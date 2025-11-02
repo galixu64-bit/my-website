@@ -196,6 +196,15 @@ function logout() {
     }
 }
 
+// 监听语言切换事件，更新动态内容
+window.addEventListener('languageChanged', function(e) {
+    const currentUser = getCurrentUser();
+    if (currentUser) {
+        // 重新加载用户资料以更新翻译
+        loadUserProfile(currentUser);
+    }
+});
+
 // 页面加载
 document.addEventListener('DOMContentLoaded', function() {
     setUserInfo();

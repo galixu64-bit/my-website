@@ -438,7 +438,32 @@ const translations = {
             document.querySelectorAll('[data-i18n]').forEach(function(el) {
                 const key = el.getAttribute('data-i18n');
                 if (key) {
-                    el.textContent = i18n.t(key);
+                    // 检查是否有子元素（如图标、span等）
+                    const hasChildren = el.children.length > 0;
+                    
+                    if (hasChildren) {
+                        // 有子元素时，只更新文本内容，保留子元素
+                        // 找到所有文本节点并更新第一个，或者创建一个文本节点
+                        let textNode = Array.from(el.childNodes).find(node => 
+                            node.nodeType === Node.TEXT_NODE && node.textContent.trim()
+                        );
+                        
+                        if (!textNode) {
+                            // 如果没有文本节点，在第一个子元素前插入
+                            const translated = i18n.t(key);
+                            if (el.firstChild) {
+                                el.insertBefore(document.createTextNode(translated), el.firstChild);
+                            } else {
+                                el.textContent = translated;
+                            }
+                        } else {
+                            // 更新现有文本节点
+                            textNode.textContent = i18n.t(key);
+                        }
+                    } else {
+                        // 没有子元素，直接更新文本内容
+                        el.textContent = i18n.t(key);
+                    }
                 }
             });
             
