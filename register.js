@@ -67,24 +67,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            // 注册
-            const result = registerUser(username, password, email);
-            
-            if (result.success) {
-                showSuccess('注册成功！正在跳转到登录页面...');
-                
-                // 自动登录
-                setTimeout(() => {
-                    const loginResult = login(username, password);
-                    if (loginResult.success) {
-                        window.location.href = 'index.html';
+            // 注册（异步）
+            (async function() {
+                try {
+                    const result = await registerUser(username, password, email);
+                    
+                    if (result.success) {
+                        showSuccess('注册成功！正在跳转到登录页面...');
+                        
+                        // 自动登录
+                        setTimeout(() => {
+                            const loginResult = login(username, password);
+                            if (loginResult.success) {
+                                window.location.href = 'index.html';
+                            } else {
+                                window.location.href = 'login.html';
+                            }
+                        }, 1500);
                     } else {
-                        window.location.href = 'login.html';
+                        showError(result.message || '注册失败');
                     }
-                }, 1500);
-            } else {
-                showError(result.message || '注册失败');
-            }
+                } catch (error) {
+                    console.error('注册错误:', error);
+                    showError('注册失败，请稍后重试');
+                }
+            })();
         });
     }
     

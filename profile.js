@@ -29,8 +29,8 @@ function setUserInfo() {
 
 // 加载用户资料
 function loadUserProfile(currentUser) {
-    // 获取完整用户信息
-    const fullUser = getUserByUsername(currentUser.username);
+    // 获取完整用户信息（使用同步版本）
+    const fullUser = getUserByUsernameSync ? getUserByUsernameSync(currentUser.username) : null;
     
     // 设置头像
     const profileAvatar = document.getElementById('profileAvatar');
