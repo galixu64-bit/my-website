@@ -110,23 +110,56 @@ function loadUserProfile(currentUser) {
     loadUserStats(currentUser);
 }
 
+// 缓存资源数据，避免重复加载
+let cachedResources = null;
+let loadingResources = false;
+
 // 加载用户统计数据
 function loadUserStats(currentUser) {
+    // 如果已经在加载，避免重复请求
+    if (loadingResources) {
+        console.log('Resources already loading, skipping...');
+        return;
+    }
+    
     // 获取所有资源
     let allResources = [];
     try {
         const localResources = getResourcesFromLocalStorage();
         if (localResources && localResources.length > 0) {
             allResources = localResources;
-        } else {
-            // 从文件加载
-            fetch('resources.json', { cache: 'no-cache' })
-                .then(response => response.json())
-                .then(data => {
-                    allResources = data;
-                    calculateStats(currentUser, allResources);
-                })
-                .catch(() => {
+            cachedResources = allResources;
+            calculateStats(currentUser, allResources);
+            return;
+        }
+        
+        // 如果已有缓存，直接使用
+        if (cachedResources && cachedResources.length > 0) {
+            console.log('Using cached resources');
+            calculateStats(currentUser, cachedResources);
+            return;
+        }
+        
+        // 从文件加载（标记为正在加载）
+        loadingResources = true;
+        fetch('resources.json', { cache: 'no-cache' })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to load resources.json');
+                }
+                return response.json();
+            })
+            .then(data => {
+                allResources = data;
+                cachedResources = data; // 缓存结果
+                loadingResources = false; // 标记加载完成
+                calculateStats(currentUser, allResources);
+            })
+            .catch((error) => {
+                loadingResources = false; // 标记加载失败
+                console.error('Failed to load resources:', error);
+                // 即使加载失败，也尝试计算统计数据（使用空数组）
+                calculateStats(currentUser, []);
                     calculateStats(currentUser, []);
                 });
             return;
