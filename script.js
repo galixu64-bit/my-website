@@ -813,6 +813,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 监听语言切换事件
     window.addEventListener('languageChanged', function(e) {
+        // 如果未登录，更新登录提示
+        if (!isLoggedIn()) {
+            showLoginRequired();
+            return;
+        }
+        
         // 重新渲染资源列表以更新文本
         if (resources && resources.length > 0) {
             renderResources();
@@ -851,10 +857,12 @@ document.addEventListener('DOMContentLoaded', function() {
 function showLoginRequired() {
     const main = document.querySelector('main');
     if (main) {
-        const loginRequiredTitle = window.i18n ? i18n.t('loginRequired') : '需要登录';
-        const loginRequiredMsg = window.i18n ? i18n.t('loginRequiredMessage') : '您需要登录后才能查看资源内容\n请先登录或注册账号';
-        const loginLabel = window.i18n ? i18n.t('login') : '登录';
-        const registerLabel = window.i18n ? i18n.t('register') : '注册';
+        // 确保 i18n 已加载
+        const i18n = window.i18n;
+        const loginRequiredTitle = (i18n && typeof i18n.t === 'function') ? i18n.t('loginRequired') : '需要登录';
+        const loginRequiredMsg = (i18n && typeof i18n.t === 'function') ? i18n.t('loginRequiredMessage') : '您需要登录后才能查看资源内容\n请先登录或注册账号';
+        const loginLabel = (i18n && typeof i18n.t === 'function') ? i18n.t('login') : '登录';
+        const registerLabel = (i18n && typeof i18n.t === 'function') ? i18n.t('register') : '注册';
         const messageLines = loginRequiredMsg.split('\n');
         
         main.innerHTML = `

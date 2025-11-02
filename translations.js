@@ -51,6 +51,7 @@ const translations = {
         'description': '描述',
         'author': '作者',
         'noCommentsYet': '暂无评论，快来发表第一条评论吧！',
+        'loginToComment': '请登录后评论',
         
         // 登录页面
         'loginTitle': '登录资源库',
@@ -174,6 +175,7 @@ const translations = {
         'description': 'Description',
         'author': 'Author',
         'noCommentsYet': 'No comments yet. Be the first to comment!',
+        'loginToComment': 'Please login to comment',
         
         // Login Page
         'loginTitle': 'Login',
