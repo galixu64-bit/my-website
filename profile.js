@@ -27,8 +27,8 @@ function setUserInfo() {
     loadUserProfile(currentUser);
 }
 
-// 加载用户资料
-function loadUserProfile(currentUser) {
+// 加载用户资料（skipStats 参数用于跳过统计数据加载，避免重复fetch）
+function loadUserProfile(currentUser, skipStats = false) {
     // 确保翻译已更新
     if (window.i18n && typeof window.i18n.updatePage === 'function') {
         window.i18n.updatePage();
@@ -106,8 +106,10 @@ function loadUserProfile(currentUser) {
         });
     }
     
-    // 加载统计数据
-    loadUserStats(currentUser);
+    // 只有在不跳过统计时才加载统计数据
+    if (!skipStats) {
+        loadUserStats(currentUser);
+    }
 }
 
 // 缓存资源数据，避免重复加载
@@ -161,13 +163,11 @@ function loadUserStats(currentUser) {
                 // 即使加载失败，也尝试计算统计数据（使用空数组）
                 calculateStats(currentUser, []);
             });
-            return;
-        }
+        return; // 异步加载，直接返回
     } catch (error) {
         console.error('加载资源失败:', error);
+        calculateStats(currentUser, []);
     }
-    
-    calculateStats(currentUser, allResources);
 }
 
 // 计算统计数据
