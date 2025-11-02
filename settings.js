@@ -196,6 +196,9 @@ function changeLanguageSetting(lang) {
     }
 }
 
+// 暴露到全局作用域供 HTML onclick/onchange 调用
+window.changeLanguageSetting = changeLanguageSetting;
+
 // 更新语言显示
 function updateLanguageDisplay(lang) {
     const getTranslation = (key) => {
