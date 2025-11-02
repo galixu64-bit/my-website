@@ -284,9 +284,11 @@ function initSettings() {
     }
     
     // 初始化语言显示（延迟一点确保 i18n 已加载）
-    setTimeout(() => {
-        const savedLang = localStorage.getItem('language') || 'zh';
+    setTimeout(function() {
+        const savedLang = localStorage.getItem('language') || 
+            (window.detectBrowserLanguage ? window.detectBrowserLanguage() : 'zh');
         updateLanguageDisplay(savedLang);
+        updateBrowserLanguageDisplay();
         
         // 设置下拉框的值
         const langSelect = document.getElementById('languageSelect');
