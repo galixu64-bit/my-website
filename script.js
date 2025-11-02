@@ -315,7 +315,10 @@ function downloadResource(resourceId) {
     const resource = resources.find(r => r.id === resourceId);
     if (resource) {
         if (!resource.downloadUrl || resource.downloadUrl === '#') {
-            alert(`dragbit "${resource.name}" 的下载链接尚未配置。`);
+            const message = window.i18n ? 
+                i18n.t('downloadLinkNotConfigured').replace('{name}', resource.name) : 
+                `dragbit "${resource.name}" 的下载链接尚未配置。`;
+            alert(message);
             return;
         }
         
@@ -745,7 +748,7 @@ function openResourceDetail(resourceId) {
     detailHtml += `
         <div class="resource-detail-actions">
             <button class="download-btn" onclick="${isWebsite ? 'visitWebsite' : 'downloadResource'}(${resource.id}); closeResourceDetail();" style="flex: 1;">
-                ${isWebsite ? '<i class="fas fa-link"></i> 访问网站' : '<i class="fas fa-download"></i> 下载 dragbit'}
+                ${isWebsite ? `<i class="fas fa-link"></i> ${window.i18n ? i18n.t('visitWebsite') : '访问网站'}` : `<i class="fas fa-download"></i> ${window.i18n ? i18n.t('download') : '下载'} dragbit`}
             </button>
             <button class="comment-btn" onclick="closeResourceDetail(); openCommentModal(${resource.id});" style="flex: 1;">
                 <i class="fas fa-comments"></i> 查看评论 (${getCommentCount(resource.id)})
