@@ -751,7 +751,7 @@ function openResourceDetail(resourceId) {
                 ${isWebsite ? `<i class="fas fa-link"></i> ${window.i18n ? i18n.t('visitWebsite') : '访问网站'}` : `<i class="fas fa-download"></i> ${window.i18n ? i18n.t('download') : '下载'} dragbit`}
             </button>
             <button class="comment-btn" onclick="closeResourceDetail(); openCommentModal(${resource.id});" style="flex: 1;">
-                <i class="fas fa-comments"></i> 查看评论 (${getCommentCount(resource.id)})
+                <i class="fas fa-comments"></i> ${window.i18n ? i18n.t('viewComments') : '查看评论'} (${getCommentCount(resource.id)})
             </button>
         </div>
     `;
