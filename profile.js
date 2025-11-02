@@ -56,7 +56,15 @@ function loadUserProfile(currentUser) {
     
     const infoAccountType = document.getElementById('infoAccountType');
     if (infoAccountType) {
-        infoAccountType.textContent = currentUser.isDeveloper ? '⭐ 开发者账户' : '👤 普通用户';
+        // 获取翻译函数
+        const t = (key) => {
+            return (window.i18n && typeof window.i18n.t === 'function') 
+                ? window.i18n.t(key) 
+                : key;
+        };
+        infoAccountType.textContent = currentUser.isDeveloper 
+            ? t('developerAccount') 
+            : t('regularUser');
     }
     
     const infoEmail = document.getElementById('infoEmail');
