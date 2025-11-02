@@ -62,6 +62,7 @@ const translations = {
         'author': '作者',
         'noCommentsYet': '暂无评论，快来发表第一条评论吧！',
         'loginToComment': '请登录后评论',
+        'viewComments': '查看评论',
         
         // 登录页面
         'loginTitle': '登录资源库',
@@ -240,6 +241,7 @@ const translations = {
         'author': 'Author',
         'noCommentsYet': 'No comments yet. Be the first to comment!',
         'loginToComment': 'Please login to comment',
+        'viewComments': 'View Comments',
         
         // Login Page
         'loginTitle': 'Login',
