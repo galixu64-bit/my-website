@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>添加资源 - dragbit优质资源网站</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 添加资源页面专用样式 */
+        .add-resource-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .form-card {
+            background: rgba(26, 26, 46, 0.8);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .form-title {
+            font-size: 2em;
+            color: #667eea;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-label {
+            display: block;
+            color: #b0b0b0;
+            font-size: 1em;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-label .required {
+            color: #ff6b6b;
+            margin-left: 4px;
+        }
+        
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(26, 26, 46, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        }
+        
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .form-help {
+            font-size: 0.85em;
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        .icon-preview {
+            font-size: 3em;
+            text-align: center;
+            margin: 15px 0;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn-submit {
+            flex: 1;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+        
+        .btn-cancel {
+            flex: 1;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #b0b0b0;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .json-output {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .json-output.hidden {
+            display: none;
+        }
+        
+        .json-title {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        .json-code {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            color: #10b981;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-x: auto;
+            margin-bottom: 15px;
+        }
+        
+        .json-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-copy,
+        .btn-download {
+            flex: 1;
+            padding: 10px;
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-copy:hover,
+        .btn-download:hover {
+            background: rgba(102, 126, 234, 0.3);
+            border-color: rgba(102, 126, 234, 0.5);
+        }
+        
+        .success-message {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.5);
+            color: #10b981;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .success-message.show {
+            display: block;
+        }
+        
+        .back-link {
+            display: inline-block;
+            color: #667eea;
+            text-decoration: none;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: rgba(102, 126, 234, 0.5);
+        }
+        
+        @media (max-width: 768px) {
+            .form-actions {
+                flex-direction: column;
+            }
+            
+            .json-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 语言切换器 -->
+    <div class="language-selector">
+        <button class="language-btn" id="langBtnZh" data-lang="zh">
+            <i class="fas fa-globe"></i> 中文
+        </button>
+        <button class="language-btn" id="langBtnEn" data-lang="en">
+            <i class="fas fa-globe"></i> English
+        </button>
+    </div>
+    
+    <header>
+        <div class="container">
+            <div class="user-info" id="userInfo" style="display: none;">
+                <img src="avatar.jpg" alt="头像" class="avatar" id="avatar">
+                <div class="user-name" id="userName"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                <div>
+                    <h1>➕ <span data-i18n="addResourceTitle">添加资源</span></h1>
+                    <p data-i18n="addResourceSubtitle">资源将收录在 dragbit —— 一个优质资源网站</p>
+                </div>
+                <div>
+                    <a href="index.html" class="download-btn" style="text-decoration: none; padding: 10px 20px; font-size: 0.9em;">
+                        ← <span data-i18n="backToMain">返回主页</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="add-resource-container">
+            <a href="index.html" class="back-link" data-i18n="backToDragbit">← 返回 dragbit</a>
+            
+            <div class="form-card">
+                <h2 class="form-title" data-i18n="addNewResource">添加新资源</h2>
+                
+                <form id="resourceForm">
+                    <div class="form-group">
+                        <label class="form-label" data-i18n="resourceName">
+                            资源名称 <span class="required">*</span>
+                        </label>
+                        <input type="text" class="form-input" id="resourceName" placeholder="例如：Photoshop CC 2024" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" data-i18n="resourceDescription">
+                            资源描述 <span class="required">*</span>
+                        </label>
+                        <textarea class="form-textarea" id="resourceDescription" placeholder="简短描述这个资源..." required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" data-i18n="resourceDetails">
+                            详细说明
+                        </label>
+                        <textarea class="form-textarea" id="resourceDetails" placeholder="详细的资源介绍，功能特点，使用方法等..." rows="6"></textarea>
+                        <div class="form-help">支持多行文本，用于详情页面展示</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" data-i18n="resourceTags">
+                            标签（用逗号分隔）
+                        </label>
+                        <input type="text" class="form-input" id="resourceTags" data-i18n-placeholder="exampleTags" placeholder="例如：免费,开源,Windows,中文">
+                        <div class="form-help" data-i18n="tagsHelp">输入多个标签，用逗号分隔，例如：免费,开源,Windows</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            展示图片URL
+                        </label>
+                        <input type="url" class="form-input" id="resourceImages" placeholder="https://example.com/image1.jpg">
+                        <div class="form-help">可以添加多张图片URL，用逗号分隔</div>
+                        <div id="imagePreview" style="margin-top: 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px;"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            展示视频URL
+                        </label>
+                        <input type="url" class="form-input" id="resourceVideos" placeholder="https://example.com/video.mp4 或 YouTube 链接">
+                        <div class="form-help">支持直接视频链接或 YouTube/Bilibili 链接</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" data-i18n="categorySelect">
+                            资源分类 <span class="required">*</span>
+                        </label>
+                        <select class="form-select" id="resourceCategory" required>
+                            <option value="">请选择分类</option>
+                            <option value="software" data-i18n="software">软件</option>
+                            <option value="document" data-i18n="document">文档</option>
+                            <option value="media" data-i18n="media">媒体</option>
+                            <option value="website" data-i18n="website">网站</option>
+                            <option value="other" data-i18n="other">其他</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            文件大小
+                        </label>
+                        <input type="text" class="form-input" id="resourceSize" placeholder="例如：100 MB, 2.5 GB, 或 -（网站类型）">
+                        <div class="form-help">网站类型可以填写 "-" 或不填</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            文件格式
+                        </label>
+                        <input type="text" class="form-input" id="resourceFormat" placeholder="例如：ZIP, PDF, MP4, URL（网站类型）">
+                        <div class="form-help">网站类型建议填写 "URL"</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            下载链接/网站链接 <span class="required">*</span>
+                        </label>
+                        <input type="url" class="form-input" id="resourceUrl" placeholder="https://example.com/file.zip 或 https://www.example.com" required>
+                        <div class="form-help">完整的下载链接或网站地址</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            图标（Font Awesome 类名或 Emoji）
+                        </label>
+                        <input type="text" class="form-input" id="resourceIcon" placeholder="例如：fas fa-desktop 或 💻（可选）">
+                        <div class="icon-preview" id="iconPreview"><i class="fas fa-archive"></i></div>
+                        <div class="form-help">
+                            输入 Font Awesome 图标类名（如：<code>fas fa-desktop</code>、<code>fas fa-file-pdf</code>）或 emoji 表情<br>
+                            常用图标：<code>fas fa-desktop</code>（软件）、<code>fas fa-file-pdf</code>（文档）、<code>fas fa-video</code>（媒体）、<code>fas fa-globe</code>（网站）
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn-submit"><i class="fas fa-plus"></i> <span data-i18n="submitResource">提交</span></button>
+                        <a href="index.html" class="btn-cancel" data-i18n="cancel">取消</a>
+                    </div>
+                </form>
+                
+                <div class="json-output hidden" id="jsonOutput">
+                    <div class="json-title"><i class="fas fa-check-circle" style="color: #10b981;"></i> 资源已添加到列表！</div>
+                    <div class="form-help" style="margin-bottom: 15px; color: #10b981; line-height: 1.6;">
+                        <i class="fas fa-info-circle"></i> <strong>下一步操作：</strong><br>
+                        1. 点击"下载 resources.json"按钮下载完整文件<br>
+                        2. 将下载的文件替换项目中的 <code>resources.json</code><br>
+                        3. 刷新主页即可看到新添加的资源
+                    </div>
+                    <details style="margin-bottom: 15px;">
+                        <summary style="color: #b0b0b0; cursor: pointer; user-select: none;"><i class="fas fa-file-code"></i> 查看完整 JSON（点击展开）</summary>
+                        <div class="json-code" id="jsonCode" style="margin-top: 10px;"></div>
+                    </details>
+                    <div class="json-actions">
+                        <button class="btn-download" onclick="downloadJson()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-color: #10b981;">
+                            <i class="fas fa-download"></i> 下载 resources.json（推荐）
+                        </button>
+                        <button class="btn-copy" onclick="copyJson()"><i class="fas fa-copy"></i> 复制完整 JSON</button>
+                    </div>
+                    <div class="success-message" id="successMessage" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p data-i18n="copyright">© 2024 Gary Dragbit | 用 ❤️ 制作</p>
+        </div>
+    </footer>
+
+    <script src="translations.js"></script>
+    <script src="auth.js"></script>
+    <script src="add-resource.js"></script>
+    <script>
+        // 语言切换函数
+        window.switchLanguage = function(lang) {
+            if (window.i18n && typeof window.i18n.setLanguage === 'function') {
+                window.i18n.setLanguage(lang);
+                document.querySelectorAll('.language-btn').forEach(function(btn) {
+                    if (btn.getAttribute('data-lang') === lang) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+        };
+        
+        // 初始化语言
+        function initLanguage() {
+            if (!window.i18n) return;
+            
+            var langBtnZh = document.getElementById('langBtnZh');
+            var langBtnEn = document.getElementById('langBtnEn');
+            
+            if (langBtnZh) {
+                langBtnZh.addEventListener('click', function() {
+                    window.switchLanguage('zh');
+                });
+            }
+            
+            if (langBtnEn) {
+                langBtnEn.addEventListener('click', function() {
+                    window.switchLanguage('en');
+                });
+            }
+            
+            try {
+                window.i18n.init();
+                var savedLang = localStorage.getItem('language') || 'zh';
+                document.querySelectorAll('.language-btn').forEach(function(btn) {
+                    if (btn.getAttribute('data-lang') === savedLang) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            } catch (e) {
+                console.error('语言初始化失败:', e);
+            }
+        }
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(initLanguage, 50);
+            });
+        } else {
+            setTimeout(initLanguage, 50);
+        }
+    </script>
+</body>
+</html>
+

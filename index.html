@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <title>dragbit - 优质资源免费下载网站 | 软件、文档、媒体资源库</title>
+    <meta name="description" content="dragbit 是一个优质资源分享平台，提供免费软件、文档、媒体等资源下载。高质量资源，完全免费，支持多语言。">
+    <meta name="keywords" content="资源下载,免费软件,文档资源,媒体资源,资源分享,dragbit,免费资源,优质资源">
+    <meta name="author" content="dragbit">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://dragbit.com/">
+    <meta property="og:title" content="dragbit - 优质资源免费下载网站">
+    <meta property="og:description" content="高质量资源，免费下载。软件、文档、媒体资源一站式获取。">
+    <meta property="og:image" content="https://dragbit.com/og-image.jpg">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://dragbit.com/">
+    <meta property="twitter:title" content="dragbit - 优质资源免费下载网站">
+    <meta property="twitter:description" content="高质量资源，免费下载。软件、文档、媒体资源一站式获取。">
+    <meta property="twitter:image" content="https://dragbit.com/og-image.jpg">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="canonical" href="https://your-domain.com/">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 语言切换器 -->
+    <div class="language-selector">
+        <button class="language-btn active" data-lang="zh" id="langBtnZh">
+            <i class="fas fa-globe"></i> 中文
+        </button>
+        <button class="language-btn" data-lang="en" id="langBtnEn">
+            <i class="fas fa-globe"></i> English
+        </button>
+    </div>
+    <header>
+        <div class="container">
+            <div class="user-info" id="userInfo" style="display: none;">
+                <img src="avatar.jpg" alt="头像" class="avatar" id="avatar">
+                <div class="user-name" id="userName"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                <div>
+                    <h1><i class="fas fa-archive"></i> <span data-i18n="siteName">dragbit</span></h1>
+                    <p data-i18n="siteDescription">优质资源，免费下载</p>
+                </div>
+                <div id="authButtons" style="display: flex; gap: 10px;">
+                    <a href="login.html" class="download-btn" style="text-decoration: none; padding: 10px 20px; font-size: 0.9em;">
+                        <i class="fas fa-lock"></i> <span data-i18n="login">登录</span>
+                    </a>
+                </div>
+                <div id="userMenu" style="display: none;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <a href="profile.html" class="download-btn" style="text-decoration: none; padding: 8px 16px; font-size: 0.85em;">
+                            <i class="fas fa-user"></i> <span data-i18n="personalCenter">个人中心</span>
+                        </a>
+                        <a href="my-resources.html" class="download-btn" style="text-decoration: none; padding: 8px 16px; font-size: 0.85em;">
+                            <i class="fas fa-clipboard-list"></i> <span data-i18n="myResources">我的资源</span>
+                        </a>
+                        <button onclick="logout()" class="btn-cancel" style="padding: 8px 16px; font-size: 0.85em; background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.5); color: #ef4444;">
+                            <span data-i18n="logout">登出</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- 搜索和筛选区域 -->
+        <div class="search-filter-section">
+            <div class="search-box">
+                <input type="text" id="searchInput" data-i18n-placeholder="searchPlaceholder" placeholder="搜索资源..." class="search-input">
+                <span class="search-icon"><i class="fas fa-search"></i></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 20px; flex-wrap: wrap;">
+                <div class="filter-tabs" style="flex: 1;">
+                    <button class="filter-btn active" data-category="all" data-i18n="filterAll">全部</button>
+                    <button class="filter-btn" data-category="software" data-i18n="filterSoftware">软件</button>
+                    <button class="filter-btn" data-category="document" data-i18n="filterDocument">文档</button>
+                    <button class="filter-btn" data-category="media" data-i18n="filterMedia">媒体</button>
+                    <button class="filter-btn" data-category="website" data-i18n="filterWebsite">网站</button>
+                    <button class="filter-btn" data-category="other" data-i18n="filterOther">其他</button>
+                </div>
+                <a href="add-resource.html" class="download-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-plus"></i> <span data-i18n="addResource">添加资源</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- 资源列表 -->
+        <div class="resources-container">
+            <div id="resourcesList" class="resources-list">
+                <!-- 资源项将通过JavaScript动态生成 -->
+            </div>
+            <div id="noResults" class="no-results hidden">
+                <p><i class="fas fa-frown"></i> <span data-i18n="noResults">没有找到相关资源</span></p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p data-i18n="copyright">© 2024 Gary 资源库 | 用 <i class="fas fa-heart" style="color: #ef4444;"></i> 制作</p>
+        </div>
+    </footer>
+    
+    <!-- 评论弹窗 -->
+    <div id="commentModal" class="comment-modal hidden">
+      <div class="comment-modal-content">
+        <div class="comment-modal-header">
+          <h3 id="commentResourceName" data-i18n="comment">评论</h3>
+          <button class="comment-modal-close" onclick="closeCommentModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="comment-modal-body">
+          <div id="commentsList" class="comments-list"></div>
+          <form id="commentForm" class="comment-form" onsubmit="event.preventDefault(); submitComment();">
+            <textarea id="commentInput" class="comment-input" data-i18n-placeholder="enterComment" placeholder="请输入你的评论..." required maxlength="500"></textarea>
+            <button type="submit" class="download-btn" style="width:100%;margin-top:10px;"><i class="fas fa-paper-plane"></i> <span data-i18n="submitComment">发表评论</span></button>
+          </form>
+          <div id="commentLoginPrompt" class="comment-login-prompt" style="display:none;" data-i18n="loginToComment">请登录后评论</div>
+        </div>
+      </div>
+    </div>
+    <!-- 资源详情弹窗 -->
+    <div id="resourceDetailModal" class="resource-detail-modal hidden">
+      <div class="resource-detail-content">
+        <div class="resource-detail-header">
+          <span id="detailResourceName" class="resource-detail-title"></span>
+          <button class="resource-detail-close" onclick="closeResourceDetail()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div id="resourceDetailBody" class="resource-detail-body"></div>
+      </div>
+    </div>
+    <script src="translations.js"></script>
+    <script src="auth.js"></script>
+    <script src="script.js"></script>
+    <script>
+        // 语言切换函数
+        window.switchLanguage = function(lang) {
+            if (window.i18n && typeof window.i18n.setLanguage === 'function') {
+                window.i18n.setLanguage(lang);
+                // 更新按钮状态
+                document.querySelectorAll('.language-btn').forEach(function(btn) {
+                    if (btn.getAttribute('data-lang') === lang) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+        };
+        
+        // 页面加载完成后初始化语言
+        function initLanguage() {
+            // 检查 i18n 是否已加载
+            if (!window.i18n) {
+                console.error('i18n 未加载');
+                return;
+            }
+            
+            // 绑定语言按钮事件
+            var langBtnZh = document.getElementById('langBtnZh');
+            var langBtnEn = document.getElementById('langBtnEn');
+            
+            if (langBtnZh) {
+                langBtnZh.addEventListener('click', function() {
+                    window.switchLanguage('zh');
+                });
+            }
+            
+            if (langBtnEn) {
+                langBtnEn.addEventListener('click', function() {
+                    window.switchLanguage('en');
+                });
+            }
+            
+            // 初始化语言
+            try {
+                window.i18n.init();
+                
+                // 设置当前语言的按钮为激活状态
+                var savedLang = localStorage.getItem('language') || 'zh';
+                document.querySelectorAll('.language-btn').forEach(function(btn) {
+                    if (btn.getAttribute('data-lang') === savedLang) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            } catch (e) {
+                console.error('语言初始化失败:', e);
+            }
+        }
+        
+        // 等待 DOM 和脚本加载完成
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                // 延迟一点确保 translations.js 已执行
+                setTimeout(initLanguage, 50);
+            });
+        } else {
+            // DOM 已加载，延迟执行确保脚本已加载
+            setTimeout(initLanguage, 50);
+        }
+    </script>
+</body>
+</html>
+

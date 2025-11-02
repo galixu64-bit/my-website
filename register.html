@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册 - Gary Dragbit</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="login.html" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <style>
+        .login-container {
+            max-width: 450px;
+            margin: 80px auto;
+            padding: 0 20px;
+        }
+        
+        .login-card {
+            background: rgba(26, 26, 46, 0.9);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .login-title {
+            font-size: 2em;
+            color: #667eea;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .login-subtitle {
+            color: #b0b0b0;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            color: #b0b0b0;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(26, 26, 46, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-register {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            margin-top: 10px;
+        }
+        
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        
+        .login-divider {
+            text-align: center;
+            color: #888;
+            margin: 25px 0;
+            position: relative;
+        }
+        
+        .login-divider::before,
+        .login-divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .login-divider::before {
+            left: 0;
+        }
+        
+        .login-divider::after {
+            right: 0;
+        }
+        
+        .btn-login-link {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #b0b0b0;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+        
+        .btn-login-link:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #e0e0e0;
+        }
+        
+        .error-message {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            color: #ef4444;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        .success-message {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.5);
+            color: #10b981;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .success-message.show {
+            display: block;
+        }
+        
+        /* 验证码相关样式 */
+        .verification-code-group {
+            margin-bottom: 20px;
+        }
+        
+        .verification-code-input-wrapper {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .verification-code-input {
+            flex: 1;
+            padding: 12px 15px;
+            background: rgba(26, 26, 46, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+        
+        .verification-code-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-send-code {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            min-width: 120px;
+        }
+        
+        .btn-send-code:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-send-code:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background: rgba(102, 126, 234, 0.3);
+        }
+        
+        .back-home {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            color: #667eea;
+            text-decoration: none;
+            padding: 10px 20px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-home:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: rgba(102, 126, 234, 0.5);
+        }
+        
+        @media (max-width: 768px) {
+            .login-container {
+                margin: 50px auto;
+            }
+            
+            .back-home {
+                position: relative;
+                top: 0;
+                left: 0;
+                margin-bottom: 20px;
+                display: inline-block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 语言切换器 -->
+    <div class="language-selector">
+        <button class="language-btn" id="langBtnZh" data-lang="zh">
+            <i class="fas fa-globe"></i> 中文
+        </button>
+        <button class="language-btn" id="langBtnEn" data-lang="en">
+            <i class="fas fa-globe"></i> English
+        </button>
+    </div>
+    
+    <a href="index.html" class="back-home" data-i18n="backToHome">← 返回首页</a>
+    
+    <div class="login-container">
+        <div class="login-card">
+            <h1 class="login-title" data-i18n="registerTitle">✨ 注册</h1>
+            <p class="login-subtitle" data-i18n="registerSubtitle">创建账户开始使用</p>
+            
+            <div class="error-message" id="errorMessage"></div>
+            <div class="success-message" id="successMessage"></div>
+            
+            <form id="registerForm">
+                <div class="form-group">
+                    <label class="form-label" data-i18n="username">用户名</label>
+                    <input type="text" class="form-input" id="username" placeholder="输入用户名（3-20个字符）" required minlength="3" maxlength="20" autofocus>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" data-i18n="password">密码</label>
+                    <input type="password" class="form-input" id="password" placeholder="输入密码（至少6个字符）" required minlength="6">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" data-i18n="confirmPassword">确认密码</label>
+                    <input type="password" class="form-input" id="confirmPassword" placeholder="再次输入密码" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" data-i18n="email">邮箱 <span style="color: #ef4444;">*</span></label>
+                    <input type="email" class="form-input" id="email" placeholder="your@email.com" required>
+                    <div style="font-size: 0.85em; color: #888; margin-top: 5px;" data-i18n="codeSentTo">验证码将发送到此邮箱</div>
+                </div>
+                
+                <div class="verification-code-group">
+                    <label class="form-label" data-i18n="verificationCode">验证码 <span style="color: #ef4444;">*</span></label>
+                    <div class="verification-code-input-wrapper">
+                        <input type="text" class="verification-code-input" id="verificationCode" data-i18n-placeholder="enterCode" placeholder="请输入验证码" required maxlength="6">
+                        <button type="button" class="btn-send-code" id="sendCodeBtn" onclick="sendVerificationCode()">
+                            <i class="fas fa-paper-plane"></i> <span data-i18n="sendCode">发送验证码</span>
+                        </button>
+                    </div>
+                    <div id="codeCountdown" style="font-size: 0.85em; color: #888; margin-top: 5px; display: none;"></div>
+                </div>
+                
+                <button type="submit" class="btn-register" data-i18n="registerSubmit">注册</button>
+            </form>
+            
+            <div class="login-divider" data-i18n="alreadyHaveAccount">已有账户？</div>
+            
+            <a href="login.html" class="btn-login-link" data-i18n="loginNow">立即登录</a>
+        </div>
+    </div>
+
+    <script src="translations.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        // 语言切换函数
+        window.switchLanguage = function(lang) {
+            if (window.i18n && typeof window.i18n.setLanguage === 'function') {
+                window.i18n.setLanguage(lang);
+                document.querySelectorAll('.language-btn').forEach(function(btn) {
+                    if (btn.getAttribute('data-lang') === lang) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+        };
+        
+        // 初始化语言
+        function initLanguage() {
+            if (!window.i18n) return;
+            
+            var langBtnZh = document.getElementById('langBtnZh');
+            var langBtnEn = document.getElementById('langBtnEn');
+            
+            if (langBtnZh) {
+                langBtnZh.addEventListener('click', function() {
+                    window.switchLanguage('zh');
+                });
+            }
+            
+            if (langBtnEn) {
+                langBtnEn.addEventListener('click', function() {
+                    window.switchLanguage('en');
+                });
+            }
+            
+            try {
+                window.i18n.init();
+                var savedLang = localStorage.getItem('language') || 'zh';
+                document.querySelectorAll('.language-btn').forEach(function(btn) {
+                    if (btn.getAttribute('data-lang') === savedLang) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            } catch (e) {
+                console.error('语言初始化失败:', e);
+            }
+        }
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(initLanguage, 50);
+            });
+        } else {
+            setTimeout(initLanguage, 50);
+        }
+        
+        // 原有代码继续...
+        // 初始化 EmailJS（需要替换为你的实际配置）
+        // 用户需要到 https://www.emailjs.com/ 注册并获取以下信息：
+        // - Public Key (EMAILJS_PUBLIC_KEY)
+        // - Service ID (EMAILJS_SERVICE_ID)
+        // - Template ID (EMAILJS_TEMPLATE_ID)
+        const EMAILJS_CONFIG = {
+            publicKey: 'He4SR5Jhl-7ZEOPRu',
+            serviceId: 'service_w41xxeq',
+            templateId: 'template_i0nicqo'
+        };
+        
+        // 初始化 EmailJS
+        (function() {
+            emailjs.init(EMAILJS_CONFIG.publicKey);
+        })();
+        
+        // 验证码相关变量
+        let verificationCode = '';
+        let codeExpireTime = 0;
+        
+        // 发送验证码
+        window.sendVerificationCode = function() {
+            const emailInput = document.getElementById('email');
+            const email = emailInput.value.trim();
+            const sendCodeBtn = document.getElementById('sendCodeBtn');
+            const countdownDiv = document.getElementById('codeCountdown');
+            
+            // 验证邮箱格式
+            if (!email) {
+                showErrorMessage('请先输入邮箱地址');
+                return;
+            }
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showErrorMessage('请输入有效的邮箱地址');
+                return;
+            }
+            
+            // 生成6位随机验证码
+            verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+            codeExpireTime = Date.now() + 5 * 60 * 1000; // 5分钟有效期
+            
+            // 使用 EmailJS 发送邮件
+            // 注意：EmailJS 模板变量名称必须与模板中完全匹配
+            // 支持多种常见的变量名格式，根据你的模板选择：
+            const templateParams = {
+                // 收件人邮箱（常见格式）
+                to_email: email,
+                email: email,
+                user_email: email,
+                // 收件人名称（可选）
+                to_name: email.split('@')[0],
+                // 验证码（常见格式）
+                verification_code: verificationCode,
+                code: verificationCode,
+                verificationCode: verificationCode,
+                // 网站名称
+                site_name: 'dragbit 资源库',
+                siteName: 'dragbit 资源库',
+                // 完整消息（可选）
+                message: '您的验证码是：' + verificationCode + '，有效期为5分钟。'
+            };
+            
+            console.log('发送验证码请求:', {
+                serviceId: EMAILJS_CONFIG.serviceId,
+                templateId: EMAILJS_CONFIG.templateId,
+                templateParams: { ...templateParams, verification_code: '***', code: '***', verificationCode: '***' } // 隐藏验证码
+            });
+            
+            emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, templateParams)
+                .then(function(response) {
+                    console.log('邮件发送成功:', response.status, response.text);
+                    showSuccessMessage('验证码已发送到您的邮箱，请查收！');
+                }, function(error) {
+                    console.error('邮件发送失败，详细错误:', {
+                        status: error.status,
+                        text: error.text,
+                        message: error.message,
+                        fullError: error
+                    });
+                    
+                    let errorMsg = '邮件发送失败。';
+                    
+                    // 检查是否是 Public Key 无效的错误
+                    if (error.status === 400 && error.text && error.text.includes('Public Key is invalid')) {
+                        errorMsg = 'Public Key 无效！\n\n';
+                        errorMsg += '请按以下步骤获取正确的 Public Key：\n';
+                        errorMsg += '1. 访问 https://dashboard.emailjs.com/admin/account\n';
+                        errorMsg += '2. 登录你的 EmailJS 账号\n';
+                        errorMsg += '3. 在 "General" 页面找到 "Public Key"\n';
+                        errorMsg += '4. 复制完整的 Public Key\n';
+                        errorMsg += '5. 替换 register.html 中第 304 行的 publicKey 值';
+                        // 显示弹窗提示，因为错误信息可能较长
+                        alert(errorMsg);
+                        errorMsg = 'Public Key 无效，请检查配置。查看控制台或弹窗了解详情。';
+                    } else if (error.status === 400) {
+                        errorMsg += ' 请检查模板配置或变量名称是否正确。\n错误详情：' + (error.text || '请查看浏览器控制台');
+                    } else if (error.status === 401) {
+                        errorMsg += ' 认证失败，请检查 Public Key 是否正确。';
+                    } else if (error.status === 403) {
+                        errorMsg += ' 权限不足，请检查服务配置。';
+                    } else if (error.status === 404) {
+                        errorMsg += ' 服务或模板不存在，请检查 Service ID 和 Template ID。';
+                    } else {
+                        errorMsg += ' 错误代码：' + (error.status || '未知') + '，详细信息：' + (error.text || error.message || '请查看浏览器控制台');
+                    }
+                    
+                    showErrorMessage(errorMsg);
+                    // 发送失败时不清空验证码，方便调试（如果是配置问题，验证码仍然有效）
+                    // verificationCode = '';
+                });
+            
+            // 开始倒计时
+            let countdown = 60;
+            sendCodeBtn.disabled = true;
+            countdownDiv.style.display = 'block';
+            
+            const timer = setInterval(function() {
+                countdown--;
+                countdownDiv.textContent = `${countdown}秒后可重新发送`;
+                
+                if (countdown <= 0) {
+                    clearInterval(timer);
+                    sendCodeBtn.disabled = false;
+                    countdownDiv.style.display = 'none';
+                    sendCodeBtn.innerHTML = '<i class="fas fa-paper-plane"></i> 发送验证码';
+                }
+            }, 1000);
+        };
+        
+        // 验证验证码
+        function verifyCode(inputCode) {
+            if (!verificationCode) {
+                return { valid: false, message: '请先发送验证码' };
+            }
+            
+            if (Date.now() > codeExpireTime) {
+                verificationCode = '';
+                return { valid: false, message: '验证码已过期，请重新发送' };
+            }
+            
+            if (inputCode !== verificationCode) {
+                return { valid: false, message: '验证码错误' };
+            }
+            
+            return { valid: true };
+        }
+        
+        function showErrorMessage(message) {
+            const errorMsg = document.getElementById('errorMessage');
+            if (errorMsg) {
+                errorMsg.textContent = message;
+                errorMsg.classList.add('show');
+                setTimeout(() => {
+                    errorMsg.classList.remove('show');
+                }, 5000);
+            }
+        }
+        
+        function showSuccessMessage(message) {
+            const successMsg = document.getElementById('successMessage');
+            if (successMsg) {
+                successMsg.textContent = message;
+                successMsg.classList.add('show');
+                setTimeout(() => {
+                    successMsg.classList.remove('show');
+                }, 3000);
+            }
+        }
+        
+        // 导出验证函数供 register.js 使用
+        window.verifyVerificationCode = verifyCode;
+    </script>
+    <script src="register.js"></script>
+</body>
+</html>
+
