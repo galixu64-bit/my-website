@@ -447,27 +447,30 @@ const translations = {
                         }
                         // 如果 value 需要翻译，可以使用 data-i18n-value
                     } else {
-                        // 对于普通元素，直接更新文本内容
-                        // 如果元素内部有子元素（如 span、i 标签），需要保留子元素
-                        if (el.children.length > 0) {
-                            // 有子元素时，只更新文本节点
-                            // 先保存所有子元素
-                            const children = Array.from(el.children);
-                            const childTexts = Array.from(el.childNodes).filter(node => 
-                                node.nodeType === Node.TEXT_NODE && node.textContent.trim()
-                            );
+                        // 对于普通元素，更新文本内容
+                        // 如果元素有子元素（如 <i> 图标），需要特殊处理
+                        // 检查是否有子元素且子元素是图标或其他需要保留的元素
+                        const hasIcon = el.querySelector('i, svg, img') !== null;
+                        
+                        if (hasIcon) {
+                            // 有图标等子元素，需要保留子元素，只更新文本
+                            // 找到文本节点并更新
+                            let textUpdated = false;
+                            Array.from(el.childNodes).forEach(function(node) {
+                                if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
+                                    node.textContent = translated;
+                                    textUpdated = true;
+                                }
+                            });
                             
-                            // 清除所有内容
-                            el.textContent = '';
-                            
-                            // 先插入翻译的文本
-                            el.textContent = translated;
-                            
-                            // 如果原来有子元素，在文本后重新添加
-                            // 但实际上这些元素通常是纯文本标签，不需要保留子元素
-                            // 所以这里直接替换文本即可
+                            // 如果没有文本节点，在第一个子元素前插入翻译文本
+                            if (!textUpdated && el.firstChild) {
+                                el.insertBefore(document.createTextNode(translated), el.firstChild);
+                            } else if (!textUpdated) {
+                                el.textContent = translated;
+                            }
                         } else {
-                            // 没有子元素，直接更新文本内容
+                            // 没有需要保留的子元素，直接替换所有文本内容
                             el.textContent = translated;
                         }
                     }
