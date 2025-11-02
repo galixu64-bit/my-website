@@ -60,8 +60,23 @@ function loadUserProfile(currentUser) {
     }
     
     const infoEmail = document.getElementById('infoEmail');
-    if (infoEmail && fullUser && fullUser.email) {
-        infoEmail.textContent = fullUser.email;
+    if (infoEmail) {
+        if (fullUser && fullUser.email) {
+            infoEmail.textContent = fullUser.email;
+        } else {
+            // 获取翻译
+            const t = (key) => {
+                return (window.i18n && typeof window.i18n.t === 'function') 
+                    ? window.i18n.t(key) 
+                    : '未设置';
+            };
+            infoEmail.textContent = t('emailNotSet');
+        }
+    }
+    
+    // 更新设置页面的邮箱显示（如果存在）
+    if (typeof updateEmailDisplay === 'function') {
+        updateEmailDisplay(fullUser ? fullUser.email : null);
     }
     
     // 设置注册时间
