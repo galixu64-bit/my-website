@@ -91,7 +91,10 @@ function loadUserProfile(currentUser) {
     const infoCreatedAt = document.getElementById('infoCreatedAt');
     if (infoCreatedAt && fullUser && fullUser.createdAt) {
         const date = new Date(fullUser.createdAt);
-        infoCreatedAt.textContent = date.toLocaleDateString('zh-CN', {
+        // 根据当前语言设置日期格式
+        const currentLang = (window.i18n && window.i18n.currentLang) || 'zh';
+        const locale = currentLang === 'zh' ? 'zh-CN' : 'en-US';
+        infoCreatedAt.textContent = date.toLocaleDateString(locale, {
             year: 'numeric',
             month: 'long',
             day: 'numeric'
