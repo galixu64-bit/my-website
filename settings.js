@@ -352,5 +352,25 @@ function t(key) {
 // 页面加载完成后初始化
 document.addEventListener('DOMContentLoaded', function() {
     initSettings();
+    
+    // 确保语言选择器的事件监听器正确绑定
+    const languageSelect = document.getElementById('languageSelect');
+    if (languageSelect) {
+        // 移除可能存在的旧监听器，添加新监听器
+        languageSelect.removeEventListener('change', handleLanguageChange);
+        languageSelect.addEventListener('change', handleLanguageChange);
+        console.log('Language select event listener attached');
+    }
 });
+
+// 语言选择器的 change 事件处理函数
+function handleLanguageChange(event) {
+    const lang = event.target.value;
+    console.log('Language select changed to:', lang);
+    if (window.changeLanguageSetting) {
+        window.changeLanguageSetting(lang);
+    } else {
+        console.error('changeLanguageSetting function not available');
+    }
+}
 
