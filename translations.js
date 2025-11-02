@@ -448,30 +448,24 @@ const translations = {
                         // 如果 value 需要翻译，可以使用 data-i18n-value
                     } else {
                         // 对于普通元素，直接更新文本内容
-                        // 如果元素内部有子元素（如 span、i 标签），需要保留
+                        // 如果元素内部有子元素（如 span、i 标签），需要保留子元素
                         if (el.children.length > 0) {
-                            // 有子元素时，只更新直接的文本内容
-                            // 先找到所有文本节点
-                            const textNodes = Array.from(el.childNodes).filter(node => 
-                                node.nodeType === Node.TEXT_NODE
+                            // 有子元素时，只更新文本节点
+                            // 先保存所有子元素
+                            const children = Array.from(el.children);
+                            const childTexts = Array.from(el.childNodes).filter(node => 
+                                node.nodeType === Node.TEXT_NODE && node.textContent.trim()
                             );
                             
-                            if (textNodes.length > 0) {
-                                // 更新第一个文本节点
-                                textNodes[0].textContent = translated;
-                                // 删除其他文本节点
-                                for (let i = 1; i < textNodes.length; i++) {
-                                    textNodes[i].remove();
-                                }
-                            } else {
-                                // 如果没有文本节点，在第一个子元素前插入
-                                const textNode = document.createTextNode(translated);
-                                if (el.firstChild) {
-                                    el.insertBefore(textNode, el.firstChild);
-                                } else {
-                                    el.appendChild(textNode);
-                                }
-                            }
+                            // 清除所有内容
+                            el.textContent = '';
+                            
+                            // 先插入翻译的文本
+                            el.textContent = translated;
+                            
+                            // 如果原来有子元素，在文本后重新添加
+                            // 但实际上这些元素通常是纯文本标签，不需要保留子元素
+                            // 所以这里直接替换文本即可
                         } else {
                             // 没有子元素，直接更新文本内容
                             el.textContent = translated;
