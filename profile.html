@@ -520,23 +520,32 @@
         document.addEventListener('DOMContentLoaded', function() {
             // 先初始化翻译
             setTimeout(function() {
-                if (window.i18n && typeof window.i18n.init === 'function') {
-                    window.i18n.init();
+                if (window.i18n) {
+                    if (typeof window.i18n.init === 'function') {
+                        window.i18n.init();
+                    }
+                    // 确保翻译已更新（双重保险）
+                    if (typeof window.i18n.updatePage === 'function') {
+                        window.i18n.updatePage();
+                    }
                 }
-            }, 50);
+            }, 100);
             
             // 监听语言切换事件，确保更新所有内容
             window.addEventListener('languageChanged', function(e) {
                 setTimeout(function() {
-                    if (window.i18n && typeof window.i18n.updatePage === 'function') {
-                        window.i18n.updatePage();
-                        // 重新加载用户资料以更新动态内容
+                    if (window.i18n) {
+                        // 强制更新所有翻译
+                        if (typeof window.i18n.updatePage === 'function') {
+                            window.i18n.updatePage();
+                        }
+                        // 重新加载用户资料以更新动态内容（如账户类型）
                         const currentUser = getCurrentUser();
                         if (currentUser && typeof loadUserProfile === 'function') {
                             loadUserProfile(currentUser);
                         }
                     }
-                }, 10);
+                }, 50);
             });
         });
     </script>
