@@ -29,6 +29,11 @@ function setUserInfo() {
 
 // 加载用户资料
 function loadUserProfile(currentUser) {
+    // 确保翻译已更新
+    if (window.i18n && typeof window.i18n.updatePage === 'function') {
+        window.i18n.updatePage();
+    }
+    
     // 获取完整用户信息（使用同步版本）
     const fullUser = getUserByUsernameSync ? getUserByUsernameSync(currentUser.username) : null;
     
