@@ -438,31 +438,44 @@ const translations = {
             document.querySelectorAll('[data-i18n]').forEach(function(el) {
                 const key = el.getAttribute('data-i18n');
                 if (key) {
-                    // 检查是否有子元素（如图标、span等）
-                    const hasChildren = el.children.length > 0;
+                    const translated = i18n.t(key);
                     
-                    if (hasChildren) {
-                        // 有子元素时，只更新文本内容，保留子元素
-                        // 找到所有文本节点并更新第一个，或者创建一个文本节点
-                        let textNode = Array.from(el.childNodes).find(node => 
-                            node.nodeType === Node.TEXT_NODE && node.textContent.trim()
-                        );
-                        
-                        if (!textNode) {
-                            // 如果没有文本节点，在第一个子元素前插入
-                            const translated = i18n.t(key);
-                            if (el.firstChild) {
-                                el.insertBefore(document.createTextNode(translated), el.firstChild);
+                    // 如果元素是 input、textarea 等，更新 placeholder 或 value
+                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                        if (el.getAttribute('data-i18n-placeholder') || el.placeholder) {
+                            // placeholder 会由 data-i18n-placeholder 处理
+                        }
+                        // 如果 value 需要翻译，可以使用 data-i18n-value
+                    } else {
+                        // 对于普通元素，直接更新文本内容
+                        // 如果元素内部有子元素（如 span、i 标签），需要保留
+                        if (el.children.length > 0) {
+                            // 有子元素时，只更新直接的文本内容
+                            // 先找到所有文本节点
+                            const textNodes = Array.from(el.childNodes).filter(node => 
+                                node.nodeType === Node.TEXT_NODE
+                            );
+                            
+                            if (textNodes.length > 0) {
+                                // 更新第一个文本节点
+                                textNodes[0].textContent = translated;
+                                // 删除其他文本节点
+                                for (let i = 1; i < textNodes.length; i++) {
+                                    textNodes[i].remove();
+                                }
                             } else {
-                                el.textContent = translated;
+                                // 如果没有文本节点，在第一个子元素前插入
+                                const textNode = document.createTextNode(translated);
+                                if (el.firstChild) {
+                                    el.insertBefore(textNode, el.firstChild);
+                                } else {
+                                    el.appendChild(textNode);
+                                }
                             }
                         } else {
-                            // 更新现有文本节点
-                            textNode.textContent = i18n.t(key);
+                            // 没有子元素，直接更新文本内容
+                            el.textContent = translated;
                         }
-                    } else {
-                        // 没有子元素，直接更新文本内容
-                        el.textContent = i18n.t(key);
                     }
                 }
             });
