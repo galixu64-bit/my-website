@@ -156,6 +156,9 @@ const translations = {
         'emailChangeSuccess': '邮箱修改成功！',
         'emailNotSet': '未设置',
         'userNotFound': '用户未找到',
+        'currentLanguage': '当前语言',
+        'browserLanguage': '浏览器语言',
+        'selectLanguage': '选择语言',
         
         // Other
         'copyright': '© 2024 dragbit | Made with ❤️',
@@ -316,6 +319,9 @@ const translations = {
         'emailChangeSuccess': 'Email changed successfully!',
         'emailNotSet': 'Not set',
         'userNotFound': 'User not found',
+        'currentLanguage': 'Current Language',
+        'browserLanguage': 'Browser Language',
+        'selectLanguage': 'Select Language',
         
         // Other
         'copyright': '© 2024 dragbit | Made with ❤️',
@@ -326,16 +332,74 @@ const translations = {
 (function() {
     'use strict';
     
-    // 获取当前语言
+    // 自动检测浏览器语言
+    // 检测浏览器语言
+    function detectBrowserLanguage() {
+        try {
+            // 获取浏览器语言（优先级：language > userLanguage > languages[0]）
+            const browserLang = (navigator.language || navigator.userLanguage || 
+                (navigator.languages && navigator.languages[0]) || 'zh-CN').toLowerCase();
+            
+            // 支持的语言列表
+            const supportedLangs = ['zh', 'en'];
+            
+            // 检查完整语言代码（如 zh-cn, en-us, zh-tw）
+            if (browserLang) {
+                const langCode = browserLang.split('-')[0];
+                if (supportedLangs.includes(langCode)) {
+                    return langCode;
+                }
+            }
+        } catch (e) {
+            console.warn('无法检测浏览器语言:', e);
+        }
+        
+        // 默认返回中文
+        return 'zh';
+    }
+    
+    // 获取浏览器语言（用于显示）
+    function getBrowserLanguage() {
+        try {
+            const browserLang = (navigator.language || navigator.userLanguage || 
+                (navigator.languages && navigator.languages[0]) || 'zh-CN');
+            return browserLang;
+        } catch (e) {
+            return 'zh-CN';
+        }
+    }
+    
+    // 获取当前语言（优先级：localStorage > 浏览器语言 > 默认中文）
     let currentLang = 'zh';
+    let browserDetectedLang = detectBrowserLanguage();
+    
     try {
-        currentLang = localStorage.getItem('language') || 'zh';
+        const savedLang = localStorage.getItem('language');
+        if (savedLang && translations[savedLang]) {
+            // 使用保存的语言
+            currentLang = savedLang;
+        } else {
+            // 如果没有保存的语言，使用检测到的浏览器语言
+            currentLang = browserDetectedLang;
+            // 保存检测到的语言
+            try {
+                localStorage.setItem('language', currentLang);
+            } catch (e) {
+                // 忽略存储错误
+            }
+        }
+        
+        // 确保语言有效
         if (!translations[currentLang]) {
             currentLang = 'zh';
         }
     } catch (e) {
         currentLang = 'zh';
     }
+    
+    // 导出浏览器语言检测函数
+    window.getBrowserLanguage = getBrowserLanguage;
+    window.detectBrowserLanguage = detectBrowserLanguage;
     
     // 创建 i18n 对象
     const i18n = {

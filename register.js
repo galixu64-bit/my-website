@@ -21,37 +21,44 @@ document.addEventListener('DOMContentLoaded', function() {
             const email = document.getElementById('email').value.trim();
             const verificationCode = document.getElementById('verificationCode').value.trim();
             
+            // 获取翻译函数
+            const t = (key) => {
+                return (window.i18n && typeof window.i18n.t === 'function') 
+                    ? window.i18n.t(key) 
+                    : key;
+            };
+            
             // 验证
             if (username.length < 3 || username.length > 20) {
-                showError('用户名长度必须在3-20个字符之间');
+                showError(t('usernameLengthError'));
                 return;
             }
             
             if (password.length < 6) {
-                showError('密码长度至少6个字符');
+                showError(t('passwordLengthError'));
                 return;
             }
             
             if (password !== confirmPassword) {
-                showError('两次输入的密码不一致');
+                showError(t('passwordMismatch'));
                 return;
             }
             
             if (!email) {
-                showError('请输入邮箱地址');
+                showError(t('emailRequired'));
                 return;
             }
             
             // 验证邮箱格式
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
-                showError('请输入有效的邮箱地址');
+                showError(t('emailInvalid'));
                 return;
             }
             
             // 验证验证码
             if (!verificationCode) {
-                showError('请输入验证码');
+                showError(t('codeRequired'));
                 return;
             }
             
@@ -59,11 +66,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if (window.verifyVerificationCode) {
                 const codeResult = window.verifyVerificationCode(verificationCode);
                 if (!codeResult.valid) {
-                    showError(codeResult.message || '验证码错误');
+                    // codeResult.message 可能已经包含翻译，如果没有则使用默认翻译
+                    showError(codeResult.message || t('codeError'));
                     return;
                 }
             } else {
-                showError('验证码验证功能未初始化，请刷新页面重试');
+                showError(t('codeVerificationFailed'));
                 return;
             }
             
@@ -72,8 +80,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 try {
                     const result = await registerUser(username, password, email);
                     
+                    // 获取翻译函数
+                    const t = (key) => {
+                        return (window.i18n && typeof window.i18n.t === 'function') 
+                            ? window.i18n.t(key) 
+                            : key;
+                    };
+                    
                     if (result.success) {
-                        showSuccess('注册成功！正在跳转到登录页面...');
+                        showSuccess(t('registerSuccess'));
                         
                         // 自动登录
                         setTimeout(() => {
@@ -85,11 +100,16 @@ document.addEventListener('DOMContentLoaded', function() {
                             }
                         }, 1500);
                     } else {
-                        showError(result.message || '注册失败');
+                        showError(result.message || t('registerFailed'));
                     }
                 } catch (error) {
                     console.error('注册错误:', error);
-                    showError('注册失败，请稍后重试');
+                    const t = (key) => {
+                        return (window.i18n && typeof window.i18n.t === 'function') 
+                            ? window.i18n.t(key) 
+                            : key;
+                    };
+                    showError(t('registerFailedRetry'));
                 }
             })();
         });

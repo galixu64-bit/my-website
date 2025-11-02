@@ -33,15 +33,6 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- 语言切换器 -->
-    <div class="language-selector">
-        <button class="language-btn active" data-lang="zh" id="langBtnZh">
-            <i class="fas fa-globe"></i> 中文
-        </button>
-        <button class="language-btn" data-lang="en" id="langBtnEn">
-            <i class="fas fa-globe"></i> English
-        </button>
-    </div>
     <header>
         <div class="container">
             <div class="user-info" id="userInfo" style="display: none;">
@@ -149,73 +140,21 @@
     <script src="auth.js"></script>
     <script src="script.js"></script>
     <script>
-        // 语言切换函数
+        // 语言切换函数（供设置页面使用）
         window.switchLanguage = function(lang) {
             if (window.i18n && typeof window.i18n.setLanguage === 'function') {
                 window.i18n.setLanguage(lang);
-                // 更新按钮状态
-                document.querySelectorAll('.language-btn').forEach(function(btn) {
-                    if (btn.getAttribute('data-lang') === lang) {
-                        btn.classList.add('active');
-                    } else {
-                        btn.classList.remove('active');
-                    }
-                });
             }
         };
         
         // 页面加载完成后初始化语言
-        function initLanguage() {
-            // 检查 i18n 是否已加载
-            if (!window.i18n) {
-                console.error('i18n 未加载');
-                return;
-            }
-            
-            // 绑定语言按钮事件
-            var langBtnZh = document.getElementById('langBtnZh');
-            var langBtnEn = document.getElementById('langBtnEn');
-            
-            if (langBtnZh) {
-                langBtnZh.addEventListener('click', function() {
-                    window.switchLanguage('zh');
-                });
-            }
-            
-            if (langBtnEn) {
-                langBtnEn.addEventListener('click', function() {
-                    window.switchLanguage('en');
-                });
-            }
-            
-            // 初始化语言
-            try {
-                window.i18n.init();
-                
-                // 设置当前语言的按钮为激活状态
-                var savedLang = localStorage.getItem('language') || 'zh';
-                document.querySelectorAll('.language-btn').forEach(function(btn) {
-                    if (btn.getAttribute('data-lang') === savedLang) {
-                        btn.classList.add('active');
-                    } else {
-                        btn.classList.remove('active');
-                    }
-                });
-            } catch (e) {
-                console.error('语言初始化失败:', e);
-            }
-        }
-        
-        // 等待 DOM 和脚本加载完成
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', function() {
-                // 延迟一点确保 translations.js 已执行
-                setTimeout(initLanguage, 50);
-            });
-        } else {
-            // DOM 已加载，延迟执行确保脚本已加载
-            setTimeout(initLanguage, 50);
-        }
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                if (window.i18n && typeof window.i18n.init === 'function') {
+                    window.i18n.init();
+                }
+            }, 50);
+        });
     </script>
 </body>
 </html>

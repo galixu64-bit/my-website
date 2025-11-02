@@ -241,16 +241,6 @@
     </style>
 </head>
 <body>
-    <!-- 语言切换器 -->
-    <div class="language-selector">
-        <button class="language-btn" id="langBtnZh" data-lang="zh">
-            <i class="fas fa-globe"></i> 中文
-        </button>
-        <button class="language-btn" id="langBtnEn" data-lang="en">
-            <i class="fas fa-globe"></i> English
-        </button>
-    </div>
-    
     <a href="index.html" class="back-home" data-i18n="backToHome">← 返回首页</a>
     
     <div class="login-container">
@@ -306,61 +296,21 @@
     <script src="translations.js"></script>
     <script src="auth.js"></script>
     <script>
-        // 语言切换函数
+        // 语言切换函数（供设置页面使用）
         window.switchLanguage = function(lang) {
             if (window.i18n && typeof window.i18n.setLanguage === 'function') {
                 window.i18n.setLanguage(lang);
-                document.querySelectorAll('.language-btn').forEach(function(btn) {
-                    if (btn.getAttribute('data-lang') === lang) {
-                        btn.classList.add('active');
-                    } else {
-                        btn.classList.remove('active');
-                    }
-                });
             }
         };
         
-        // 初始化语言
-        function initLanguage() {
-            if (!window.i18n) return;
-            
-            var langBtnZh = document.getElementById('langBtnZh');
-            var langBtnEn = document.getElementById('langBtnEn');
-            
-            if (langBtnZh) {
-                langBtnZh.addEventListener('click', function() {
-                    window.switchLanguage('zh');
-                });
-            }
-            
-            if (langBtnEn) {
-                langBtnEn.addEventListener('click', function() {
-                    window.switchLanguage('en');
-                });
-            }
-            
-            try {
-                window.i18n.init();
-                var savedLang = localStorage.getItem('language') || 'zh';
-                document.querySelectorAll('.language-btn').forEach(function(btn) {
-                    if (btn.getAttribute('data-lang') === savedLang) {
-                        btn.classList.add('active');
-                    } else {
-                        btn.classList.remove('active');
-                    }
-                });
-            } catch (e) {
-                console.error('语言初始化失败:', e);
-            }
-        }
-        
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', function() {
-                setTimeout(initLanguage, 50);
-            });
-        } else {
-            setTimeout(initLanguage, 50);
-        }
+        // 页面加载完成后初始化语言
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                if (window.i18n && typeof window.i18n.init === 'function') {
+                    window.i18n.init();
+                }
+            }, 50);
+        });
         
         // 原有代码继续...
         // 初始化 EmailJS（需要替换为你的实际配置）

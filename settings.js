@@ -198,6 +198,12 @@ function changeLanguageSetting(lang) {
 
 // 更新语言显示
 function updateLanguageDisplay(lang) {
+    const getTranslation = (key) => {
+        return (window.i18n && typeof window.i18n.t === 'function') 
+            ? window.i18n.t(key) 
+            : key;
+    };
+    
     const langDisplay = document.getElementById('currentLanguageDisplay');
     if (langDisplay) {
         langDisplay.textContent = lang === 'zh' ? '中文' : 'English';
@@ -207,6 +213,35 @@ function updateLanguageDisplay(lang) {
     const langSelect = document.getElementById('languageSelect');
     if (langSelect) {
         langSelect.value = lang;
+    }
+    
+    // 更新浏览器语言显示
+    updateBrowserLanguageDisplay();
+}
+
+// 更新浏览器语言显示
+function updateBrowserLanguageDisplay() {
+    const browserLangDisplay = document.getElementById('browserLanguageDisplay');
+    if (browserLangDisplay && window.getBrowserLanguage) {
+        try {
+            const browserLang = window.getBrowserLanguage();
+            const detectedLang = window.detectBrowserLanguage ? window.detectBrowserLanguage() : 'zh';
+            
+            // 显示浏览器语言和检测结果
+            const detectedName = detectedLang === 'zh' ? '中文' : 'English';
+            browserLangDisplay.textContent = `${browserLang} (${detectedName})`;
+            
+            // 如果检测到的语言与当前语言不同，添加提示
+            const currentLang = localStorage.getItem('language') || 'zh';
+            if (detectedLang !== currentLang) {
+                browserLangDisplay.style.color = '#888';
+                browserLangDisplay.title = '浏览器检测到的语言与当前设置不同';
+            } else {
+                browserLangDisplay.style.color = '#10b981';
+            }
+        } catch (e) {
+            browserLangDisplay.textContent = '无法检测';
+        }
     }
 }
 
@@ -248,14 +283,28 @@ function initSettings() {
         updateEmailDisplay(fullUser.email);
     }
     
-    // 初始化语言显示
-    const savedLang = localStorage.getItem('language') || 'zh';
-    updateLanguageDisplay(savedLang);
+    // 初始化语言显示（延迟一点确保 i18n 已加载）
+    setTimeout(() => {
+        const savedLang = localStorage.getItem('language') || 'zh';
+        updateLanguageDisplay(savedLang);
+        
+        // 设置下拉框的值
+        const langSelect = document.getElementById('languageSelect');
+        if (langSelect) {
+            langSelect.value = savedLang;
+        }
+    }, 100);
     
     // 监听语言切换事件
     window.addEventListener('languageChanged', function(e) {
         const lang = e.detail ? e.detail.lang : (localStorage.getItem('language') || 'zh');
         updateLanguageDisplay(lang);
+        
+        // 更新下拉框
+        const langSelect = document.getElementById('languageSelect');
+        if (langSelect) {
+            langSelect.value = lang;
+        }
     });
 }
 
