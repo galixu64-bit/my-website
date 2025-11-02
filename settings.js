@@ -189,11 +189,40 @@ window.updateEmailDisplay = updateEmailDisplay;
 
 // 修改语言设置
 function changeLanguageSetting(lang) {
-    if (window.switchLanguage) {
-        window.switchLanguage(lang);
-        // 更新语言显示
-        updateLanguageDisplay(lang);
+    console.log('changeLanguageSetting called with lang:', lang);
+    
+    // 确保语言值有效
+    if (!lang || (lang !== 'zh' && lang !== 'en')) {
+        console.warn('Invalid language value:', lang);
+        return;
     }
+    
+    // 尝试多种方式切换语言
+    if (window.i18n && typeof window.i18n.setLanguage === 'function') {
+        console.log('Using i18n.setLanguage');
+        window.i18n.setLanguage(lang);
+    } else if (window.switchLanguage && typeof window.switchLanguage === 'function') {
+        console.log('Using window.switchLanguage');
+        window.switchLanguage(lang);
+    } else {
+        console.warn('No language switching method available');
+        // 直接操作 localStorage 作为后备方案
+        try {
+            localStorage.setItem('language', lang);
+            // 手动触发页面更新
+            if (window.i18n && typeof window.i18n.updatePage === 'function') {
+                window.i18n.currentLang = lang;
+                window.i18n.updatePage();
+            }
+        } catch (e) {
+            console.error('Failed to save language preference:', e);
+        }
+    }
+    
+    // 更新语言显示
+    updateLanguageDisplay(lang);
+    
+    console.log('Language changed to:', lang);
 }
 
 // 暴露到全局作用域供 HTML onclick/onchange 调用
