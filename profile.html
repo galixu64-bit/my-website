@@ -552,10 +552,11 @@
                         if (typeof window.i18n.updatePage === 'function') {
                             window.i18n.updatePage();
                         }
-                        // 重新加载用户资料以更新动态内容（如账户类型）
+                        // 只更新需要翻译的UI部分，不重新加载统计数据（避免重复fetch）
                         const currentUser = getCurrentUser();
                         if (currentUser && typeof loadUserProfile === 'function') {
-                            loadUserProfile(currentUser);
+                            // 传递 skipStats=true 避免重复加载资源
+                            loadUserProfile(currentUser, true);
                         }
                     }
                 }, 50);

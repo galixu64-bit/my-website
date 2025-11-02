@@ -160,8 +160,7 @@ function loadUserStats(currentUser) {
                 console.error('Failed to load resources:', error);
                 // 即使加载失败，也尝试计算统计数据（使用空数组）
                 calculateStats(currentUser, []);
-                    calculateStats(currentUser, []);
-                });
+            });
             return;
         }
     } catch (error) {
