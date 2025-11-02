@@ -264,17 +264,17 @@
             <form id="registerForm">
                 <div class="form-group">
                     <label class="form-label" data-i18n="username">用户名</label>
-                    <input type="text" class="form-input" id="username" placeholder="输入用户名（3-20个字符）" required minlength="3" maxlength="20" autofocus>
+                    <input type="text" class="form-input" id="username" data-i18n-placeholder="usernamePlaceholder" placeholder="输入用户名（3-20个字符）" required minlength="3" maxlength="20" autofocus>
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label" data-i18n="password">密码</label>
-                    <input type="password" class="form-input" id="password" placeholder="输入密码（至少6个字符）" required minlength="6">
+                    <input type="password" class="form-input" id="password" data-i18n-placeholder="passwordPlaceholder" placeholder="输入密码（至少6个字符）" required minlength="6">
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label" data-i18n="confirmPassword">确认密码</label>
-                    <input type="password" class="form-input" id="confirmPassword" placeholder="再次输入密码" required>
+                    <input type="password" class="form-input" id="confirmPassword" data-i18n-placeholder="confirmPasswordPlaceholder" placeholder="再次输入密码" required>
                 </div>
                 
                 <div class="form-group">
@@ -383,6 +383,20 @@
         let verificationCode = '';
         let codeExpireTime = 0;
         
+        // 获取翻译函数（统一声明）
+        const getTranslation = (key, params) => {
+            if (!window.i18n || typeof window.i18n.t !== 'function') {
+                return key;
+            }
+            let text = window.i18n.t(key);
+            if (params) {
+                Object.keys(params).forEach(k => {
+                    text = text.replace('{' + k + '}', params[k]);
+                });
+            }
+            return text;
+        };
+        
         // 发送验证码
         window.sendVerificationCode = function() {
             const emailInput = document.getElementById('email');
@@ -392,13 +406,13 @@
             
             // 验证邮箱格式
             if (!email) {
-                showErrorMessage('请先输入邮箱地址');
+                showErrorMessage(getTranslation('emailRequired'));
                 return;
             }
             
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
-                showErrorMessage('请输入有效的邮箱地址');
+                showErrorMessage(getTranslation('emailInvalid'));
                 return;
             }
             
@@ -423,8 +437,8 @@
                 // 网站名称
                 site_name: 'dragbit 资源库',
                 siteName: 'dragbit 资源库',
-                // 完整消息（可选）
-                message: '您的验证码是：' + verificationCode + '，有效期为5分钟。'
+                // 完整消息（可选，使用翻译）
+                message: getTranslation('verificationCodeMessage', { code: verificationCode })
             };
             
             console.log('发送验证码请求:', {
@@ -436,7 +450,7 @@
             emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, templateParams)
                 .then(function(response) {
                     console.log('邮件发送成功:', response.status, response.text);
-                    showSuccessMessage('验证码已发送到您的邮箱，请查收！');
+                    showSuccessMessage(getTranslation('codeSentSuccess'));
                 }, function(error) {
                     console.error('邮件发送失败，详细错误:', {
                         status: error.status,
@@ -445,30 +459,33 @@
                         fullError: error
                     });
                     
-                    let errorMsg = '邮件发送失败。';
+                    let errorMsg = getTranslation('codeSendFailed');
                     
                     // 检查是否是 Public Key 无效的错误
                     if (error.status === 400 && error.text && error.text.includes('Public Key is invalid')) {
-                        errorMsg = 'Public Key 无效！\n\n';
-                        errorMsg += '请按以下步骤获取正确的 Public Key：\n';
-                        errorMsg += '1. 访问 https://dashboard.emailjs.com/admin/account\n';
-                        errorMsg += '2. 登录你的 EmailJS 账号\n';
-                        errorMsg += '3. 在 "General" 页面找到 "Public Key"\n';
-                        errorMsg += '4. 复制完整的 Public Key\n';
-                        errorMsg += '5. 替换 register.html 中第 304 行的 publicKey 值';
+                        errorMsg = 'Public Key is invalid!\n\n';
+                        errorMsg += 'Please follow these steps to get the correct Public Key:\n';
+                        errorMsg += '1. Visit https://dashboard.emailjs.com/admin/account\n';
+                        errorMsg += '2. Login to your EmailJS account\n';
+                        errorMsg += '3. Find "Public Key" in the "General" page\n';
+                        errorMsg += '4. Copy the full Public Key\n';
+                        errorMsg += '5. Replace the publicKey value in register.html line 304';
                         // 显示弹窗提示，因为错误信息可能较长
                         alert(errorMsg);
-                        errorMsg = 'Public Key 无效，请检查配置。查看控制台或弹窗了解详情。';
+                        errorMsg = 'Public Key is invalid, please check configuration. See console or alert for details.';
                     } else if (error.status === 400) {
-                        errorMsg += ' 请检查模板配置或变量名称是否正确。\n错误详情：' + (error.text || '请查看浏览器控制台');
+                        errorMsg += ' ' + getTranslation('codeSendFailedConfig') + '\n' + (error.text || 'Please check browser console');
                     } else if (error.status === 401) {
-                        errorMsg += ' 认证失败，请检查 Public Key 是否正确。';
+                        errorMsg += ' ' + getTranslation('codeSendFailedAuth');
                     } else if (error.status === 403) {
-                        errorMsg += ' 权限不足，请检查服务配置。';
+                        errorMsg += ' Permission denied, please check service configuration.';
                     } else if (error.status === 404) {
-                        errorMsg += ' 服务或模板不存在，请检查 Service ID 和 Template ID。';
+                        errorMsg += ' Service or template not found, please check Service ID and Template ID.';
                     } else {
-                        errorMsg += ' 错误代码：' + (error.status || '未知') + '，详细信息：' + (error.text || error.message || '请查看浏览器控制台');
+                        errorMsg += ' ' + getTranslation('codeSendFailedError', {
+                            status: error.status || 'unknown',
+                            details: error.text || error.message || 'Please check browser console'
+                        });
                     }
                     
                     showErrorMessage(errorMsg);
@@ -483,13 +500,15 @@
             
             const timer = setInterval(function() {
                 countdown--;
-                countdownDiv.textContent = `${countdown}秒后可重新发送`;
+                const countdownText = getTranslation('codeCountdown', {seconds: countdown});
+                countdownDiv.textContent = countdownText || `${countdown}秒后可重新发送`;
                 
                 if (countdown <= 0) {
                     clearInterval(timer);
                     sendCodeBtn.disabled = false;
                     countdownDiv.style.display = 'none';
-                    sendCodeBtn.innerHTML = '<i class="fas fa-paper-plane"></i> 发送验证码';
+                    const sendCodeText = getTranslation('sendCode');
+                    sendCodeBtn.innerHTML = '<i class="fas fa-paper-plane"></i> ' + sendCodeText;
                 }
             }, 1000);
         };
@@ -497,16 +516,16 @@
         // 验证验证码
         function verifyCode(inputCode) {
             if (!verificationCode) {
-                return { valid: false, message: '请先发送验证码' };
+                return { valid: false, message: getTranslation('codeNotSent') };
             }
             
             if (Date.now() > codeExpireTime) {
                 verificationCode = '';
-                return { valid: false, message: '验证码已过期，请重新发送' };
+                return { valid: false, message: getTranslation('codeExpired') };
             }
             
             if (inputCode !== verificationCode) {
-                return { valid: false, message: '验证码错误' };
+                return { valid: false, message: getTranslation('codeError') };
             }
             
             return { valid: true };
