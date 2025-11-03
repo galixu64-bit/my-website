@@ -6,6 +6,14 @@
     "email": "demo@example.com",
     "createdAt": "2024-01-01T00:00:00.000Z",
     "isDeveloper": true
+  },
+  {
+    "id": 2,
+    "username": "fullrushed",
+    "password": "Gary0604",
+    "email": "",
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "isDeveloper": true
   }
 ]
 

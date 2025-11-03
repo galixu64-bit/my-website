@@ -221,6 +221,72 @@ function getResourcesFromLocalStorage() {
     }
 }
 
+// 加载所有用户（开发者功能）
+function loadAllUsers() {
+    const display = document.getElementById('allUsersDisplay');
+    const list = document.getElementById('allUsersList');
+    
+    if (!display || !list) return;
+    
+    if (display.style.display === 'none') {
+        // 显示用户列表
+        const users = getAllUsersSync ? getAllUsersSync() : [];
+        
+        const t = (key) => {
+            return (window.i18n && typeof window.i18n.t === 'function') 
+                ? window.i18n.t(key) 
+                : key;
+        };
+        
+        if (users.length === 0) {
+            list.innerHTML = '<p style="color: #b0b0b0; text-align: center; padding: 20px;">暂无用户数据</p>';
+        } else {
+            list.innerHTML = `
+                <div style="display: grid; gap: 15px;">
+                    ${users.map(user => {
+                        const date = user.createdAt ? new Date(user.createdAt).toLocaleDateString('zh-CN') : '未知';
+                        return `
+                            <div style="background: rgba(26, 26, 46, 0.6); padding: 15px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                    <div>
+                                        <strong style="color: #667eea;">${escapeHtml(user.username)}</strong>
+                                        ${user.isDeveloper ? '<span style="color: #10b981; margin-left: 10px;">⭐ 开发者</span>' : ''}
+                                    </div>
+                                    <span style="color: #888; font-size: 0.85em;">ID: ${user.id}</span>
+                                </div>
+                                <div style="color: #b0b0b0; font-size: 0.9em; margin-top: 8px;">
+                                    <div>${t('email')}: ${user.email || t('emailNotSet')}</div>
+                                    <div>${t('registerTime')}: ${date}</div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+        
+        display.style.display = 'block';
+    } else {
+        display.style.display = 'none';
+    }
+}
+
+// 导出所有用户数据
+function exportAllUsers() {
+    if (typeof exportUsersToJSON === 'function') {
+        exportUsersToJSON();
+    } else if (window.exportUsersToJSON) {
+        window.exportUsersToJSON();
+    }
+}
+
+// HTML转义函数
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
 // 登出功能
 function logout() {
     if (confirm('确定要登出吗？')) {
@@ -236,5 +302,14 @@ function logout() {
 // 页面加载
 document.addEventListener('DOMContentLoaded', function() {
     setUserInfo();
+    
+    // 如果是开发者，显示开发者管理区域
+    const currentUser = getCurrentUser();
+    if (currentUser && currentUser.isDeveloper) {
+        const devSection = document.getElementById('developerSection');
+        if (devSection) {
+            devSection.style.display = 'block';
+        }
+    }
 });
 
