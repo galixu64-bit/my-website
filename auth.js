@@ -112,62 +112,87 @@ async function initDefaultUsers() {
         }
     });
 
-    jsonUsers.forEach(user => {
-        if (!user) {
-            console.warn('跳过 JSON 中的空用户');
-            return;
-        }
-        
-        const emailKey = user.email ? user.email.toLowerCase().trim() : '';
-        const usernameKey = (user.username || '').trim();
-        const userId = user.id;
-        
-        let shouldAdd = false;
-        let reason = '';
-        
-        if (emailKey) {
-            if (!emails.has(emailKey)) {
-                shouldAdd = true;
-                reason = 'email not found';
-                emails.add(emailKey);
-            } else {
-                reason = 'email already exists, localStorage version has priority (skipped)';
-            }
-        } else if (usernameKey) {
-            const existingByUsername = mergedUsers.find(u => u.username === usernameKey);
-            if (existingByUsername) {
-                if (!existingByUsername.email) {
-                    console.log('JSON 用户与 localStorage 用户用户名冲突，保留 localStorage 版本:', usernameKey);
-                    reason = 'username conflict, localStorage has priority (skipped)';
-                } else {
-                    reason = 'username exists and has email (skipped)';
-                }
-            } else if (!usernames.has(usernameKey)) {
-                shouldAdd = true;
-                reason = 'username not found';
-                usernames.add(usernameKey);
-            } else {
-                reason = 'username already in set (skipped)';
-            }
-        }
-        
-        if (userId && userIds.has(userId)) {
-            reason = 'user id already exists (skipped)';
-            shouldAdd = false;
-        } else if (userId) {
-            userIds.add(userId);
-        }
-        
-        if (shouldAdd) {
-            mergedUsers.push(user);
-            if (usernameKey && !usernames.has(usernameKey)) {
-                usernames.add(usernameKey);
-            }
-            console.log('添加 JSON 用户:', user.email || user.username || user.id, '-', reason);
-        } else {
-            console.log('跳过 JSON 用户:', user.email || user.username || user.id, '-', reason);
-        }
-    });
+       jsonUsers.forEach(user => {
+           if (!user) {
+               console.warn('跳过 JSON 中的空用户');
+               return;
+           }
+           
+           const emailKey = user.email ? user.email.toLowerCase().trim() : '';
+           const usernameKey = (user.username || '').trim();
+           const userId = user.id;
+           
+           let shouldAdd = false;
+           let shouldUpdate = false;
+           let reason = '';
+           
+           if (emailKey) {
+               const existingByEmail = mergedUsers.find(u => u.email && u.email.toLowerCase() === emailKey);
+               if (existingByEmail) {
+                   if (user.isDeveloper && !existingByEmail.isDeveloper) {
+                       console.log('JSON 用户是开发者，更新 localStorage 用户的开发者状态:', emailKey);
+                       existingByEmail.isDeveloper = true;
+                       shouldUpdate = true;
+                       reason = 'updated developer status from JSON';
+                   } else {
+                       reason = 'email already exists, localStorage version has priority (skipped)';
+                   }
+               } else if (!emails.has(emailKey)) {
+                   shouldAdd = true;
+                   reason = 'email not found';
+                   emails.add(emailKey);
+               }
+           } else if (usernameKey) {
+               const existingByUsername = mergedUsers.find(u => u.username === usernameKey);
+               if (existingByUsername) {
+                   if (user.isDeveloper && !existingByUsername.isDeveloper) {
+                       console.log('JSON 用户是开发者，更新 localStorage 用户的开发者状态:', usernameKey);
+                       existingByUsername.isDeveloper = true;
+                       shouldUpdate = true;
+                       reason = 'updated developer status from JSON';
+                   } else if (!existingByUsername.email) {
+                       console.log('JSON 用户与 localStorage 用户用户名冲突，保留 localStorage 版本:', usernameKey);
+                       reason = 'username conflict, localStorage has priority (skipped)';
+                   } else {
+                       reason = 'username exists and has email (skipped)';
+                   }
+               } else if (!usernames.has(usernameKey)) {
+                   shouldAdd = true;
+                   reason = 'username not found';
+                   usernames.add(usernameKey);
+               } else {
+                   reason = 'username already in set (skipped)';
+               }
+           }
+           
+           if (userId) {
+               const existingById = mergedUsers.find(u => u.id && u.id === userId);
+               if (existingById) {
+                   if (user.isDeveloper && !existingById.isDeveloper) {
+                       console.log('JSON 用户是开发者，更新 localStorage 用户的开发者状态 (by ID):', userId);
+                       existingById.isDeveloper = true;
+                       shouldUpdate = true;
+                       reason = 'updated developer status from JSON (by ID)';
+                   } else if (!shouldUpdate && !shouldAdd) {
+                       reason = 'user id already exists (skipped)';
+                   }
+               } else if (!userIds.has(userId)) {
+                   userIds.add(userId);
+               }
+           }
+           
+           if (shouldAdd) {
+               mergedUsers.push(user);
+               if (usernameKey && !usernames.has(usernameKey)) {
+                   usernames.add(usernameKey);
+               }
+               console.log('添加 JSON 用户:', user.email || user.username || user.id, '-', reason);
+           } else if (shouldUpdate) {
+               console.log('更新 JSON 用户属性:', user.email || user.username || user.id, '-', reason);
+           } else {
+               console.log('跳过 JSON 用户:', user.email || user.username || user.id, '-', reason);
+           }
+       });
 
     if (mergedUsers.length === 0) {
         console.log('没有用户数据，创建默认 demo 用户');
