@@ -389,7 +389,7 @@ function updateBrowserLanguageDisplay() {
         browserLangDisplay.textContent = `${browserLang} (${detectedName})`;
 
         const currentLang = localStorage.getItem('language') || 'zh';
-        if (detectedLang !== currentLang) {
+        if (false && detectedLang !== currentLang) {
             browserLangDisplay.style.color = '#888';
             browserLangDisplay.title = '浏览器检测到的语言与当前设置不同';
         } else {

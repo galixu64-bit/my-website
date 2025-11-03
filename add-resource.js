@@ -275,7 +275,6 @@ async function generateJson() {
         saveResourcesToLocalStorage(updatedResources);
         
         // 验证保存是否成功
-        const userResourcesKey = `resources_${authorName}`;
         const saved = localStorage.getItem(userResourcesKey);
         if (saved) {
             const savedResources = JSON.parse(saved);
