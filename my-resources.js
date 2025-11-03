@@ -4,6 +4,7 @@ function setUserInfo() {
     const avatarImg = document.getElementById('avatar');
     const userNameElement = document.getElementById('userName');
     const userInfo = document.getElementById('userInfo');
+    const topRightButtons = document.getElementById('topRightButtons');
 
     const currentUser = getCurrentUser();
     if (!currentUser) {
@@ -18,6 +19,10 @@ function setUserInfo() {
     }
     if (userNameElement) {
         userNameElement.textContent = currentUser.username;
+    }
+    
+    if (topRightButtons) {
+        topRightButtons.style.display = 'flex';
     }
 }
 
