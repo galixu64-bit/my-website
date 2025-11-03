@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设置 - dragbit</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .settings-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .settings-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .settings-section {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px var(--shadow);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .light-theme .settings-section {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.12), 0 2px 8px rgba(102, 126, 234, 0.08);
+            border: 1.5px solid rgba(102, 126, 234, 0.2);
+        }
+        
+        .section-title {
+            font-size: 1.5em;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .settings-item {
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .settings-item:last-child {
+            border-bottom: none;
+        }
+        
+        .settings-label {
+            color: var(--text-primary);
+            font-size: 1.1em;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .settings-value {
+            color: var(--text-secondary);
+            font-size: 0.95em;
+            margin-top: 5px;
+        }
+        
+        .btn-settings-toggle {
+            padding: 8px 16px;
+            background: var(--bg-button-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-button-secondary);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-settings-toggle:hover {
+            background: var(--accent-light);
+            border-color: var(--accent-color);
+        }
+        
+        .settings-form {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .form-group-settings {
+            margin-bottom: 20px;
+        }
+        
+        .form-label-settings {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+        
+        .form-input-settings {
+            width: 100%;
+            padding: 10px 15px;
+            background: var(--bg-input);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1em;
+            transition: all 0.3s ease;
+            display: block;
+        }
+        
+        .light-theme .form-input-settings {
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        .form-input-settings:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        }
+        
+        .settings-form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn-settings-save {
+            flex: 1;
+            padding: 10px 20px;
+            background: var(--bg-button);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-settings-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .settings-message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        
+        .settings-message.success {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.5);
+            color: #10b981;
+        }
+        
+        .settings-message.error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            color: #ef4444;
+        }
+        
+        .header-actions {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-header-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .btn-header-icon:hover {
+            background: var(--accent-light);
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <header style="position: relative;">
+        <div class="container">
+            <div class="header-actions">
+                <a href="index.html" class="btn-header-icon" title="返回主页">
+                    <i class="fas fa-home"></i>
+                </a>
+            </div>
+            <div style="text-align: center;">
+                <h1><i class="fas fa-cog"></i> <span data-i18n="settings">设置</span></h1>
+                <p data-i18n="manageAccountSettings">管理账户设置</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="settings-container">
+            <div class="settings-section">
+                <h3 class="section-title">🔐 <span data-i18n="changePassword">修改密码</span></h3>
+                <div class="settings-item">
+                    <div>
+                        <span class="settings-label" data-i18n="password">密码</span>
+                        <div class="settings-value" data-i18n="changePasswordDesc">点击按钮修改登录密码</div>
+                    </div>
+                    <button class="btn-settings-toggle" onclick="togglePasswordChange()">
+                        <span data-i18n="change">修改</span>
+                    </button>
+                </div>
+                <div id="passwordChangeForm" class="settings-form" style="display: none;">
+                    <div id="passwordMessage" class="settings-message"></div>
+                    <div class="form-group-settings">
+                        <label class="form-label-settings" data-i18n="currentPassword">当前密码</label>
+                        <input type="password" class="form-input-settings" id="currentPassword" data-i18n-placeholder="currentPassword">
+                    </div>
+                    <div class="form-group-settings">
+                        <label class="form-label-settings" data-i18n="newPassword">新密码</label>
+                        <input type="password" class="form-input-settings" id="newPassword" data-i18n-placeholder="passwordPlaceholder">
+                    </div>
+                    <div class="form-group-settings">
+                        <label class="form-label-settings" data-i18n="confirmNewPassword">确认新密码</label>
+                        <input type="password" class="form-input-settings" id="confirmNewPassword" data-i18n-placeholder="confirmPasswordPlaceholder">
+                    </div>
+                    <div class="settings-form-actions">
+                        <button class="btn-settings-save" onclick="savePassword()">
+                            <span data-i18n="save">保存</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3 class="section-title">📧 <span data-i18n="changeEmail">修改邮箱</span></h3>
+                <div class="settings-item">
+                    <div>
+                        <span class="settings-label" data-i18n="email">邮箱</span>
+                        <div class="settings-value" id="currentEmailDisplay" data-i18n="emailNotSet">未设置</div>
+                    </div>
+                    <button class="btn-settings-toggle" onclick="toggleEmailChange()">
+                        <span data-i18n="change">修改</span>
+                    </button>
+                </div>
+                <div id="emailChangeForm" class="settings-form" style="display: none;">
+                    <div id="emailMessage" class="settings-message"></div>
+                    <div class="form-group-settings">
+                        <label class="form-label-settings" data-i18n="newEmail">新邮箱</label>
+                        <input type="email" class="form-input-settings" id="newEmail" data-i18n-placeholder="email">
+                    </div>
+                    <div class="settings-form-actions">
+                        <button class="btn-settings-save" onclick="saveEmail()">
+                            <span data-i18n="save">保存</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3 class="section-title">🌐 <span data-i18n="language">语言</span></h3>
+                <div class="settings-item">
+                    <div>
+                        <span class="settings-label" data-i18n="currentLanguage">当前语言</span>
+                        <div class="settings-value" id="currentLanguageDisplay">中文</div>
+                    </div>
+                    <select id="languageSelect" class="form-input-settings" style="width: auto; padding: 8px 16px;" onchange="handleLanguageChange(event)">
+                        <option value="zh" data-i18n="chinese">中文</option>
+                        <option value="en" data-i18n="english">English</option>
+                    </select>
+                </div>
+                <div class="settings-item">
+                    <div>
+                        <span class="settings-label" data-i18n="browserLanguage">浏览器语言</span>
+                        <div class="settings-value" id="browserLanguageDisplay">检测中...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="theme.js"></script>
+    <script src="translations.js"></script>
+    <script src="auth.js"></script>
+    <script src="settings.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!isLoggedIn()) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            if (window.i18n && typeof window.i18n.updatePage === 'function') {
+                window.i18n.updatePage();
+            }
+            
+            initSettings();
+        });
+    </script>
+</body>
+</html>

@@ -275,12 +275,16 @@ function logout() {
 
 document.addEventListener('DOMContentLoaded', function() {
     setUserInfo();
-
+    
     const currentUser = getCurrentUser();
     if (currentUser && currentUser.isDeveloper) {
         const devSection = document.getElementById('developerSection');
         if (devSection) {
             devSection.style.display = 'block';
+        }
+        const developerBtn = document.getElementById('developerBtn');
+        if (developerBtn) {
+            developerBtn.style.display = 'flex';
         }
     }
 });

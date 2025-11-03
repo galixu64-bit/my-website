@@ -39,7 +39,7 @@
                 <img src="avatar.jpg" alt="头像" class="avatar" id="avatar">
                 <div class="user-name" id="userName"></div>
             </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; position: relative;">
                 <div>
                     <h1><i class="fas fa-archive"></i> <span data-i18n="siteName">dragbit</span></h1>
                     <p data-i18n="siteDescription">优质资源，免费下载</p>
@@ -51,6 +51,9 @@
                 </div>
                 <div id="userMenu" style="display: none;">
                     <div style="display: flex; align-items: center; gap: 15px;">
+                        <a href="settings.html" class="btn-header-icon" style="width: 40px; height: 40px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--accent-color); display: flex; align-items: center; justify-content: center; text-decoration: none; transition: all 0.3s ease;" title="设置">
+                            <i class="fas fa-cog"></i>
+                        </a>
                         <a href="profile.html" class="download-btn" style="text-decoration: none; padding: 8px 16px; font-size: 0.85em;">
                             <i class="fas fa-user"></i> <span data-i18n="personalCenter">个人中心</span>
                         </a>

@@ -26,9 +26,9 @@
     --bg-secondary: rgba(255, 255, 255, 0.95);
     --bg-card: rgba(255, 255, 255, 0.85);
     --bg-card-hover: rgba(255, 255, 255, 0.98);
-    --text-primary: #0f172a;
-    --text-secondary: #1e293b;
-    --text-muted: #64748b;
+    --text-primary: #1a1a2e;
+    --text-secondary: #2d3748;
+    --text-muted: #4a5568;
     --border-color: rgba(102, 126, 234, 0.25);
     --border-color-hover: rgba(102, 126, 234, 0.4);
     --shadow: rgba(102, 126, 234, 0.12);
@@ -397,11 +397,11 @@ main {
 /* 页脚样式 */
 footer {
     background: rgba(0, 0, 0, 0.9);
-    color: #b0b0b0;
+    color: var(--text-secondary);
     text-align: center;
     padding: 30px 0;
     margin-top: 60px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid var(--border-color);
 }
 
 footer p {
@@ -563,15 +563,23 @@ footer p {
 }
 
 .comment-time {
-    color: #888;
+    color: var(--text-muted);
     font-size: 0.85em;
     margin-left: auto;
 }
 
+.light-theme .comment-author {
+    color: var(--text-secondary);
+}
+
 .comment-text {
-    color: #e0e0e0;
+    color: var(--text-primary);
     line-height: 1.6;
     margin-top: 10px;
+}
+
+.light-theme .comment-text {
+    color: var(--text-primary);
 }
 
 .comment-form {
@@ -581,25 +589,29 @@ footer p {
 .comment-input {
     width: 100%;
     padding: 12px;
-    background: rgba(26, 26, 46, 0.6);
-    border: 2px solid rgba(255, 255, 255, 0.1);
+    background: var(--bg-input);
+    border: 2px solid var(--border-color);
     border-radius: 8px;
-    color: #e0e0e0;
+    color: var(--text-primary);
     font-size: 1em;
     font-family: inherit;
     resize: vertical;
 }
 
+.light-theme .comment-input {
+    background: rgba(255, 255, 255, 0.95);
+}
+
 .comment-input:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: var(--accent-color);
     box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
 }
 
 .comment-login-prompt {
     text-align: center;
     padding: 40px 20px;
-    color: #888;
+    color: var(--text-muted);
 }
 
 /* 资源上传者信息 */
@@ -609,11 +621,11 @@ footer p {
     gap: 8px;
     margin-top: 10px;
     font-size: 0.85em;
-    color: #888;
+    color: var(--text-muted);
 }
 
 .resource-author-label {
-    color: #b0b0b0;
+    color: var(--text-secondary);
 }
 
 .resource-author-name {
