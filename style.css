@@ -916,15 +916,23 @@ footer p {
 }
 
 .resource-detail-info-label {
-    color: #888;
+    color: var(--text-muted);
     font-size: 0.9em;
     margin-bottom: 5px;
 }
 
+.light-theme .resource-detail-info-label {
+    color: var(--text-muted);
+}
+
 .resource-detail-info-value {
-    color: #667eea;
+    color: var(--accent-color);
     font-weight: bold;
     font-size: 1.1em;
+}
+
+.light-theme .resource-detail-info-value {
+    color: var(--accent-color);
 }
 
 .resource-detail-actions {
