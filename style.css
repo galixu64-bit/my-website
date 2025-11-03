@@ -863,10 +863,14 @@ footer p {
 
 .resource-detail-section-title {
     font-size: 1.3em;
-    color: #667eea;
+    color: var(--accent-color);
     margin-bottom: 15px;
     padding-bottom: 10px;
     border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+}
+
+.light-theme .resource-detail-section-title {
+    color: var(--accent-color);
 }
 
 .resource-detail-text {

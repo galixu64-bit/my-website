@@ -233,9 +233,57 @@
                 flex-direction: column;
             }
         }
+        .top-right-buttons {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+        
+        .btn-top-right-secondary {
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-primary);
+            border-radius: 8px;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .btn-top-right-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            background: rgba(102, 126, 234, 0.2);
+            border-color: rgba(102, 126, 234, 0.4);
+        }
+        
+        .light-theme .btn-top-right-secondary {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            color: var(--accent-color);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+        
+        .light-theme .btn-top-right-secondary:hover {
+            background: rgba(255, 255, 255, 1);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.25);
+        }
     </style>
 </head>
 <body>
+    <div class="top-right-buttons" id="topRightButtons" style="display: none;">
+        <a href="settings.html" class="btn-top-right-secondary">
+            <i class="fas fa-cog"></i> <span data-i18n="settings">设置</span>
+        </a>
+    </div>
     <header>
         <div class="container">
             <div class="user-info" id="userInfo" style="display: none;">
