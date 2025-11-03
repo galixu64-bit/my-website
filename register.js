@@ -86,9 +86,51 @@ document.addEventListener('DOMContentLoaded', function() {
                         console.log('注册成功，准备登录...');
                         showSuccess(t('registerSuccess'));
                         
-                        const verifyUsers = getAllUsersSync ? getAllUsersSync() : [];
-                        console.log('注册后验证 - localStorage中的用户数量:', verifyUsers.length);
-                        console.log('注册后验证 - 所有用户:', verifyUsers);
+                        setTimeout(() => {
+                            console.log('=== 注册后验证用户数据 ===');
+                            const userDbRaw = localStorage.getItem('userDatabase');
+                            const usersKeyRaw = localStorage.getItem('users');
+                            console.log('userDatabase 原始数据:', userDbRaw ? '存在' : '不存在');
+                            console.log('users 原始数据:', usersKeyRaw ? '存在' : '不存在');
+                            
+                            let verifyUsers = [];
+                            if (userDbRaw) {
+                                try {
+                                    verifyUsers = JSON.parse(userDbRaw);
+                                    console.log('从 userDatabase 解析:', verifyUsers.length, '个用户');
+                                } catch (e) {
+                                    console.error('解析 userDatabase 失败:', e);
+                                }
+                            }
+                            
+                            if (verifyUsers.length === 0 && usersKeyRaw) {
+                                try {
+                                    verifyUsers = JSON.parse(usersKeyRaw);
+                                    console.log('从 users 解析:', verifyUsers.length, '个用户');
+                                } catch (e) {
+                                    console.error('解析 users 失败:', e);
+                                }
+                            }
+                            
+                            if (typeof getAllUsersSync === 'function') {
+                                const syncUsers = getAllUsersSync();
+                                console.log('getAllUsersSync 返回:', syncUsers.length, '个用户');
+                                if (syncUsers.length > verifyUsers.length) {
+                                    verifyUsers = syncUsers;
+                                }
+                            }
+                            
+                            console.log('注册后验证 - 最终用户数量:', verifyUsers.length);
+                            console.log('注册后验证 - 所有用户:', verifyUsers);
+                            
+                            const foundUser = verifyUsers.find(u => u.email && u.email.toLowerCase() === email.toLowerCase());
+                            if (foundUser) {
+                                console.log('✓ 找到新注册的用户:', foundUser);
+                            } else {
+                                console.error('✗ 未找到新注册的用户！邮箱:', email);
+                                console.log('所有用户的邮箱:', verifyUsers.map(u => u.email).filter(Boolean));
+                            }
+                        }, 500);
 
                         setTimeout(() => {
                             const loginResult = login(email, password);

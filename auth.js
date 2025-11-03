@@ -284,17 +284,41 @@ function saveUserToDatabase(user) {
     console.log('保存后用户数量:', users.length);
     
     const savedData = JSON.stringify(users);
-    localStorage.setItem(USER_DATABASE_KEY, savedData);
-    localStorage.setItem('users', savedData);
     
-    console.log('用户数据已保存到 localStorage');
-    
-    const verifyUsers = JSON.parse(localStorage.getItem(USER_DATABASE_KEY) || '[]');
-    console.log('验证保存 - localStorage中的用户数量:', verifyUsers.length);
-    if (user.email) {
-        const found = verifyUsers.find(u => u.email && u.email.toLowerCase() === user.email.toLowerCase());
-        console.log('验证保存 - 找到邮箱用户:', found ? '是' : '否', found);
+    try {
+        localStorage.setItem(USER_DATABASE_KEY, savedData);
+        localStorage.setItem('users', savedData);
+        console.log('✓ 用户数据已保存到 localStorage');
+        console.log('✓ userDatabase 键已设置，长度:', savedData.length);
+        console.log('✓ users 键已设置，长度:', savedData.length);
+    } catch (e) {
+        console.error('✗ 保存到 localStorage 失败:', e);
+        console.error('错误详情:', e.message);
     }
+    
+    setTimeout(() => {
+        const verifyUserDb = localStorage.getItem(USER_DATABASE_KEY);
+        const verifyUsers = localStorage.getItem('users');
+        console.log('=== 保存后立即验证 ===');
+        console.log('userDatabase 是否存在:', verifyUserDb ? '是' : '否');
+        console.log('users 是否存在:', verifyUsers ? '是' : '否');
+        
+        if (verifyUserDb) {
+            try {
+                const parsed = JSON.parse(verifyUserDb);
+                console.log('userDatabase 中的用户数量:', parsed.length);
+                if (user.email) {
+                    const found = parsed.find(u => u.email && u.email.toLowerCase() === user.email.toLowerCase());
+                    console.log('验证保存 - 找到邮箱用户:', found ? '✓ 是' : '✗ 否');
+                    if (found) {
+                        console.log('找到的用户详情:', found);
+                    }
+                }
+            } catch (e) {
+                console.error('验证解析 userDatabase 失败:', e);
+            }
+        }
+    }, 100);
 }
 
 function saveUser(user) {

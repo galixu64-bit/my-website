@@ -263,40 +263,88 @@
         }
         
         function loadAllUsers() {
-            console.log('开始加载用户数据...');
+            console.log('=== 开始加载用户数据 ===');
             
             let users = [];
             
-            if (typeof getAllUsersSync === 'function') {
-                users = getAllUsersSync();
-                console.log('通过 getAllUsersSync 获取:', users);
-            } else if (window.getAllUsersSync) {
-                users = window.getAllUsersSync();
-                console.log('通过 window.getAllUsersSync 获取:', users);
-            } else {
-                console.error('getAllUsersSync 函数未找到');
-                try {
-                    const userDb = localStorage.getItem('userDatabase');
-                    const usersKey = localStorage.getItem('users');
-                    console.log('userDatabase:', userDb);
-                    console.log('users key:', usersKey);
-                    
-                    if (userDb) {
-                        users = JSON.parse(userDb);
-                        console.log('从 userDatabase 解析:', users);
-                    } else if (usersKey) {
-                        users = JSON.parse(usersKey);
-                        console.log('从 users 解析:', users);
+            try {
+                const userDbRaw = localStorage.getItem('userDatabase');
+                const usersKeyRaw = localStorage.getItem('users');
+                
+                console.log('localStorage userDatabase 原始数据:', userDbRaw);
+                console.log('localStorage users 原始数据:', usersKeyRaw);
+                
+                if (userDbRaw) {
+                    try {
+                        users = JSON.parse(userDbRaw);
+                        console.log('✓ 从 userDatabase 解析成功，用户数:', users.length);
+                    } catch (e) {
+                        console.error('✗ 解析 userDatabase 失败:', e);
                     }
-                } catch (e) {
-                    console.error('解析用户数据失败:', e);
                 }
+                
+                if (!users || users.length === 0) {
+                    if (usersKeyRaw) {
+                        try {
+                            users = JSON.parse(usersKeyRaw);
+                            console.log('✓ 从 users 解析成功，用户数:', users.length);
+                        } catch (e) {
+                            console.error('✗ 解析 users 失败:', e);
+                        }
+                    }
+                }
+                
+                if (typeof getAllUsersSync === 'function') {
+                    const syncUsers = getAllUsersSync();
+                    console.log('通过 getAllUsersSync 获取:', syncUsers.length, '个用户');
+                    if (syncUsers.length > users.length) {
+                        users = syncUsers;
+                        console.log('使用 getAllUsersSync 的结果（更多用户）');
+                    }
+                } else if (window.getAllUsersSync) {
+                    const syncUsers = window.getAllUsersSync();
+                    console.log('通过 window.getAllUsersSync 获取:', syncUsers.length, '个用户');
+                    if (syncUsers.length > users.length) {
+                        users = syncUsers;
+                        console.log('使用 window.getAllUsersSync 的结果（更多用户）');
+                    }
+                }
+                
+                if (!users || !Array.isArray(users)) {
+                    console.warn('用户数据不是数组，初始化为空数组');
+                    users = [];
+                }
+                
+                users = users.filter(u => u !== null && u !== undefined);
+                
+            } catch (e) {
+                console.error('加载用户数据时出错:', e);
+                users = [];
             }
             
-            console.log('最终获取到的用户数据:', users);
+            console.log('=== 最终用户数据 ===');
             console.log('用户数量:', users.length);
+            console.log('所有用户:', users);
+            
             if (users.length > 0) {
-                console.log('第一个用户:', users[0]);
+                users.forEach((user, index) => {
+                    console.log(`用户 ${index + 1}:`, {
+                        id: user.id,
+                        username: user.username,
+                        email: user.email,
+                        isDeveloper: user.isDeveloper,
+                        createdAt: user.createdAt
+                    });
+                });
+            } else {
+                console.warn('⚠️ 没有找到任何用户数据！');
+                console.log('尝试检查 localStorage...');
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.includes('user') || key.includes('User')) {
+                        console.log('找到相关键:', key, '=', localStorage.getItem(key));
+                    }
+                }
             }
             
             const jsonData = document.getElementById('jsonData');
