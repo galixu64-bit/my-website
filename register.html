@@ -511,6 +511,15 @@
         window.verifyVerificationCode = verifyCode;
     </script>
     <script src="theme.js"></script>
+    <script src="auth.js"></script>
     <script src="register.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const settingsBtn = document.getElementById('settingsBtn');
+            if (settingsBtn && typeof isLoggedIn === 'function' && isLoggedIn()) {
+                settingsBtn.style.display = 'inline-flex';
+            }
+        });
+    </script>
 </body>
 </html>
