@@ -1,3 +1,8 @@
+const DEFAULT_JSON_STORAGE = {
+    binId: '69086ec0d0ea881f40d0751e',
+    apiKey: '$2a$10$h1TxzENvBWCh5O0j3Y4/l.nEIokceZp1K4PyZ/1XUj/b0pdVFc9p.'
+};
+
 const JSON_STORAGE_CONFIG = {
     binId: null,
     apiKey: null,
@@ -125,6 +130,13 @@ function loadJSONStorageConfig() {
             JSON_STORAGE_CONFIG.apiKey = config.apiKey;
             console.log('✅ JSON存储配置已加载');
             return config;
+        }
+        if (DEFAULT_JSON_STORAGE.apiKey && DEFAULT_JSON_STORAGE.binId) {
+            JSON_STORAGE_CONFIG.apiKey = DEFAULT_JSON_STORAGE.apiKey;
+            JSON_STORAGE_CONFIG.binId = DEFAULT_JSON_STORAGE.binId;
+            localStorage.setItem('jsonStorageConfig', JSON.stringify(DEFAULT_JSON_STORAGE));
+            console.log('✅ 使用默认JSON存储配置');
+            return { ...DEFAULT_JSON_STORAGE };
         }
     } catch (error) {
         console.error('加载JSON存储配置失败:', error);
