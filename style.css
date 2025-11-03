@@ -11,9 +11,9 @@
     --bg-primary: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
     --bg-secondary: rgba(26, 26, 46, 0.9);
     --bg-card: rgba(26, 26, 46, 0.8);
-    --text-primary: #f5f5f5;
-    --text-secondary: #d0d0d0;
-    --text-muted: #a0a0a0;
+    --text-primary: #ffffff;
+    --text-secondary: #e8e8e8;
+    --text-muted: #c0c0c0;
     --border-color: rgba(255, 255, 255, 0.1);
     --shadow: rgba(0, 0, 0, 0.5);
     --accent-color: #667eea;
@@ -26,9 +26,9 @@
     --bg-secondary: rgba(240, 245, 250, 0.98);
     --bg-card: rgba(245, 248, 252, 0.92);
     --bg-card-hover: rgba(250, 252, 255, 0.98);
-    --text-primary: #020617;
-    --text-secondary: #0f172a;
-    --text-muted: #1e293b;
+    --text-primary: #000000;
+    --text-secondary: #1a1a2e;
+    --text-muted: #2d3748;
     --border-color: rgba(102, 126, 234, 0.3);
     --border-color-hover: rgba(102, 126, 234, 0.5);
     --shadow: rgba(102, 126, 234, 0.15);
@@ -202,6 +202,7 @@ main {
     color: var(--accent-color);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px var(--shadow);
+    transition: all 0.25s ease;
 }
 
 .filter-btn.active {
@@ -254,9 +255,8 @@ main {
     gap: 25px;
     box-shadow: 0 5px 15px var(--shadow);
     border: 1px solid var(--border-color);
-    transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     backdrop-filter: blur(10px);
-    will-change: transform, box-shadow;
 }
 
 .resource-card:hover {
@@ -1099,16 +1099,17 @@ footer p {
 }
 
 .btn-settings-icon {
-    width: 56px;
-    height: 56px;
+    width: 64px;
+    height: 64px;
     padding: 0;
     background: rgba(255, 255, 255, 0.15);
     border: 2px solid rgba(255, 255, 255, 0.25);
     color: var(--text-primary);
     border-radius: 50%;
-    font-size: 1.4em;
+    font-size: 1.6em;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
@@ -1120,10 +1121,10 @@ footer p {
 }
 
 .btn-settings-icon:hover {
-    transform: translateY(-3px) scale(1.1);
-    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.5);
-    background: rgba(102, 126, 234, 0.3);
-    border-color: rgba(102, 126, 234, 0.6);
+    transform: translateY(-4px) scale(1.12);
+    box-shadow: 0 12px 32px rgba(102, 126, 234, 0.6);
+    background: rgba(102, 126, 234, 0.35);
+    border-color: rgba(102, 126, 234, 0.7);
     color: var(--accent-color);
 }
 
@@ -1135,10 +1136,10 @@ footer p {
 }
 
 .light-theme .btn-settings-icon:hover {
-    background: rgba(102, 126, 234, 0.15);
-    border-color: rgba(102, 126, 234, 0.6);
-    box-shadow: 0 8px 28px rgba(102, 126, 234, 0.4);
-    transform: translateY(-3px) scale(1.1);
+    background: rgba(102, 126, 234, 0.2);
+    border-color: rgba(102, 126, 234, 0.7);
+    box-shadow: 0 12px 32px rgba(102, 126, 234, 0.5);
+    transform: translateY(-4px) scale(1.12);
 }
 
 @media (max-width: 768px) {
@@ -1149,9 +1150,9 @@ footer p {
     }
     
     .btn-settings-icon {
-        width: 48px;
-        height: 48px;
-        font-size: 1.2em;
+        width: 56px;
+        height: 56px;
+        font-size: 1.4em;
     }
 }
 

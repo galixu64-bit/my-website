@@ -216,7 +216,7 @@ function loadAllUsers() {
         };
         
         if (users.length === 0) {
-            list.innerHTML = '<p style="color: #b0b0b0; text-align: center; padding: 20px;">暂无用户数据</p>';
+            list.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 20px;">暂无用户数据</p>';
         } else {
             list.innerHTML = `
                 <div style="display: grid; gap: 15px;">
