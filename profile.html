@@ -384,6 +384,17 @@
     </style>
 </head>
 <body>
+    <div class="top-right-buttons">
+        <a href="settings.html" class="btn-top-right-secondary">
+            <i class="fas fa-cog"></i> <span data-i18n="settings">设置</span>
+        </a>
+        <a href="index.html" class="btn-top-right-secondary">
+            <i class="fas fa-home"></i> <span data-i18n="home">首页</span>
+        </a>
+        <a href="admin.html" class="btn-top-right-secondary" id="adminButton" style="display: none;">
+            <i class="fas fa-crown"></i> <span data-i18n="developerManagement">开发者管理</span>
+        </a>
+    </div>
     <header>
         <div class="container">
             <div class="user-info">
@@ -394,11 +405,6 @@
                 <div>
                     <h1>👤 <span data-i18n="profileTitle">个人中心</span></h1>
                     <p data-i18n="profileSubtitle">管理你的账户信息</p>
-                </div>
-                <div>
-                    <a href="index.html" class="download-btn" style="text-decoration: none; padding: 10px 20px; font-size: 0.9em;">
-                        ← <span data-i18n="backToMain">返回主页</span>
-                    </a>
                 </div>
             </div>
         </div>
