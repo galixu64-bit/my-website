@@ -14,6 +14,33 @@
             background: rgba(30,34,60,0.98);
             border-radius: 14px;
             box-shadow: 0 4px 32px 6px rgba(21,12,52,0.13);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .light-theme .login-page-box {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 8px 40px rgba(102, 126, 234, 0.15), 0 2px 12px rgba(102, 126, 234, 0.08);
+            border: 1.5px solid rgba(102, 126, 234, 0.2);
+        }
+        
+        .light-theme .login-page-logo i {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .light-theme .login-title {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .light-theme .login-form label {
+            color: var(--text-secondary);
+            font-weight: 600;
         }
         .login-page-logo {
             text-align: center;
