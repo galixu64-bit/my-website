@@ -144,6 +144,7 @@ function setUserInfo() {
 
         if (avatarImg) {
             avatarImg.src = 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + currentUser.username;
+            avatarImg.style.display = 'block';
         }
         if (userNameElement) {
             userNameElement.textContent = currentUser.username;
