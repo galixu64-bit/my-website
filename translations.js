@@ -381,7 +381,6 @@ const translations = {
             }
             
             if (!browserLang) {
-                console.warn('无法获取浏览器语言，使用默认值 zh-CN');
                 return 'zh';
             }
             
@@ -389,15 +388,10 @@ const translations = {
             const supportedLangs = ['zh', 'en'];
             const langCode = browserLangLower.split('-')[0];
             
-            console.log('检测到浏览器语言:', browserLang, '解析为:', langCode);
-            
             if (supportedLangs.includes(langCode)) {
                 return langCode;
             }
-            
-            console.warn('不支持的浏览器语言代码:', langCode, '使用默认值 zh');
         } catch (e) {
-            console.error('检测浏览器语言时出错:', e);
         }
 
         return 'zh';
@@ -456,31 +450,22 @@ const translations = {
         currentLang: currentLang,
         
         setLanguage: function(lang) {
-            console.log('=== i18n.setLanguage 开始 ===');
-            console.log('目标语言:', lang);
-            console.log('当前语言:', this.currentLang);
-            
             if (translations[lang]) {
                 const oldLang = this.currentLang;
                 this.currentLang = lang;
                 
                 try {
                     localStorage.setItem('language', lang);
-                    console.log('✓ 语言已保存到 localStorage:', lang);
                 } catch (e) {
-                    console.error('✗ 保存语言到 localStorage 失败:', e);
                 }
                 
-                console.log('开始更新页面内容...');
                 this.updatePage();
                 
                 setTimeout(() => {
-                    console.log('延迟更新页面内容（第一次）...');
                     this.updatePage();
                 }, 150);
                 
                 setTimeout(() => {
-                    console.log('延迟更新页面内容（第二次）...');
                     this.updatePage();
                     
                     try {
@@ -488,19 +473,13 @@ const translations = {
                             detail: { lang: lang, oldLang: oldLang } 
                         });
                         window.dispatchEvent(event);
-                        console.log('✓ 已分发 languageChanged 事件');
                     } catch (e) {
-                        console.error('✗ 分发 languageChanged 事件失败:', e);
                     }
                 }, 300);
                 
                 setTimeout(() => {
-                    console.log('最终更新页面内容...');
                     this.updatePage();
-                    console.log('=== i18n.setLanguage 完成 ===');
                 }, 600);
-            } else {
-                console.warn('✗ 不支持的语言:', lang);
             }
         },
         
@@ -537,7 +516,6 @@ const translations = {
                         
                         if (hasSpanWithI18n) {
                             hasSpanWithI18n.textContent = translated;
-                            console.log('更新 span[data-i18n] 元素:', key, '=', translated);
                         } else if (hasIcon) {
                             let textUpdated = false;
                             const allChildren = Array.from(el.childNodes);
@@ -549,20 +527,16 @@ const translations = {
                                         n.nodeType === Node.ELEMENT_NODE && 
                                         (n.tagName === 'I' || n.tagName === 'SVG' || n.tagName === 'IMG')
                                     );
-                                    const oldText = node.textContent;
                                     if (hasIconBefore) {
                                         node.textContent = ' ' + translated;
                                     } else {
                                         node.textContent = translated;
                                     }
                                     textUpdated = true;
-                                    console.log('更新文本节点:', key, '从', oldText.trim(), '到', translated);
                                 } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'SPAN' && !node.hasAttribute('data-i18n')) {
                                     if (!node.querySelector('i, svg, img')) {
-                                        const oldSpanText = node.textContent;
                                         node.textContent = translated;
                                         textUpdated = true;
-                                        console.log('更新 SPAN 元素:', key, '从', oldSpanText, '到', translated);
                                     }
                                 }
                             });
@@ -572,9 +546,7 @@ const translations = {
                                 if (firstIcon) {
                                     const nextSibling = firstIcon.nextSibling;
                                     if (nextSibling && nextSibling.nodeType === Node.TEXT_NODE) {
-                                        const oldNextText = nextSibling.textContent;
                                         nextSibling.textContent = ' ' + translated;
-                                        console.log('更新图标后的文本节点:', key, '从', oldNextText.trim(), '到', translated);
                                         textUpdated = true;
                                     } else {
                                         const existingTextNodes = Array.from(el.childNodes).filter(n => 
@@ -582,27 +554,20 @@ const translations = {
                                         );
                                         if (existingTextNodes.length > 0) {
                                             existingTextNodes.forEach(n => {
-                                                const oldText = n.textContent;
                                                 n.textContent = ' ' + translated;
-                                                console.log('更新现有文本节点:', key, '从', oldText.trim(), '到', translated);
                                                 textUpdated = true;
                                             });
                                         }
                                         if (!textUpdated) {
                                             firstIcon.insertAdjacentText('afterend', ' ' + translated);
-                                            console.log('插入新文本节点:', key, '=', translated);
                                         }
                                     }
                                 } else {
-                                    const oldText = el.textContent;
                                     el.textContent = translated;
-                                    console.log('更新元素文本:', key, '从', oldText, '到', translated);
                                 }
                             }
                         } else {
-                            const oldContent = el.textContent || el.innerHTML;
                             el.textContent = translated;
-                            console.log('更新纯文本元素:', key, '从', oldContent, '到', translated);
                         }
                     }
                 }
@@ -636,16 +601,12 @@ const translations = {
                 document.documentElement.lang = this.currentLang === 'zh' ? 'zh-CN' : 'en';
             }
 
-            console.log('updatePage 完成，共更新了', updatedCount, '个元素');
-            
             try {
                 const event = new CustomEvent('languageChanged', { 
                     detail: { lang: this.currentLang } 
                 });
                 window.dispatchEvent(event);
-                console.log('已分发 languageChanged 事件，语言:', this.currentLang);
             } catch (e) {
-                console.error('分发语言更改事件失败:', e);
             }
         },
         

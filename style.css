@@ -27,7 +27,7 @@
     --bg-card: rgba(245, 248, 252, 0.92);
     --bg-card-hover: rgba(250, 252, 255, 0.98);
     --text-primary: #000000;
-    --text-secondary: #0a0a1a;
+    --text-secondary: #000000;
     --text-muted: #1a1a2e;
     --border-color: rgba(102, 126, 234, 0.3);
     --border-color-hover: rgba(102, 126, 234, 0.5);
@@ -238,6 +238,7 @@ main {
 .resources-container {
     margin-top: 30px;
     min-height: 400px;
+    overflow: hidden;
 }
 
 .resources-list {
@@ -245,6 +246,7 @@ main {
     flex-direction: column;
     gap: 20px;
     min-height: 300px;
+    overflow: hidden;
 }
 
 /* 资源卡片 */
@@ -259,6 +261,8 @@ main {
     border: 1px solid var(--border-color);
     transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     backdrop-filter: blur(10px);
+    will-change: auto;
+    min-height: 100px;
 }
 
 .resource-card:hover {
@@ -1109,9 +1113,8 @@ footer p {
     color: var(--text-primary);
     border-radius: 50%;
     font-size: 1.6em;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-    cursor: pointer;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
@@ -1119,6 +1122,7 @@ footer p {
     backdrop-filter: blur(10px);
     cursor: pointer;
     position: relative;
+    flex-shrink: 0;
 }
 
 .btn-settings-icon:hover {
