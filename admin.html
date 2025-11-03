@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>开发者管理 - dragbit</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .admin-header {
+            background: rgba(26, 26, 46, 0.8);
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .light-theme .admin-header {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.12), 0 2px 8px rgba(102, 126, 234, 0.08);
+            border: 1.5px solid rgba(102, 126, 234, 0.2);
+        }
+        
+        .admin-section {
+            background: rgba(26, 26, 46, 0.8);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .light-theme .admin-section {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.12), 0 2px 8px rgba(102, 126, 234, 0.08);
+            border: 1.5px solid rgba(102, 126, 234, 0.2);
+        }
+        
+        .section-title {
+            font-size: 1.5em;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+        }
+        
+        .users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .user-card {
+            background: rgba(26, 26, 46, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .light-theme .user-card {
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.1);
+            border: 1.5px solid rgba(102, 126, 234, 0.15);
+        }
+        
+        .user-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(102, 126, 234, 0.15);
+        }
+        
+        .user-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .user-card-username {
+            font-size: 1.2em;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+        
+        .user-card-id {
+            color: var(--text-muted);
+            font-size: 0.85em;
+        }
+        
+        .user-card-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            margin-left: 10px;
+        }
+        
+        .user-card-info {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+        
+        .user-card-info div {
+            margin-bottom: 5px;
+        }
+        
+        .btn-admin {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-admin:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        
+        .top-right-buttons {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+        
+        .btn-top-right {
+            padding: 10px 16px;
+            background: var(--bg-button, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-top-right:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        
+        .btn-top-right-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .light-theme .btn-top-right-secondary {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            color: var(--accent-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="top-right-buttons">
+        <a href="profile.html" class="btn-top-right btn-top-right-secondary">
+            <i class="fas fa-user"></i> <span data-i18n="profile">个人中心</span>
+        </a>
+        <a href="index.html" class="btn-top-right btn-top-right-secondary">
+            <i class="fas fa-home"></i> <span data-i18n="home">首页</span>
+        </a>
+    </div>
+    
+    <header>
+        <div class="container">
+            <div style="text-align: center;">
+                <h1><i class="fas fa-crown"></i> <span data-i18n="developerManagement">开发者管理</span></h1>
+                <p data-i18n="developerManagementDesc">管理系统用户和资源</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="admin-container">
+            <div class="admin-section">
+                <h3 class="section-title">
+                    <i class="fas fa-users"></i> <span data-i18n="allUsers">所有用户</span>
+                </h3>
+                <button class="btn-admin" onclick="loadAllUsers()">
+                    <i class="fas fa-sync"></i> <span data-i18n="refreshUsers">刷新用户列表</span>
+                </button>
+                <button class="btn-admin" onclick="exportAllUsers()" style="margin-left: 10px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                    <i class="fas fa-download"></i> <span data-i18n="exportUsers">导出用户数据</span>
+                </button>
+                <div id="allUsersList" class="users-grid" style="margin-top: 20px;"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p data-i18n="copyright">© 2024 dragbit优质资源网站 | 用 ❤️ 制作</p>
+        </div>
+    </footer>
+
+    <script src="theme.js"></script>
+    <script src="translations.js"></script>
+    <script src="auth.js"></script>
+    <script src="profile.js"></script>
+    <script>
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function loadAllUsers() {
+            if (!isDeveloper()) {
+                alert('您没有权限访问此页面');
+                window.location.href = 'profile.html';
+                return;
+            }
+            
+            const list = document.getElementById('allUsersList');
+            if (!list) return;
+            
+            const users = getAllUsersSync ? getAllUsersSync() : [];
+            
+            const t = (key) => {
+                return (window.i18n && typeof window.i18n.t === 'function')
+                    ? window.i18n.t(key)
+                    : key;
+            };
+            
+            if (users.length === 0) {
+                list.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 40px; grid-column: 1 / -1;">' + t('noUsers') + '</p>';
+            } else {
+                list.innerHTML = users.map(user => {
+                    const date = user.createdAt ? new Date(user.createdAt).toLocaleDateString('zh-CN') : t('unknown');
+                    return `
+                        <div class="user-card">
+                            <div class="user-card-header">
+                                <div>
+                                    <span class="user-card-username">${escapeHtml(user.username)}</span>
+                                    ${user.isDeveloper ? '<span class="user-card-badge">⭐ ' + t('developerAccount') + '</span>' : ''}
+                                </div>
+                                <span class="user-card-id">ID: ${user.id}</span>
+                            </div>
+                            <div class="user-card-info">
+                                <div><strong>${t('email')}:</strong> ${user.email || t('emailNotSet')}</div>
+                                <div><strong>${t('registerTime')}:</strong> ${date}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+        
+        function exportAllUsers() {
+            if (!isDeveloper()) {
+                alert('您没有权限执行此操作');
+                return;
+            }
+            
+            if (typeof exportUsersToJSON === 'function') {
+                exportUsersToJSON();
+            } else if (window.exportUsersToJSON) {
+                window.exportUsersToJSON();
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!isLoggedIn()) {
+                alert('请先登录');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            if (!isDeveloper()) {
+                alert('您没有权限访问此页面');
+                window.location.href = 'profile.html';
+                return;
+            }
+            
+            if (window.i18n && typeof window.i18n.init === 'function') {
+                window.i18n.init();
+            }
+            
+            loadAllUsers();
+        });
+    </script>
+</body>
+</html>
+

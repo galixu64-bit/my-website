@@ -14,17 +14,30 @@
         }
         
         .settings-header {
+            background: rgba(26, 26, 46, 0.8);
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 30px;
             text-align: center;
-            margin-bottom: 40px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .light-theme .settings-header {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.12), 0 2px 8px rgba(102, 126, 234, 0.08);
+            border: 1.5px solid rgba(102, 126, 234, 0.2);
         }
         
         .settings-section {
-            background: var(--bg-card);
+            background: rgba(26, 26, 46, 0.8);
             border-radius: 15px;
             padding: 30px;
             margin-bottom: 30px;
-            box-shadow: 0 5px 15px var(--shadow);
-            border: 1px solid var(--border-color);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             transition: all 0.3s ease;
         }
@@ -40,19 +53,27 @@
             color: var(--accent-color);
             margin-bottom: 20px;
             padding-bottom: 15px;
-            border-bottom: 2px solid var(--border-color);
+            border-bottom: 2px solid rgba(102, 126, 234, 0.3);
         }
         
         .settings-item {
             padding: 20px 0;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .light-theme .settings-item {
+            border-bottom: 1px solid rgba(102, 126, 234, 0.2);
         }
         
         .settings-item:last-child {
             border-bottom: none;
+        }
+        
+        .settings-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
         }
         
         .settings-label {
@@ -72,9 +93,9 @@
         
         .btn-settings-toggle {
             padding: 8px 16px;
-            background: var(--bg-button-secondary);
-            border: 1px solid var(--border-color);
-            color: var(--text-button-secondary);
+            background: rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(102, 126, 234, 0.4);
+            color: var(--accent-color);
             border-radius: 6px;
             cursor: pointer;
             font-size: 0.9em;
@@ -82,14 +103,18 @@
         }
         
         .btn-settings-toggle:hover {
-            background: var(--accent-light);
-            border-color: var(--accent-color);
+            background: rgba(102, 126, 234, 0.3);
+            border-color: rgba(102, 126, 234, 0.6);
         }
         
         .settings-form {
             margin-top: 20px;
             padding-top: 20px;
-            border-top: 1px solid var(--border-color);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .light-theme .settings-form {
+            border-top: 1px solid rgba(102, 126, 234, 0.2);
         }
         
         .form-group-settings {
@@ -106,17 +131,21 @@
         .form-input-settings {
             width: 100%;
             padding: 10px 15px;
-            background: var(--bg-input);
+            background: var(--bg-input, rgba(26, 26, 46, 0.6));
             border: 2px solid var(--border-color);
             border-radius: 8px;
             color: var(--text-primary);
             font-size: 1em;
             transition: all 0.3s ease;
             display: block;
+            visibility: visible;
+            opacity: 1;
         }
         
-        .light-theme .form-input-settings {
-            background: rgba(255, 255, 255, 0.95);
+        .form-input-settings option {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            padding: 10px;
         }
         
         .form-input-settings:focus {
@@ -134,7 +163,7 @@
         .btn-settings-save {
             flex: 1;
             padding: 10px 20px;
-            background: var(--bg-button);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
             border-radius: 8px;
@@ -145,13 +174,13 @@
         
         .btn-settings-save:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
         }
         
         .settings-message {
             padding: 12px;
             border-radius: 8px;
-            margin-bottom: 15px;
+            margin-top: 15px;
             display: none;
         }
         
@@ -167,131 +196,162 @@
             color: #ef4444;
         }
         
-        .header-actions {
-            position: absolute;
+        .top-right-buttons {
+            position: fixed;
             top: 20px;
             right: 20px;
             display: flex;
             gap: 10px;
+            z-index: 1000;
         }
         
-        .btn-header-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--accent-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .btn-top-right {
+            padding: 10px 16px;
+            background: var(--bg-button, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9em;
             cursor: pointer;
             transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
             text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
         
-        .btn-header-icon:hover {
-            background: var(--accent-light);
-            transform: scale(1.1);
+        .btn-top-right:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        
+        .btn-top-right-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .light-theme .btn-top-right-secondary {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            color: var(--accent-color);
         }
     </style>
 </head>
 <body>
-    <header style="position: relative;">
+    <div class="top-right-buttons">
+        <a href="index.html" class="btn-top-right btn-top-right-secondary">
+            <i class="fas fa-home"></i> <span data-i18n="home">首页</span>
+        </a>
+        <a href="profile.html" class="btn-top-right btn-top-right-secondary">
+            <i class="fas fa-user"></i> <span data-i18n="profile">个人中心</span>
+        </a>
+    </div>
+    
+    <header>
         <div class="container">
-            <div class="header-actions">
-                <a href="index.html" class="btn-header-icon" title="返回主页">
-                    <i class="fas fa-home"></i>
-                </a>
-            </div>
             <div style="text-align: center;">
                 <h1><i class="fas fa-cog"></i> <span data-i18n="settings">设置</span></h1>
-                <p data-i18n="manageAccountSettings">管理账户设置</p>
+                <p data-i18n="settingsSubtitle">管理你的账户和偏好设置</p>
             </div>
         </div>
     </header>
 
     <main class="container">
         <div class="settings-container">
-            <div class="settings-section">
-                <h3 class="section-title">🔐 <span data-i18n="changePassword">修改密码</span></h3>
-                <div class="settings-item">
+            <div class="settings-section" id="passwordSection">
+                <div class="settings-header-row">
                     <div>
-                        <span class="settings-label" data-i18n="password">密码</span>
-                        <div class="settings-value" data-i18n="changePasswordDesc">点击按钮修改登录密码</div>
+                        <div class="settings-label">
+                            <i class="fas fa-lock"></i> <span data-i18n="changePassword">修改密码</span>
+                        </div>
+                        <div class="settings-value" data-i18n="changePasswordDesc">更改您的登录密码</div>
                     </div>
                     <button class="btn-settings-toggle" onclick="togglePasswordChange()">
-                        <span data-i18n="change">修改</span>
+                        <span data-i18n="change">更改</span>
                     </button>
                 </div>
-                <div id="passwordChangeForm" class="settings-form" style="display: none;">
-                    <div id="passwordMessage" class="settings-message"></div>
+                <div class="settings-form" id="passwordChangeForm" style="display: none;">
                     <div class="form-group-settings">
                         <label class="form-label-settings" data-i18n="currentPassword">当前密码</label>
-                        <input type="password" class="form-input-settings" id="currentPassword" data-i18n-placeholder="currentPassword">
+                        <input type="password" class="form-input-settings" id="currentPassword" data-i18n-placeholder="currentPasswordPlaceholder" placeholder="输入当前密码">
                     </div>
                     <div class="form-group-settings">
                         <label class="form-label-settings" data-i18n="newPassword">新密码</label>
-                        <input type="password" class="form-input-settings" id="newPassword" data-i18n-placeholder="passwordPlaceholder">
+                        <input type="password" class="form-input-settings" id="newPassword" data-i18n-placeholder="passwordPlaceholder" placeholder="输入新密码（至少6个字符）">
                     </div>
                     <div class="form-group-settings">
-                        <label class="form-label-settings" data-i18n="confirmNewPassword">确认新密码</label>
-                        <input type="password" class="form-input-settings" id="confirmNewPassword" data-i18n-placeholder="confirmPasswordPlaceholder">
+                        <label class="form-label-settings" data-i18n="confirmPassword">确认新密码</label>
+                        <input type="password" class="form-input-settings" id="confirmNewPassword" data-i18n-placeholder="confirmPasswordPlaceholder" placeholder="再次输入新密码">
                     </div>
                     <div class="settings-form-actions">
                         <button class="btn-settings-save" onclick="savePassword()">
-                            <span data-i18n="save">保存</span>
+                            <i class="fas fa-save"></i> <span data-i18n="save">保存</span>
                         </button>
                     </div>
+                    <div class="settings-message" id="passwordMessage"></div>
                 </div>
             </div>
 
-            <div class="settings-section">
-                <h3 class="section-title">📧 <span data-i18n="changeEmail">修改邮箱</span></h3>
-                <div class="settings-item">
+            <div class="settings-section" id="emailSection">
+                <div class="settings-header-row">
                     <div>
-                        <span class="settings-label" data-i18n="email">邮箱</span>
-                        <div class="settings-value" id="currentEmailDisplay" data-i18n="emailNotSet">未设置</div>
+                        <div class="settings-label">
+                            <i class="fas fa-envelope"></i> <span data-i18n="changeEmail">修改邮箱</span>
+                        </div>
+                        <div class="settings-value">
+                            <span data-i18n="currentEmail">当前邮箱：</span><span id="currentEmailDisplay">-</span>
+                        </div>
                     </div>
                     <button class="btn-settings-toggle" onclick="toggleEmailChange()">
-                        <span data-i18n="change">修改</span>
+                        <span data-i18n="change">更改</span>
                     </button>
                 </div>
-                <div id="emailChangeForm" class="settings-form" style="display: none;">
-                    <div id="emailMessage" class="settings-message"></div>
+                <div class="settings-form" id="emailChangeForm" style="display: none;">
                     <div class="form-group-settings">
                         <label class="form-label-settings" data-i18n="newEmail">新邮箱</label>
-                        <input type="email" class="form-input-settings" id="newEmail" data-i18n-placeholder="email">
+                        <input type="email" class="form-input-settings" id="newEmail" data-i18n-placeholder="emailPlaceholder" placeholder="输入新邮箱地址">
                     </div>
                     <div class="settings-form-actions">
                         <button class="btn-settings-save" onclick="saveEmail()">
-                            <span data-i18n="save">保存</span>
+                            <i class="fas fa-save"></i> <span data-i18n="save">保存</span>
                         </button>
                     </div>
+                    <div class="settings-message" id="emailMessage"></div>
                 </div>
             </div>
 
-            <div class="settings-section">
-                <h3 class="section-title">🌐 <span data-i18n="language">语言</span></h3>
-                <div class="settings-item">
+            <div class="settings-section" id="languageSection">
+                <div class="settings-header-row">
                     <div>
-                        <span class="settings-label" data-i18n="currentLanguage">当前语言</span>
-                        <div class="settings-value" id="currentLanguageDisplay">中文</div>
+                        <div class="settings-label">
+                            <i class="fas fa-language"></i> <span data-i18n="language">语言设置</span>
+                        </div>
+                        <div class="settings-value">
+                            <span data-i18n="currentLanguage">当前语言：</span><span id="currentLanguageDisplay">中文</span>
+                            <br>
+                            <span style="font-size: 0.85em; color: var(--text-muted);" data-i18n="browserLanguage">浏览器语言：</span><span id="browserLanguageDisplay" style="font-size: 0.85em; color: var(--text-muted);">-</span>
+                        </div>
                     </div>
-                    <select id="languageSelect" class="form-input-settings" style="width: auto; padding: 8px 16px;" onchange="handleLanguageChange(event)">
-                        <option value="zh" data-i18n="chinese">中文</option>
-                        <option value="en" data-i18n="english">English</option>
-                    </select>
                 </div>
-                <div class="settings-item">
-                    <div>
-                        <span class="settings-label" data-i18n="browserLanguage">浏览器语言</span>
-                        <div class="settings-value" id="browserLanguageDisplay">检测中...</div>
+                <div class="settings-form">
+                    <div class="form-group-settings">
+                        <label class="form-label-settings" data-i18n="selectLanguage">选择语言</label>
+                        <select class="form-input-settings" id="languageSelect">
+                            <option value="zh">中文</option>
+                            <option value="en">English</option>
+                        </select>
                     </div>
                 </div>
             </div>
         </div>
     </main>
+
+    <footer>
+        <div class="container">
+            <p data-i18n="copyright">© 2024 dragbit优质资源网站 | 用 ❤️ 制作</p>
+        </div>
+    </footer>
 
     <script src="theme.js"></script>
     <script src="translations.js"></script>
@@ -300,16 +360,16 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             if (!isLoggedIn()) {
+                alert('请先登录');
                 window.location.href = 'login.html';
                 return;
             }
             
-            if (window.i18n && typeof window.i18n.updatePage === 'function') {
-                window.i18n.updatePage();
+            if (window.initSettings) {
+                initSettings();
             }
-            
-            initSettings();
         });
     </script>
 </body>
 </html>
+
