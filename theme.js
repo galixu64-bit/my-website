@@ -28,12 +28,15 @@
     }
 
     function initTheme() {
-
-        let theme = 'dark';
+        let theme = 'system';
         try {
             const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'light' || savedTheme === 'dark') {
-                theme = savedTheme;
+            if (savedTheme === 'system' || savedTheme === 'light' || savedTheme === 'dark') {
+                if (savedTheme === 'system') {
+                    theme = detectSystemTheme();
+                } else {
+                    theme = savedTheme;
+                }
             } else {
                 theme = detectSystemTheme();
             }

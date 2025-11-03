@@ -311,6 +311,9 @@ function handleThemeSelectChange(theme) {
         window.setTheme(theme);
         updateThemeDisplay(theme);
         console.log('主题已切换为:', theme);
+        
+        const event = new CustomEvent('themeChanged', { detail: { theme: theme } });
+        window.dispatchEvent(event);
     } else {
         console.warn('window.setTheme 函数不可用');
         const root = document.documentElement;
@@ -337,6 +340,9 @@ function handleThemeSelectChange(theme) {
             localStorage.setItem('theme', 'system');
             updateThemeDisplay('system');
         }
+        
+        const event = new CustomEvent('themeChanged', { detail: { theme: theme } });
+        window.dispatchEvent(event);
     }
 }
 
