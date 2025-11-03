@@ -357,6 +357,12 @@ const translations = {
         'currentLanguage': 'Current Language',
         'browserLanguage': 'Browser Language',
         'selectLanguage': 'Select Language',
+        'theme': 'Theme Settings',
+        'currentTheme': 'Current Theme:',
+        'selectTheme': 'Select Theme',
+        'themeSystem': 'Follow System',
+        'themeLight': 'Light',
+        'themeDark': 'Dark',
 
         'copyright': '© 2024 dragbit | Made with ❤️',
     }
