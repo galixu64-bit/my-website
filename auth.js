@@ -121,18 +121,32 @@ function getAllUsersSync() {
 }
 
 function saveUserToDatabase(user) {
+    console.log('保存用户到数据库:', user);
+    
     const users = getAllUsersSync();
-    const existingIndex = users.findIndex(u => u.id === user.id || u.username === user.username);
+    console.log('当前用户列表:', users);
+    
+    const existingIndex = users.findIndex(u => 
+        (u.id && user.id && u.id === user.id) || 
+        (u.email && user.email && u.email.toLowerCase() === user.email.toLowerCase()) ||
+        (u.username && user.username && u.username === user.username)
+    );
     
     if (existingIndex >= 0) {
+        console.log('更新现有用户，索引:', existingIndex);
         users[existingIndex] = user;
     } else {
+        console.log('添加新用户');
         users.push(user);
     }
     
+    console.log('保存后的用户列表:', users);
+    console.log('用户数量:', users.length);
+    
     localStorage.setItem(USER_DATABASE_KEY, JSON.stringify(users));
-
     localStorage.setItem('users', JSON.stringify(users));
+    
+    console.log('用户数据已保存到 localStorage');
 }
 
 function saveUser(user) {
