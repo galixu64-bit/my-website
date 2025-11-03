@@ -249,6 +249,99 @@ function updateLanguageDisplay(lang) {
     updateBrowserLanguageDisplay();
 }
 
+function initThemeSettings() {
+    console.log('初始化主题设置...');
+    
+    if (typeof window.getTheme === 'function') {
+        const currentTheme = window.getTheme();
+        console.log('当前主题:', currentTheme);
+        
+        updateThemeDisplay(currentTheme);
+        
+        const themeSelect = document.getElementById('themeSelect');
+        if (themeSelect) {
+            themeSelect.value = currentTheme || 'system';
+        }
+    } else {
+        console.warn('window.getTheme 函数不可用');
+        const themeSelect = document.getElementById('themeSelect');
+        if (themeSelect) {
+            const root = document.documentElement;
+            if (root.classList.contains('dark-theme')) {
+                themeSelect.value = 'dark';
+                updateThemeDisplay('dark');
+            } else if (root.classList.contains('light-theme')) {
+                themeSelect.value = 'light';
+                updateThemeDisplay('light');
+            } else {
+                themeSelect.value = 'system';
+                updateThemeDisplay('system');
+            }
+        }
+    }
+}
+
+function updateThemeDisplay(theme) {
+    const getTranslation = (key) => {
+        return (window.i18n && typeof window.i18n.t === 'function') 
+            ? window.i18n.t(key) 
+            : key;
+    };
+    
+    const themeDisplay = document.getElementById('currentThemeDisplay');
+    if (themeDisplay) {
+        let themeText = '';
+        if (theme === 'system') {
+            themeText = getTranslation('themeSystem');
+        } else if (theme === 'light') {
+            themeText = getTranslation('themeLight');
+        } else if (theme === 'dark') {
+            themeText = getTranslation('themeDark');
+        } else {
+            themeText = theme || '-';
+        }
+        themeDisplay.textContent = themeText;
+    }
+}
+
+function handleThemeSelectChange(theme) {
+    console.log('切换主题:', theme);
+    
+    if (typeof window.setTheme === 'function') {
+        window.setTheme(theme);
+        updateThemeDisplay(theme);
+        console.log('主题已切换为:', theme);
+    } else {
+        console.warn('window.setTheme 函数不可用');
+        const root = document.documentElement;
+        
+        if (theme === 'dark') {
+            root.classList.remove('light-theme');
+            root.classList.add('dark-theme');
+            localStorage.setItem('theme', 'dark');
+            updateThemeDisplay('dark');
+        } else if (theme === 'light') {
+            root.classList.remove('dark-theme');
+            root.classList.add('light-theme');
+            localStorage.setItem('theme', 'light');
+            updateThemeDisplay('light');
+        } else {
+            const systemTheme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            if (systemTheme === 'dark') {
+                root.classList.remove('light-theme');
+                root.classList.add('dark-theme');
+            } else {
+                root.classList.remove('dark-theme');
+                root.classList.add('light-theme');
+            }
+            localStorage.setItem('theme', 'system');
+            updateThemeDisplay('system');
+        }
+    }
+}
+
+window.handleThemeSelectChange = handleThemeSelectChange;
+
 function updateBrowserLanguageDisplay() {
     const browserLangDisplay = document.getElementById('browserLanguageDisplay');
     if (!browserLangDisplay) {

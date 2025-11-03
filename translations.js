@@ -612,6 +612,14 @@ const translations = {
                 }
             });
 
+            document.querySelectorAll('[data-i18n-option]').forEach(function(el) {
+                const key = el.getAttribute('data-i18n-option');
+                if (key && el.tagName === 'OPTION') {
+                    el.textContent = i18n.t(key);
+                    updatedCount++;
+                }
+            });
+
             if (document.documentElement) {
                 document.documentElement.lang = this.currentLang === 'zh' ? 'zh-CN' : 'en';
             }

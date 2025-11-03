@@ -64,17 +64,25 @@
     window.setTheme = function(theme) {
         if (theme === 'dark' || theme === 'light' || theme === 'system') {
             if (theme === 'system') {
-                theme = detectSystemTheme();
+                const systemTheme = detectSystemTheme();
                 localStorage.setItem('theme', 'system');
+                applyTheme(systemTheme);
             } else {
                 localStorage.setItem('theme', theme);
+                applyTheme(theme);
             }
-            applyTheme(theme);
+            
+            const event = new CustomEvent('themeChanged', { detail: { theme: theme } });
+            window.dispatchEvent(event);
         }
     };
     
     window.getTheme = function() {
-        return localStorage.getItem('theme') || 'system';
+        try {
+            return localStorage.getItem('theme') || 'system';
+        } catch (e) {
+            return 'system';
+        }
     };
 })();
 
