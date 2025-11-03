@@ -148,6 +148,26 @@
             color: var(--text-primary);
         }
         
+        #jsonDisplay {
+            background: rgba(26, 26, 46, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .light-theme #jsonDisplay {
+            background: rgba(245, 248, 252, 0.98);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.1);
+        }
+        
+        #jsonContent {
+            color: #10b981;
+        }
+        
+        .light-theme #jsonContent {
+            color: #059669;
+            background: rgba(0, 0, 0, 0.02);
+        }
+        
         .action-buttons {
             display: flex;
             gap: 15px;
@@ -549,17 +569,31 @@
             <!-- 开发者管理（仅开发者可见） -->
             <div class="profile-section" id="developerSection" style="display: none;">
                 <h3 class="section-title">👑 <span data-i18n="developerManagement">开发者管理</span></h3>
-                <div class="info-item">
-                    <span class="info-label" data-i18n="allUsers">所有用户</span>
-                    <button class="btn-settings-toggle" onclick="loadAllUsers()">
-                        <span data-i18n="viewAllUsers">查看所有用户</span>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <button class="btn-profile btn-profile-secondary" onclick="loadAllUsers()" style="width: 100%;">
+                        <i class="fas fa-users"></i> <span data-i18n="viewAllUsers">查看所有用户</span>
+                    </button>
+                    <button class="btn-profile btn-profile-secondary" onclick="showUserDataJSON()" style="width: 100%;">
+                        <i class="fas fa-code"></i> 查看JSON数据（包含所有localStorage用户）
+                    </button>
+                    <button class="btn-profile btn-profile-secondary" onclick="copyAllUsersJSON()" style="width: 100%;">
+                        <i class="fas fa-copy"></i> 复制JSON到剪贴板
+                    </button>
+                    <button class="btn-profile btn-profile-secondary" onclick="exportAllUsers()" style="width: 100%;">
+                        <i class="fas fa-download"></i> <span data-i18n="exportUsers">导出用户数据</span>
                     </button>
                 </div>
                 <div id="allUsersDisplay" style="display: none; margin-top: 20px;">
                     <div id="allUsersList" style="max-height: 400px; overflow-y: auto;"></div>
-                    <button class="btn-profile btn-profile-secondary" onclick="exportAllUsers()" style="margin-top: 15px; width: 100%;">
-                        <i class="fas fa-download"></i> <span data-i18n="exportUsers">导出用户数据</span>
-                    </button>
+                </div>
+                <div id="jsonDisplay" style="display: none; margin-top: 20px; padding: 20px; background: rgba(26, 26, 46, 0.8); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); max-height: 500px; overflow-y: auto; transition: all 0.3s ease;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h4 style="color: var(--accent-color); margin: 0;">用户数据 JSON（包含所有localStorage中的用户）</h4>
+                        <button onclick="document.getElementById('jsonDisplay').style.display='none'" style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.5); color: #ef4444; padding: 5px 15px; border-radius: 5px; cursor: pointer; transition: all 0.3s ease;">
+                            <i class="fas fa-times"></i> 关闭
+                        </button>
+                    </div>
+                    <pre id="jsonContent" style="color: #10b981; font-family: 'Courier New', monospace; font-size: 0.9em; margin: 0; white-space: pre-wrap; word-wrap: break-word; padding: 15px; background: rgba(0, 0, 0, 0.2); border-radius: 8px;"></pre>
                 </div>
             </div>
             
