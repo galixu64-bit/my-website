@@ -360,14 +360,26 @@
     <script>
         function handleLanguageSelectChange(lang) {
             console.log('Language select changed to:', lang);
-            if (window.changeLanguageSetting) {
+            if (!lang) {
+                console.error('语言值为空');
+                return;
+            }
+            
+            if (window.changeLanguageSetting && typeof window.changeLanguageSetting === 'function') {
+                console.log('调用 changeLanguageSetting');
                 window.changeLanguageSetting(lang);
             } else if (window.i18n && typeof window.i18n.setLanguage === 'function') {
+                console.log('直接调用 i18n.setLanguage');
                 window.i18n.setLanguage(lang);
             } else {
                 console.error('Language switching function not available');
+                console.log('window.changeLanguageSetting:', typeof window.changeLanguageSetting);
+                console.log('window.i18n:', window.i18n);
+                console.log('window.i18n.setLanguage:', window.i18n ? typeof window.i18n.setLanguage : 'N/A');
             }
         }
+        
+        window.handleLanguageSelectChange = handleLanguageSelectChange;
         
         document.addEventListener('DOMContentLoaded', function() {
             if (!isLoggedIn()) {

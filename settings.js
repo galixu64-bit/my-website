@@ -170,17 +170,28 @@ function changeLanguageSetting(lang) {
     if (window.i18n && typeof window.i18n.setLanguage === 'function') {
         console.log('Using i18n.setLanguage');
         window.i18n.setLanguage(lang);
+        
+        setTimeout(function() {
+            if (window.i18n && typeof window.i18n.updatePage === 'function') {
+                console.log('强制更新页面内容');
+                window.i18n.updatePage();
+            }
+            updateLanguageDisplay(lang);
+            updateBrowserLanguageDisplay();
+        }, 200);
+        
         setTimeout(function() {
             if (window.i18n && typeof window.i18n.updatePage === 'function') {
                 window.i18n.updatePage();
             }
             updateLanguageDisplay(lang);
-        }, 100);
+        }, 500);
     } else if (window.switchLanguage && typeof window.switchLanguage === 'function') {
         console.log('Using window.switchLanguage');
         window.switchLanguage(lang);
         setTimeout(function() {
             updateLanguageDisplay(lang);
+            updateBrowserLanguageDisplay();
         }, 100);
     } else {
         console.warn('No language switching method available');
@@ -195,6 +206,7 @@ function changeLanguageSetting(lang) {
                 }
             }
             updateLanguageDisplay(lang);
+            updateBrowserLanguageDisplay();
         } catch (e) {
             console.error('Failed to save language preference:', e);
         }

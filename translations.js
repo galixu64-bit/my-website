@@ -444,18 +444,35 @@ const translations = {
         currentLang: currentLang,
         
         setLanguage: function(lang) {
+            console.log('i18n.setLanguage called with:', lang);
             if (translations[lang]) {
                 this.currentLang = lang;
                 try {
                     localStorage.setItem('language', lang);
+                    console.log('语言已保存到 localStorage:', lang);
                 } catch (e) {
-
+                    console.error('保存语言到 localStorage 失败:', e);
                 }
+                
+                console.log('开始更新页面...');
                 this.updatePage();
                 
                 setTimeout(() => {
+                    console.log('第二次更新页面...');
                     this.updatePage();
-                }, 50);
+                }, 100);
+                
+                setTimeout(() => {
+                    try {
+                        const event = new CustomEvent('languageChanged', { detail: { lang: lang } });
+                        window.dispatchEvent(event);
+                        console.log('已分发 languageChanged 事件');
+                    } catch (e) {
+                        console.error('分发 languageChanged 事件失败:', e);
+                    }
+                }, 150);
+            } else {
+                console.warn('不支持的语言:', lang);
             }
         },
         
