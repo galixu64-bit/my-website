@@ -144,31 +144,41 @@ async function generateJson() {
     const finalIcon = icon || defaultIcons[category] || '📦';
     
     try {
-        // 读取现有的资源列表
-        const response = await fetch('resources.json', { cache: 'no-cache' });
-        let existingResources = [];
-        
-        if (response.ok) {
-            existingResources = await response.json();
+        // 获取当前登录用户
+        const currentUser = getCurrentUser();
+        if (!currentUser || !currentUser.username) {
+            alert('请先登录后再上传资源！');
+            window.location.href = 'login.html';
+            return;
         }
         
-        // 计算新的ID
+        const authorName = currentUser.username;
+        
+        // 读取当前用户的资源列表（独立存储）
+        let existingResources = [];
+        const userResourcesKey = `resources_${authorName}`;
+        try {
+            const stored = localStorage.getItem(userResourcesKey);
+            if (stored) {
+                existingResources = JSON.parse(stored);
+            }
+        } catch (e) {
+            console.error('读取用户资源失败:', e);
+        }
+        
+        // 计算新的ID（基于用户自己的资源）
         let nextId = 1;
         if (Array.isArray(existingResources) && existingResources.length > 0) {
             const maxId = Math.max(...existingResources.map(r => r.id || 0));
             nextId = maxId + 1;
         }
         
-        // 获取当前登录用户
-        const currentUser = getCurrentUser();
-        const authorName = currentUser ? currentUser.username : '匿名用户';
-        
         // 创建新资源对象
         const newResource = {
             id: nextId,
             name: name,
             description: description,
-            details: details || description, // 如果没有详细说明，使用简短描述
+            details: details || description,
             tags: tags,
             images: images,
             videos: videos,
@@ -179,13 +189,14 @@ async function generateJson() {
             icon: finalIcon,
             author: authorName,
             uploadedBy: authorName,
-            uploadedAt: new Date().toISOString()
+            uploadedAt: new Date().toISOString(),
+            userId: currentUser.id || currentUser.username
         };
         
         // 添加到现有资源列表
         const updatedResources = [...existingResources, newResource];
         
-        // 保存到 localStorage（浏览器本地存储）
+        // 保存到 localStorage（按用户独立存储）
         saveResourcesToLocalStorage(updatedResources);
         
         // 生成完整的JSON（包含所有资源）
@@ -316,14 +327,59 @@ function showSuccessMessage(text) {
     }
 }
 
-// 保存资源到 localStorage
+// 保存资源到 localStorage（按用户独立存储）
 function saveResourcesToLocalStorage(resources) {
     try {
-        localStorage.setItem('resources', JSON.stringify(resources));
-        localStorage.setItem('resources_updated', Date.now().toString());
-        console.log('资源已保存到本地存储');
+        const currentUser = getCurrentUser();
+        if (currentUser && currentUser.username) {
+            const userResourcesKey = `resources_${currentUser.username}`;
+            localStorage.setItem(userResourcesKey, JSON.stringify(resources));
+            localStorage.setItem(`${userResourcesKey}_updated`, Date.now().toString());
+            console.log('资源已保存到用户独立存储:', userResourcesKey);
+            
+            // 同时保存到全局列表（用于"所有资源"页面）
+            updateGlobalResourcesList(resources);
+        } else {
+            // 未登录用户使用默认键
+            localStorage.setItem('resources', JSON.stringify(resources));
+            localStorage.setItem('resources_updated', Date.now().toString());
+            console.log('资源已保存到默认存储');
+        }
     } catch (error) {
         console.error('保存到本地存储失败:', error);
+    }
+}
+
+// 更新全局资源列表（所有用户共享）
+function updateGlobalResourcesList(newResources) {
+    try {
+        const currentUser = getCurrentUser();
+        if (!currentUser || !currentUser.username) return;
+        
+        let allResources = [];
+        try {
+            const stored = localStorage.getItem('all_resources');
+            if (stored) {
+                allResources = JSON.parse(stored);
+            }
+        } catch (e) {
+            console.error('读取全局资源列表失败:', e);
+        }
+        
+        // 移除当前用户的旧资源
+        allResources = allResources.filter(r => {
+            const author = r.author || r.uploadedBy;
+            return author !== currentUser.username;
+        });
+        
+        // 添加当前用户的新资源
+        allResources = [...allResources, ...newResources];
+        
+        localStorage.setItem('all_resources', JSON.stringify(allResources));
+        localStorage.setItem('all_resources_updated', Date.now().toString());
+        console.log('全局资源列表已更新，总数:', allResources.length);
+    } catch (error) {
+        console.error('更新全局资源列表失败:', error);
     }
 }
 

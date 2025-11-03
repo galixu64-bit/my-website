@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>所有上传的资源 - dragbit优质资源网站</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="top-right-buttons" id="topRightButtons" style="display: none;">
+        <a href="settings.html" class="btn-settings-icon" title="设置">
+            <i class="fas fa-cog"></i>
+        </a>
+    </div>
+    
+    <header>
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1><i class="fas fa-boxes"></i> 所有上传的资源</h1>
+                    <p>查看所有用户上传的资源</p>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <a href="index.html" class="download-btn" style="text-decoration: none; padding: 10px 20px;">
+                        <i class="fas fa-home"></i> 返回首页
+                    </a>
+                    <a href="add-resource.html" class="download-btn" style="text-decoration: none; padding: 10px 20px;">
+                        <i class="fas fa-plus"></i> 添加资源
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="search-filter-section">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="搜索资源..." class="search-input">
+                <span class="search-icon"><i class="fas fa-search"></i></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 20px; flex-wrap: wrap;">
+                <div class="filter-tabs">
+                    <button class="filter-btn active" data-category="all">全部</button>
+                    <button class="filter-btn" data-category="software">软件</button>
+                    <button class="filter-btn" data-category="document">文档</button>
+                    <button class="filter-btn" data-category="media">媒体</button>
+                    <button class="filter-btn" data-category="website">网站</button>
+                    <button class="filter-btn" data-category="other">其他</button>
+                </div>
+                <div style="color: var(--text-secondary); font-size: 0.9em;">
+                    <span id="resourceCount">加载中...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="resources-container">
+            <div id="resourcesList" class="resources-list">
+                <!-- 资源项将通过JavaScript动态生成 -->
+            </div>
+            <div id="noResults" class="no-results hidden">
+                <p><i class="fas fa-frown"></i> 没有找到相关资源</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p data-i18n="copyright">© 2024 dragbit优质资源网站 | 用 ❤️ 制作</p>
+        </div>
+    </footer>
+
+    <script src="theme.js"></script>
+    <script src="translations.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        let allResources = [];
+        let currentCategory = 'all';
+        let searchQuery = '';
+
+        function loadAllResources() {
+            try {
+                console.log('开始加载所有资源...');
+                
+                // 收集所有用户的资源
+                const allUserResources = [];
+                
+                // 遍历 localStorage 查找所有用户资源
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && key.startsWith('resources_') && key !== 'resources_updated') {
+                        try {
+                            const userResources = JSON.parse(localStorage.getItem(key));
+                            if (Array.isArray(userResources)) {
+                                allUserResources.push(...userResources);
+                                console.log(`从 ${key} 加载 ${userResources.length} 个资源`);
+                            }
+                        } catch (e) {
+                            console.error(`解析 ${key} 失败:`, e);
+                        }
+                    }
+                }
+                
+                // 也尝试从全局列表加载
+                try {
+                    const globalResources = localStorage.getItem('all_resources');
+                    if (globalResources) {
+                        const parsed = JSON.parse(globalResources);
+                        if (Array.isArray(parsed)) {
+                            // 合并并去重（基于id和作者）
+                            parsed.forEach(resource => {
+                                const exists = allUserResources.find(r => 
+                                    r.id === resource.id && 
+                                    (r.author || r.uploadedBy) === (resource.author || resource.uploadedBy)
+                                );
+                                if (!exists) {
+                                    allUserResources.push(resource);
+                                }
+                            });
+                        }
+                    }
+                } catch (e) {
+                    console.error('加载全局资源列表失败:', e);
+                }
+                
+                allResources = allUserResources;
+                console.log('总共加载了', allResources.length, '个资源');
+                
+                updateResourceCount();
+                renderResources();
+                
+            } catch (error) {
+                console.error('加载资源失败:', error);
+                allResources = [];
+                renderResources();
+            }
+        }
+
+        function updateResourceCount() {
+            const countEl = document.getElementById('resourceCount');
+            if (countEl) {
+                const filtered = getFilteredResources();
+                countEl.textContent = `共 ${filtered.length} 个资源`;
+            }
+        }
+
+        function getFilteredResources() {
+            let filtered = allResources;
+            
+            if (currentCategory !== 'all') {
+                filtered = filtered.filter(r => r.category === currentCategory);
+            }
+            
+            if (searchQuery) {
+                const query = searchQuery.toLowerCase();
+                filtered = filtered.filter(r => {
+                    const name = (r.name || '').toLowerCase();
+                    const desc = (r.description || '').toLowerCase();
+                    const tags = (r.tags || []).join(' ').toLowerCase();
+                    const author = ((r.author || r.uploadedBy) || '').toLowerCase();
+                    return name.includes(query) || desc.includes(query) || tags.includes(query) || author.includes(query);
+                });
+            }
+            
+            return filtered;
+        }
+
+        function renderResources() {
+            const resourcesList = document.getElementById('resourcesList');
+            const noResults = document.getElementById('noResults');
+            
+            if (!resourcesList) return;
+            
+            resourcesList.innerHTML = '';
+            
+            const filtered = getFilteredResources();
+            
+            if (filtered.length === 0) {
+                if (noResults) noResults.classList.remove('hidden');
+                return;
+            }
+            
+            if (noResults) noResults.classList.add('hidden');
+            
+            filtered.forEach(resource => {
+                const card = createResourceCard(resource);
+                resourcesList.appendChild(card);
+            });
+            
+            updateResourceCount();
+        }
+
+        function createResourceCard(resource) {
+            const card = document.createElement('div');
+            card.className = 'resource-card';
+            
+            const isWebsite = resource.category === 'website';
+            const buttonText = isWebsite ? '访问网站' : '下载';
+            const buttonIcon = isWebsite ? '<i class="fas fa-link"></i>' : '<i class="fas fa-download"></i>';
+            const buttonClass = isWebsite ? 'visit-btn' : 'download-btn';
+            
+            const author = resource.author || resource.uploadedBy || '匿名用户';
+            const uploadedDate = resource.uploadedAt ? new Date(resource.uploadedAt).toLocaleDateString('zh-CN') : '未知';
+
+            let iconDisplay = '';
+            if (resource.icon) {
+                if (resource.icon.startsWith('fa-') || resource.icon.startsWith('fas ') || resource.icon.startsWith('far ') || resource.icon.startsWith('fab ')) {
+                    iconDisplay = `<i class="${resource.icon}"></i>`;
+                } else {
+                    iconDisplay = resource.icon;
+                }
+            } else {
+                iconDisplay = '<i class="fas fa-archive"></i>';
+            }
+            
+            card.innerHTML = `
+                <div class="resource-icon">${iconDisplay}</div>
+                <div class="resource-info" style="flex: 1;">
+                    <h3 class="resource-name">${escapeHtml(resource.name)}</h3>
+                    <p class="resource-description">${escapeHtml(resource.description)}</p>
+                    <div class="resource-meta">
+                        <span class="resource-size"><i class="fas fa-box"></i> ${escapeHtml(resource.size || '-')}</span>
+                        <span class="resource-format"><i class="fas fa-file"></i> ${escapeHtml(resource.format || 'ZIP')}</span>
+                        <span style="color: var(--text-muted);"><i class="fas fa-user"></i> ${escapeHtml(author)}</span>
+                        <span style="color: var(--text-muted);"><i class="fas fa-calendar"></i> ${uploadedDate}</span>
+                    </div>
+                    ${resource.tags && resource.tags.length > 0 ? `
+                        <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 5px;">
+                            ${resource.tags.map(tag => `<span style="background: var(--bg-secondary); padding: 3px 8px; border-radius: 12px; font-size: 0.8em; color: var(--text-secondary);">#${escapeHtml(tag)}</span>`).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+                <div class="resource-actions">
+                    <button class="${buttonClass}" onclick="${isWebsite ? 'visitWebsite' : 'downloadResource'}(${resource.id}, '${escapeHtml(author)}')">
+                        ${buttonIcon} ${buttonText}
+                    </button>
+                </div>
+            `;
+            return card;
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function downloadResource(resourceId, author) {
+            const userResourcesKey = `resources_${author}`;
+            let resource = null;
+            
+            try {
+                const stored = localStorage.getItem(userResourcesKey);
+                if (stored) {
+                    const resources = JSON.parse(stored);
+                    resource = resources.find(r => r.id === resourceId);
+                }
+            } catch (e) {
+                console.error('读取资源失败:', e);
+            }
+            
+            if (resource) {
+                if (resource.category === 'website') {
+                    window.open(resource.downloadUrl, '_blank');
+                } else {
+                    const link = document.createElement('a');
+                    link.href = resource.downloadUrl;
+                    link.target = '_blank';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            } else {
+                alert('资源不存在或已被删除');
+            }
+        }
+
+        function visitWebsite(resourceId, author) {
+            downloadResource(resourceId, author);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentUser = getCurrentUser();
+            const topRightButtons = document.getElementById('topRightButtons');
+            
+            if (currentUser && topRightButtons) {
+                topRightButtons.style.display = 'flex';
+            }
+            
+            loadAllResources();
+            
+            // 搜索功能
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    searchQuery = this.value.trim();
+                    renderResources();
+                });
+            }
+            
+            // 筛选功能
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentCategory = this.getAttribute('data-category');
+                    renderResources();
+                });
+            });
+        });
+    </script>
+</body>
+</html>

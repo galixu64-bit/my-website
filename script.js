@@ -34,9 +34,23 @@ async function loadResourcesFromDatabase() {
     try {
 
         const localResources = getResourcesFromLocalStorage();
+        const allResources = getAllResourcesFromLocalStorage();
+        
+        if (allResources && allResources.length > 0) {
+            console.log('从所有用户存储加载资源，数量:', allResources.length);
+            resources = allResources;
+            renderResources();
+
+            if (localResources && localResources.length > 0) {
+                console.log('用户自己的资源数量:', localResources.length);
+            }
+            
+            loadResourcesFromFile();
+            return;
+        }
         
         if (localResources && localResources.length > 0) {
-            console.log('从本地存储加载资源，数量:', localResources.length);
+            console.log('从用户存储加载资源，数量:', localResources.length);
             resources = localResources;
             renderResources();
 
@@ -54,15 +68,65 @@ async function loadResourcesFromDatabase() {
 }
 
 function getResourcesFromLocalStorage() {
+    const currentUser = getCurrentUser();
+    if (!currentUser || !currentUser.username) {
+        return null;
+    }
+    
     try {
-        const stored = localStorage.getItem('resources');
+        const userResourcesKey = `resources_${currentUser.username}`;
+        const stored = localStorage.getItem(userResourcesKey);
         if (stored) {
             return JSON.parse(stored);
         }
     } catch (error) {
-        console.error('读取本地存储失败:', error);
+        console.error('读取用户资源失败:', error);
     }
     return null;
+}
+
+function getAllResourcesFromLocalStorage() {
+    const allResources = [];
+    
+    try {
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.startsWith('resources_') && key !== 'resources_updated' && !key.endsWith('_updated')) {
+                try {
+                    const userResources = JSON.parse(localStorage.getItem(key));
+                    if (Array.isArray(userResources)) {
+                        allResources.push(...userResources);
+                    }
+                } catch (e) {
+                    console.error(`解析 ${key} 失败:`, e);
+                }
+            }
+        }
+        
+        try {
+            const globalResources = localStorage.getItem('all_resources');
+            if (globalResources) {
+                const parsed = JSON.parse(globalResources);
+                if (Array.isArray(parsed)) {
+                    parsed.forEach(resource => {
+                        const exists = allResources.find(r => 
+                            r.id === resource.id && 
+                            (r.author || r.uploadedBy) === (resource.author || resource.uploadedBy)
+                        );
+                        if (!exists) {
+                            allResources.push(resource);
+                        }
+                    });
+                }
+            }
+        } catch (e) {
+            console.error('加载全局资源列表失败:', e);
+        }
+    } catch (error) {
+        console.error('读取所有资源失败:', error);
+    }
+    
+    return allResources;
 }
 
 async function loadResourcesFromFile() {
@@ -76,19 +140,27 @@ async function loadResourcesFromFile() {
             const data = await response.json();
             console.log('从文件加载成功，资源数量:', data.length);
 
-            const localResources = getResourcesFromLocalStorage();
-            if (!localResources || localResources.length === 0) {
+            const allResources = getAllResourcesFromLocalStorage();
+            if (!allResources || allResources.length === 0) {
                 resources = data;
                 renderResources();
-            }
-
-            else {
-
+            } else {
                 const fileIds = new Set(data.map(r => r.id));
-                const localOnly = localResources.filter(r => !fileIds.has(r.id));
+                const localOnly = allResources.filter(r => !fileIds.has(r.id));
                 resources = [...data, ...localOnly];
-
-                saveResourcesToLocalStorage(resources);
+                
+                const currentUser = getCurrentUser();
+                if (currentUser && currentUser.username) {
+                    const userResources = resources.filter(r => {
+                        const author = r.author || r.uploadedBy;
+                        return author === currentUser.username;
+                    });
+                    if (userResources.length > 0) {
+                        const userResourcesKey = `resources_${currentUser.username}`;
+                        localStorage.setItem(userResourcesKey, JSON.stringify(userResources));
+                    }
+                }
+                
                 renderResources();
             }
         } else {

@@ -35,27 +35,21 @@ async function loadMyResources() {
     
     try {
 
-        let allResources = [];
-
-        const localResources = getResourcesFromLocalStorage();
-        if (localResources && localResources.length > 0) {
-            allResources = localResources;
-        } else {
-
-            try {
-                const response = await fetch('resources.json', { cache: 'no-cache' });
-                if (response.ok) {
-                    allResources = await response.json();
-                }
-            } catch (e) {
-                console.error('加载文件失败:', e);
+        // 从用户独立存储中读取资源
+        const userResourcesKey = `resources_${currentUser.username}`;
+        let myResources = [];
+        
+        try {
+            const stored = localStorage.getItem(userResourcesKey);
+            if (stored) {
+                myResources = JSON.parse(stored);
+                console.log('从用户独立存储加载资源，数量:', myResources.length);
+            } else {
+                console.log('用户还没有上传过资源');
             }
+        } catch (e) {
+            console.error('读取用户资源失败:', e);
         }
-
-        const myResources = allResources.filter(resource => {
-            const author = resource.author || resource.uploadedBy;
-            return author === currentUser.username;
-        });
         
         renderMyResources(myResources);
         
@@ -66,11 +60,17 @@ async function loadMyResources() {
 }
 
 function getResourcesFromLocalStorage() {
+    const currentUser = getCurrentUser();
+    if (!currentUser || !currentUser.username) {
+        return null;
+    }
+    
     try {
-        const stored = localStorage.getItem('resources');
+        const userResourcesKey = `resources_${currentUser.username}`;
+        const stored = localStorage.getItem(userResourcesKey);
         return stored ? JSON.parse(stored) : null;
     } catch (error) {
-        console.error('读取本地存储失败:', error);
+        console.error('读取用户资源失败:', error);
         return null;
     }
 }
