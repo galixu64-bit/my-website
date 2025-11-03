@@ -230,6 +230,20 @@
                     window.i18n.init();
                 }
             }, 50);
+            
+            window.addEventListener('languageChanged', function(e) {
+                setTimeout(function() {
+                    if (window.i18n && typeof window.i18n.updatePage === 'function') {
+                        window.i18n.updatePage();
+                    }
+                }, 100);
+            });
+            
+            window.addEventListener('themeChanged', function(e) {
+                if (typeof window.setTheme === 'function') {
+                    window.setTheme(e.detail.theme);
+                }
+            });
         });
         
         document.getElementById('loginForm').onsubmit = async function(e) {

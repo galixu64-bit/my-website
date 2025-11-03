@@ -633,18 +633,22 @@
             window.addEventListener('languageChanged', function(e) {
                 setTimeout(function() {
                     if (window.i18n) {
-
                         if (typeof window.i18n.updatePage === 'function') {
                             window.i18n.updatePage();
                         }
 
                         const currentUser = getCurrentUser();
                         if (currentUser && typeof loadUserProfile === 'function') {
-
                             loadUserProfile(currentUser, true);
                         }
                     }
                 }, 50);
+            });
+            
+            window.addEventListener('themeChanged', function(e) {
+                if (typeof window.setTheme === 'function') {
+                    window.setTheme(e.detail.theme);
+                }
             });
         });
     </script>
