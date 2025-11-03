@@ -1010,6 +1010,18 @@ footer p {
 }
 
 @media (max-width: 768px) {
+    .top-right-buttons {
+        top: 10px;
+        right: 10px;
+        gap: 8px;
+    }
+    
+    .btn-settings-icon {
+        width: 42px;
+        height: 42px;
+        font-size: 1.1em;
+    }
+    
     .resource-detail-content {
         max-height: 95vh;
     }
