@@ -43,18 +43,13 @@ async function loadMyResources() {
             const stored = localStorage.getItem(userResourcesKey);
             if (stored) {
                 myResources = JSON.parse(stored);
-                console.log('从用户独立存储加载资源，数量:', myResources.length);
-            } else {
-                console.log('用户还没有上传过资源');
             }
         } catch (e) {
-            console.error('读取用户资源失败:', e);
         }
         
         renderMyResources(myResources);
         
     } catch (error) {
-        console.error('加载资源失败:', error);
         renderMyResources([]);
     }
 }

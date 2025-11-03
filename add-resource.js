@@ -214,7 +214,6 @@ async function generateJson() {
         }, 2000);
         
     } catch (error) {
-        console.error('加载现有资源失败:', error);
         
         // 获取当前登录用户
         const currentUser = getCurrentUser();
@@ -268,8 +267,33 @@ async function generateJson() {
         // 添加到现有资源列表
         const updatedResources = [...existingResources, newResource];
         
+        // 验证数据
+        if (!Array.isArray(updatedResources) || updatedResources.length === 0) {
+            alert('保存失败：资源数据无效');
+            return;
+        }
+        
         // 保存到 localStorage（按用户独立存储）
-        saveResourcesToLocalStorage(updatedResources);
+        try {
+            saveResourcesToLocalStorage(updatedResources);
+            
+            // 验证保存成功
+            const savedKey = `resources_${authorName}`;
+            const saved = localStorage.getItem(savedKey);
+            if (!saved) {
+                alert('保存失败：无法写入浏览器存储，请检查浏览器设置或清除缓存后重试');
+                return;
+            }
+            
+            const savedResources = JSON.parse(saved);
+            if (!savedResources || savedResources.length !== updatedResources.length) {
+                alert('保存失败：数据验证失败，保存的资源数量不匹配');
+                return;
+            }
+        } catch (error) {
+            alert('保存失败：' + (error.message || '未知错误，请刷新页面重试'));
+            return;
+        }
         
         // 尝试保存到在线JSON库
         if (window.jsonStorage && window.jsonStorage.config.binId && window.jsonStorage.config.apiKey) {
@@ -346,36 +370,33 @@ function showSuccessMessage(text) {
 
 // 保存资源到 localStorage（按用户独立存储）
 function saveResourcesToLocalStorage(resources) {
+    if (!resources || !Array.isArray(resources)) {
+        throw new Error('资源数据无效');
+    }
+    
+    const currentUser = getCurrentUser();
+    if (!currentUser || !currentUser.username) {
+        throw new Error('用户未登录');
+    }
+    
     try {
-        if (!resources || !Array.isArray(resources)) {
-            console.error('保存失败：资源数据无效');
-            alert('保存失败：资源数据无效');
-            return;
+        const userResourcesKey = `resources_${currentUser.username}`;
+        const resourcesJson = JSON.stringify(resources);
+        
+        localStorage.setItem(userResourcesKey, resourcesJson);
+        localStorage.setItem(`${userResourcesKey}_updated`, Date.now().toString());
+        
+        const verify = localStorage.getItem(userResourcesKey);
+        if (!verify || verify !== resourcesJson) {
+            throw new Error('localStorage写入失败，请检查浏览器设置或清除缓存');
         }
         
-        const currentUser = getCurrentUser();
-        if (currentUser && currentUser.username) {
-            const userResourcesKey = `resources_${currentUser.username}`;
-            const resourcesJson = JSON.stringify(resources);
-            localStorage.setItem(userResourcesKey, resourcesJson);
-            localStorage.setItem(`${userResourcesKey}_updated`, Date.now().toString());
-            
-            const verify = localStorage.getItem(userResourcesKey);
-            if (!verify) {
-                console.error('保存失败：localStorage写入失败');
-                alert('保存失败：浏览器存储空间可能已满或不可用');
-                return;
-            }
-            
-            updateGlobalResourcesList(resources);
-        } else {
-            console.error('保存失败：用户未登录');
-            alert('保存失败：请先登录');
-            return;
-        }
+        updateGlobalResourcesList(resources);
     } catch (error) {
-        console.error('保存资源时出错:', error);
-        alert('保存失败：' + (error.message || '未知错误'));
+        if (error.name === 'QuotaExceededError' || error.message.includes('QuotaExceeded')) {
+            throw new Error('浏览器存储空间已满，请清理浏览器缓存后重试');
+        }
+        throw error;
     }
 }
 
