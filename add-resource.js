@@ -347,20 +347,35 @@ function showSuccessMessage(text) {
 // 保存资源到 localStorage（按用户独立存储）
 function saveResourcesToLocalStorage(resources) {
     try {
+        if (!resources || !Array.isArray(resources)) {
+            console.error('保存失败：资源数据无效');
+            alert('保存失败：资源数据无效');
+            return;
+        }
+        
         const currentUser = getCurrentUser();
         if (currentUser && currentUser.username) {
             const userResourcesKey = `resources_${currentUser.username}`;
-            localStorage.setItem(userResourcesKey, JSON.stringify(resources));
+            const resourcesJson = JSON.stringify(resources);
+            localStorage.setItem(userResourcesKey, resourcesJson);
             localStorage.setItem(`${userResourcesKey}_updated`, Date.now().toString());
             
-            // 同时保存到全局列表（用于"所有资源"页面）
+            const verify = localStorage.getItem(userResourcesKey);
+            if (!verify) {
+                console.error('保存失败：localStorage写入失败');
+                alert('保存失败：浏览器存储空间可能已满或不可用');
+                return;
+            }
+            
             updateGlobalResourcesList(resources);
         } else {
-            // 未登录用户使用默认键
-            localStorage.setItem('resources', JSON.stringify(resources));
-            localStorage.setItem('resources_updated', Date.now().toString());
+            console.error('保存失败：用户未登录');
+            alert('保存失败：请先登录');
+            return;
         }
     } catch (error) {
+        console.error('保存资源时出错:', error);
+        alert('保存失败：' + (error.message || '未知错误'));
     }
 }
 

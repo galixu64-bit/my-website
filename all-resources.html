@@ -75,6 +75,29 @@
     <script src="translations.js"></script>
     <script src="auth.js"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                if (window.i18n && typeof window.i18n.init === 'function') {
+                    window.i18n.init();
+                }
+            }, 50);
+            
+            window.addEventListener('languageChanged', function(e) {
+                setTimeout(function() {
+                    if (window.i18n && typeof window.i18n.updatePage === 'function') {
+                        window.i18n.updatePage();
+                    }
+                }, 100);
+            });
+            
+            window.addEventListener('themeChanged', function(e) {
+                if (typeof window.setTheme === 'function') {
+                    window.setTheme(e.detail.theme);
+                }
+            });
+        });
+    </script>
+    <script>
         let allResources = [];
         let currentCategory = 'all';
         let searchQuery = '';
