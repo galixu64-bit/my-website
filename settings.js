@@ -417,6 +417,117 @@ function hideMessage(elementId) {
     }
 }
 
+function getJSONStorageInputs() {
+    return {
+        apiKeyInput: document.getElementById('jsonStorageApiKey'),
+        binIdInput: document.getElementById('jsonStorageBinId'),
+        messageDiv: document.getElementById('jsonStorageMessage')
+    };
+}
+
+function initJSONStorageSettings() {
+    const { apiKeyInput, binIdInput, messageDiv } = getJSONStorageInputs();
+    if (!apiKeyInput || !binIdInput) {
+        return;
+    }
+
+    if (window.jsonStorage && typeof window.jsonStorage.loadConfig === 'function') {
+        const config = window.jsonStorage.loadConfig();
+        if (config) {
+            if (config.apiKey) {
+                apiKeyInput.value = config.apiKey;
+            }
+            if (config.binId) {
+                binIdInput.value = config.binId;
+            }
+        }
+    }
+
+    if (messageDiv) {
+        messageDiv.style.display = 'none';
+        messageDiv.className = 'settings-message';
+        messageDiv.textContent = '';
+    }
+}
+
+window.saveJSONStorageConfig = function() {
+    const { apiKeyInput, binIdInput, messageDiv } = getJSONStorageInputs();
+    if (!apiKeyInput || !messageDiv) {
+        return;
+    }
+
+    const apiKey = (apiKeyInput.value || '').trim();
+    const binId = (binIdInput && binIdInput.value ? binIdInput.value.trim() : '') || null;
+
+    if (!apiKey) {
+        showMessage('jsonStorageMessage', '请先填写 API Key', 'error');
+        return;
+    }
+
+    if (!window.jsonStorage || typeof window.jsonStorage.setConfig !== 'function') {
+        showMessage('jsonStorageMessage', '配置失败：jsonStorage 未初始化', 'error');
+        return;
+    }
+
+    try {
+        window.jsonStorage.setConfig(binId, apiKey);
+        if (binIdInput && binId) {
+            binIdInput.value = binId;
+        }
+        showMessage('jsonStorageMessage', '✅ 配置已保存！', 'success');
+    } catch (error) {
+        showMessage('jsonStorageMessage', '保存配置失败：' + (error.message || '未知错误'), 'error');
+    }
+};
+
+window.testJSONStorageConnection = async function() {
+    const { apiKeyInput, binIdInput, messageDiv } = getJSONStorageInputs();
+    if (!apiKeyInput || !messageDiv) {
+        return;
+    }
+
+    const apiKey = (apiKeyInput.value || '').trim();
+    let binId = (binIdInput && binIdInput.value ? binIdInput.value.trim() : '') || null;
+
+    if (!apiKey) {
+        showMessage('jsonStorageMessage', '请先填写 API Key', 'error');
+        return;
+    }
+
+    if (!window.jsonStorage) {
+        showMessage('jsonStorageMessage', '测试失败：jsonStorage 未加载', 'error');
+        return;
+    }
+
+    try {
+        showMessage('jsonStorageMessage', '正在测试连接...', '');
+        window.jsonStorage.setConfig(binId, apiKey);
+
+        let result;
+        if (binId) {
+            result = await window.jsonStorage.load();
+        } else {
+            result = await window.jsonStorage.create([]);
+            if (result.success && result.binId) {
+                binId = result.binId;
+                if (binIdInput) {
+                    binIdInput.value = binId;
+                }
+                window.jsonStorage.setConfig(binId, apiKey);
+            }
+        }
+
+        if (result && result.success) {
+            const count = Array.isArray(result.data) ? result.data.length : (result.data?.record ? result.data.record.length : 0);
+            showMessage('jsonStorageMessage', `✅ 连接成功！当前资源数量：${count}`, 'success');
+        } else {
+            showMessage('jsonStorageMessage', `❌ 连接失败：${result ? result.error : '未知错误'}`, 'error');
+        }
+    } catch (error) {
+        showMessage('jsonStorageMessage', '❌ 测试失败：' + (error.message || '未知错误'), 'error');
+    }
+};
+
 function initSettings() {
     console.log('initSettings 开始执行');
     const currentUser = getCurrentUser();
@@ -488,6 +599,28 @@ function initSettings() {
     setTimeout(function() {
         updateBrowserLanguageDisplay();
     }, 500);
+
+    initJSONStorageSettings();
+
+    const btnSaveJSON = document.getElementById('btnSaveJSONStorage');
+    if (btnSaveJSON) {
+        btnSaveJSON.addEventListener('click', function (e) {
+            e.preventDefault();
+            if (typeof window.saveJSONStorageConfig === 'function') {
+                window.saveJSONStorageConfig();
+            }
+        });
+    }
+
+    const btnTestJSON = document.getElementById('btnTestJSONStorage');
+    if (btnTestJSON) {
+        btnTestJSON.addEventListener('click', async function (e) {
+            e.preventDefault();
+            if (typeof window.testJSONStorageConnection === 'function') {
+                await window.testJSONStorageConnection();
+            }
+        });
+    }
 
     window.addEventListener('languageChanged', function(e) {
         const lang = e.detail ? e.detail.lang : (localStorage.getItem('language') || 'zh');
