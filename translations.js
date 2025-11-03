@@ -310,7 +310,7 @@ const translations = {
         'imageHelp': 'Supports jpg, png, gif formats',
         'videoHelp': 'Supports YouTube, Bilibili, or other video links',
         'resourceLink': 'Resource Link',
-        'resourceLinkPlaceholder': 'https://example.com or file:/
+        'resourceLinkPlaceholder': 'https://example.com or file://...',
         'resourceLinkHelp': 'Website link or local file path',
         'categorySelect': 'Category',
         'iconSelect': 'Icon',
