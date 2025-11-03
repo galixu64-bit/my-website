@@ -223,17 +223,17 @@ function loadAllUsers() {
                     ${users.map(user => {
                         const date = user.createdAt ? new Date(user.createdAt).toLocaleDateString('zh-CN') : '未知';
                         return `
-                            <div style="background: rgba(26, 26, 46, 0.6); padding: 15px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                            <div style="background: var(--bg-card); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color);">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                                     <div>
-                                        <strong style="color: #667eea;">${escapeHtml(user.username)}</strong>
-                                        ${user.isDeveloper ? '<span style="color: #10b981; margin-left: 10px;">⭐ 开发者</span>' : ''}
+                                        <strong style="color: var(--accent-color);">${escapeHtml(user.username || '未命名')}</strong>
+                                        ${user.isDeveloper ? '<span style="color: var(--accent-color); margin-left: 10px;">⭐ 开发者</span>' : ''}
                                     </div>
-                                    <span style="color: #888; font-size: 0.85em;">ID: ${user.id}</span>
+                                    <span style="color: var(--text-muted); font-size: 0.85em;">ID: ${user.id || 'N/A'}</span>
                                 </div>
-                                <div style="color: #b0b0b0; font-size: 0.9em; margin-top: 8px;">
-                                    <div>${t('email')}: ${user.email || t('emailNotSet')}</div>
-                                    <div>${t('registerTime')}: ${date}</div>
+                                <div style="color: var(--text-secondary); font-size: 0.9em; margin-top: 8px;">
+                                    <div><strong>${t('email')}:</strong> ${escapeHtml(user.email || t('emailNotSet'))}</div>
+                                    <div><strong>${t('registerTime')}:</strong> ${date}</div>
                                 </div>
                             </div>
                         `;
