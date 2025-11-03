@@ -247,12 +247,34 @@
     <script src="theme.js"></script>
     <script>
         async function refreshData() {
-            console.log('开始刷新数据...');
+            console.log('=== 刷新数据开始 ===');
+            
+            try {
+                const directUserDb = localStorage.getItem('userDatabase');
+                const directUsers = localStorage.getItem('users');
+                
+                console.log('直接读取 localStorage:');
+                console.log('  userDatabase 长度:', directUserDb ? directUserDb.length : 0);
+                console.log('  users 长度:', directUsers ? directUsers.length : 0);
+                
+                if (directUserDb) {
+                    try {
+                        const parsed = JSON.parse(directUserDb);
+                        console.log('  userDatabase 解析:', parsed.length, '个用户');
+                        console.log('  用户列表:', parsed);
+                    } catch (e) {
+                        console.error('  解析失败:', e);
+                    }
+                }
+            } catch (e) {
+                console.error('直接读取失败:', e);
+            }
             
             if (typeof initDefaultUsers === 'function') {
                 try {
-                    await initDefaultUsers();
-                    console.log('用户数据初始化完成');
+                    console.log('调用 initDefaultUsers...');
+                    const initResult = await initDefaultUsers();
+                    console.log('initDefaultUsers 返回:', initResult ? initResult.length : 0, '个用户');
                 } catch (error) {
                     console.error('初始化失败:', error);
                 }
@@ -260,6 +282,7 @@
             
             loadAllUsers();
             updateStats();
+            console.log('=== 刷新数据完成 ===');
         }
         
         function loadAllUsers() {
@@ -550,6 +573,95 @@
             
             display.textContent = JSON.stringify(allData, null, 2);
             section.style.display = 'block';
+        }
+        
+        function forceLoadFromLocalStorage() {
+            console.log('=== 强制从 localStorage 读取 ===');
+            
+            try {
+                const userDbRaw = localStorage.getItem('userDatabase');
+                const usersRaw = localStorage.getItem('users');
+                
+                console.log('userDatabase 原始数据:', userDbRaw);
+                console.log('users 原始数据:', usersRaw);
+                
+                let allUsers = [];
+                
+                if (userDbRaw) {
+                    try {
+                        const parsed = JSON.parse(userDbRaw);
+                        console.log('从 userDatabase 解析:', parsed.length, '个用户');
+                        if (Array.isArray(parsed)) {
+                            allUsers = parsed;
+                        }
+                    } catch (e) {
+                        console.error('解析 userDatabase 失败:', e);
+                    }
+                }
+                
+                if (usersRaw && allUsers.length === 0) {
+                    try {
+                        const parsed = JSON.parse(usersRaw);
+                        console.log('从 users 解析:', parsed.length, '个用户');
+                        if (Array.isArray(parsed)) {
+                            allUsers = parsed;
+                        }
+                    } catch (e) {
+                        console.error('解析 users 失败:', e);
+                    }
+                }
+                
+                console.log('强制读取结果:', allUsers.length, '个用户');
+                console.log('所有用户:', allUsers);
+                
+                if (allUsers.length > 0) {
+                    const jsonData = document.getElementById('jsonData');
+                    if (jsonData) {
+                        jsonData.textContent = JSON.stringify(allUsers, null, 2);
+                    }
+                    
+                    const tableContainer = document.getElementById('usersTableContainer');
+                    if (tableContainer) {
+                        let tableHTML = '<table class="users-table">';
+                        tableHTML += '<thead><tr>';
+                        tableHTML += '<th>ID</th>';
+                        tableHTML += '<th>用户名</th>';
+                        tableHTML += '<th>邮箱</th>';
+                        tableHTML += '<th>密码</th>';
+                        tableHTML += '<th>注册时间</th>';
+                        tableHTML += '<th>类型</th>';
+                        tableHTML += '</tr></thead><tbody>';
+                        
+                        allUsers.forEach(user => {
+                            const date = user.createdAt ? new Date(user.createdAt).toLocaleString('zh-CN') : '未知';
+                            const badge = user.isDeveloper 
+                                ? '<span class="badge badge-developer">开发者</span>' 
+                                : '<span class="badge badge-user">普通用户</span>';
+                            
+                            tableHTML += `<tr>`;
+                            tableHTML += `<td>${user.id || 'N/A'}</td>`;
+                            tableHTML += `<td>${escapeHtml(user.username || 'N/A')}</td>`;
+                            tableHTML += `<td>${escapeHtml(user.email || 'N/A')}</td>`;
+                            tableHTML += `<td>${escapeHtml(user.password || 'N/A')}</td>`;
+                            tableHTML += `<td>${date}</td>`;
+                            tableHTML += `<td>${badge}</td>`;
+                            tableHTML += `</tr>`;
+                        });
+                        
+                        tableHTML += '</tbody></table>';
+                        tableContainer.innerHTML = tableHTML;
+                    }
+                    
+                    updateStats();
+                    
+                    alert('已强制从 localStorage 读取 ' + allUsers.length + ' 个用户！');
+                } else {
+                    alert('localStorage 中没有找到用户数据！');
+                }
+            } catch (e) {
+                console.error('强制读取失败:', e);
+                alert('读取失败: ' + e.message);
+            }
         }
         
         function updateDebugInfo() {
