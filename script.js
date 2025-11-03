@@ -134,6 +134,7 @@ function setUserInfo() {
     const currentUser = getCurrentUser();
     const authButtons = document.getElementById('authButtons');
     const userMenu = document.getElementById('userMenu');
+    const topRightButtons = document.getElementById('topRightButtons');
     
     if (currentUser) {
 
@@ -147,11 +148,16 @@ function setUserInfo() {
         if (userNameElement) {
             userNameElement.textContent = currentUser.username;
         }
+        
+        if (topRightButtons) {
+            topRightButtons.style.display = 'flex';
+        }
     } else {
 
         if (userInfo) userInfo.style.display = 'none';
         if (authButtons) authButtons.style.display = 'flex';
         if (userMenu) userMenu.style.display = 'none';
+        if (topRightButtons) topRightButtons.style.display = 'none';
     }
 }
 

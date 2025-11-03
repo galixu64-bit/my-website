@@ -514,15 +514,19 @@ footer p {
 }
 
 .comment-modal-header h3 {
-    color: #667eea;
+    color: var(--accent-color);
     font-size: 1.5em;
     margin: 0;
+}
+
+.light-theme .comment-modal-header h3 {
+    color: var(--accent-color);
 }
 
 .comment-modal-close {
     background: transparent;
     border: none;
-    color: #b0b0b0;
+    color: var(--text-secondary);
     font-size: 2em;
     cursor: pointer;
     padding: 0;
@@ -532,6 +536,10 @@ footer p {
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
+}
+
+.light-theme .comment-modal-close {
+    color: var(--text-secondary);
 }
 
 .comment-modal-close:hover {
@@ -565,8 +573,12 @@ footer p {
 }
 
 .comment-author-name {
-    color: #667eea;
+    color: var(--accent-color);
     font-weight: bold;
+}
+
+.light-theme .comment-author-name {
+    color: var(--accent-color);
 }
 
 .comment-author-badge {
@@ -578,15 +590,23 @@ footer p {
 }
 
 .comment-time {
-    color: #888;
+    color: var(--text-muted);
     font-size: 0.85em;
     margin-left: auto;
 }
 
+.light-theme .comment-time {
+    color: var(--text-muted);
+}
+
 .comment-text {
-    color: #e0e0e0;
+    color: var(--text-primary);
     line-height: 1.6;
     margin-top: 10px;
+}
+
+.light-theme .comment-text {
+    color: var(--text-primary);
 }
 
 .comment-form {
@@ -596,13 +616,24 @@ footer p {
 .comment-input {
     width: 100%;
     padding: 12px;
-    background: rgba(26, 26, 46, 0.6);
-    border: 2px solid rgba(255, 255, 255, 0.1);
+    background: var(--bg-input, rgba(26, 26, 46, 0.6));
+    border: 2px solid var(--border-color);
     border-radius: 8px;
-    color: #e0e0e0;
+    color: var(--text-primary);
     font-size: 1em;
     font-family: inherit;
     resize: vertical;
+    transition: all 0.3s ease;
+}
+
+.light-theme .comment-input {
+    background: var(--bg-input);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.08);
+}
+
+.light-theme .comment-input:focus {
+    background: var(--bg-input-focus);
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2), 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .comment-input:focus {
@@ -614,7 +645,11 @@ footer p {
 .comment-login-prompt {
     text-align: center;
     padding: 40px 20px;
-    color: #888;
+    color: var(--text-muted);
+}
+
+.light-theme .comment-login-prompt {
+    color: var(--text-muted);
 }
 
 /* 资源上传者信息 */
@@ -624,15 +659,27 @@ footer p {
     gap: 8px;
     margin-top: 10px;
     font-size: 0.85em;
-    color: #888;
+    color: var(--text-muted);
+}
+
+.light-theme .resource-author {
+    color: var(--text-muted);
 }
 
 .resource-author-label {
-    color: #b0b0b0;
+    color: var(--text-secondary);
+}
+
+.light-theme .resource-author-label {
+    color: var(--text-secondary);
 }
 
 .resource-author-name {
-    color: #667eea;
+    color: var(--accent-color);
+}
+
+.light-theme .resource-author-name {
+    color: var(--accent-color);
 }
 
 .resource-actions-with-comment {
@@ -838,11 +885,16 @@ footer p {
 
 .resource-detail-tag {
     background: rgba(102, 126, 234, 0.2);
-    color: #667eea;
+    color: var(--accent-color);
     padding: 8px 15px;
     border-radius: 20px;
     font-size: 0.95em;
     border: 1px solid rgba(102, 126, 234, 0.3);
+}
+
+.light-theme .resource-detail-tag {
+    background: var(--accent-light);
+    color: var(--accent-color);
 }
 
 .resource-detail-info {
