@@ -203,26 +203,45 @@ async function registerUser(email, password, username = '') {
     return { success: true, user: newUser };
 }
 
-// 登录（异步版本）
-async function loginAsync(username, password) {
-    const user = await getUserByUsername(username);
-    
-    if (!user) {
-        return { success: false, message: '用户名不存在' };
+// 登录（异步版本，支持邮箱或用户名登录）
+async function loginAsync(emailOrUsername, password) {
+    if (!emailOrUsername || !password) {
+        return { success: false, message: '请输入邮箱/用户名和密码' };
     }
     
+    const users = await getAllUsers();
+    
+    // 判断是邮箱还是用户名（包含@则为邮箱）
+    const isEmail = emailOrUsername.includes('@');
+    
+    let user = null;
+    if (isEmail) {
+        // 邮箱登录
+        user = users.find(u => u.email && u.email.toLowerCase() === emailOrUsername.toLowerCase());
+        if (!user) {
+            return { success: false, message: '邮箱不存在' };
+        }
+    } else {
+        // 用户名登录
+        user = users.find(u => u.username === emailOrUsername);
+        if (!user) {
+            return { success: false, message: '用户名不存在' };
+        }
+    }
+
     if (user.password !== password) {
         return { success: false, message: '密码错误' };
     }
-    
+
     // 保存登录状态
     const session = {
         userId: user.id,
         username: user.username,
+        email: user.email,
         isDeveloper: user.isDeveloper || false,
         loginTime: new Date().toISOString()
     };
-    
+
     localStorage.setItem('currentUser', JSON.stringify(session));
     return { success: true, user: user, session: session };
 }
