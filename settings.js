@@ -318,8 +318,10 @@ function hideMessage(elementId) {
 }
 
 function initSettings() {
+    console.log('initSettings 开始执行');
     const currentUser = getCurrentUser();
     if (!currentUser) {
+        console.warn('用户未登录，无法初始化设置');
         return;
     }
 
@@ -328,19 +330,30 @@ function initSettings() {
         updateEmailDisplay(fullUser.email);
     }
 
-    setTimeout(function() {
+    function initLanguageSettings() {
+        console.log('初始化语言设置...');
+        console.log('window.i18n 是否存在:', !!window.i18n);
+        console.log('window.detectBrowserLanguage 是否存在:', typeof window.detectBrowserLanguage);
+        console.log('window.getBrowserLanguage 是否存在:', typeof window.getBrowserLanguage);
+        
         let savedLang = localStorage.getItem('language');
+        console.log('localStorage 中的语言:', savedLang);
+        
         if (!savedLang) {
             if (window.detectBrowserLanguage && typeof window.detectBrowserLanguage === 'function') {
                 savedLang = window.detectBrowserLanguage();
                 console.log('从 detectBrowserLanguage 获取:', savedLang);
+                if (savedLang) {
+                    localStorage.setItem('language', savedLang);
+                }
             } else {
                 try {
                     const browserLang = navigator.language || navigator.userLanguage || 
                         (navigator.languages && navigator.languages[0]) || 'zh-CN';
                     const langCode = browserLang.toLowerCase().split('-')[0];
                     savedLang = (langCode === 'zh' || langCode === 'en') ? langCode : 'zh';
-                    console.log('直接从浏览器解析语言:', savedLang);
+                    console.log('直接从浏览器解析语言:', savedLang, '来自:', browserLang);
+                    localStorage.setItem('language', savedLang);
                 } catch (e) {
                     console.error('解析浏览器语言失败:', e);
                     savedLang = 'zh';
@@ -348,36 +361,88 @@ function initSettings() {
             }
         }
         
+        if (!savedLang) {
+            savedLang = 'zh';
+        }
+        
+        console.log('最终使用的语言:', savedLang);
+        
         if (window.i18n) {
-            if (window.i18n.currentLang !== savedLang && window.i18n.setLanguage) {
-                window.i18n.setLanguage(savedLang);
+            console.log('i18n.currentLang:', window.i18n.currentLang);
+            if (window.i18n.currentLang !== savedLang) {
+                console.log('语言不匹配，调用 setLanguage');
+                if (window.i18n.setLanguage) {
+                    window.i18n.setLanguage(savedLang);
+                } else {
+                    window.i18n.currentLang = savedLang;
+                }
             }
+            
+            if (typeof window.i18n.init === 'function') {
+                window.i18n.init();
+            }
+        } else {
+            console.warn('i18n 未定义，直接设置 localStorage');
+            localStorage.setItem('language', savedLang);
         }
         
         updateLanguageDisplay(savedLang);
-        
-        setTimeout(function() {
-            updateBrowserLanguageDisplay();
-        }, 200);
+        updateBrowserLanguageDisplay();
 
         const langSelect = document.getElementById('languageSelect');
         if (langSelect) {
             langSelect.value = savedLang;
+            console.log('设置语言选择器值为:', savedLang);
         }
-    }, 200);
+    }
+
+    setTimeout(function() {
+        initLanguageSettings();
+    }, 100);
+
+    setTimeout(function() {
+        updateBrowserLanguageDisplay();
+    }, 500);
 
     window.addEventListener('languageChanged', function(e) {
         const lang = e.detail ? e.detail.lang : (localStorage.getItem('language') || 'zh');
+        console.log('收到 languageChanged 事件，语言:', lang);
         updateLanguageDisplay(lang);
+        updateBrowserLanguageDisplay();
 
         const langSelect = document.getElementById('languageSelect');
         if (langSelect) {
             langSelect.value = lang;
         }
+        
+        setTimeout(function() {
+            if (window.i18n && typeof window.i18n.updatePage === 'function') {
+                console.log('在事件监听器中强制更新页面内容');
+                window.i18n.updatePage();
+            }
+        }, 100);
     });
     
-    if (window.i18n && typeof window.i18n.init === 'function') {
-        window.i18n.init();
+    if (window.i18n) {
+        if (typeof window.i18n.init === 'function') {
+            window.i18n.init();
+        }
+        
+        setTimeout(function() {
+            updateBrowserLanguageDisplay();
+            if (window.i18n && typeof window.i18n.updatePage === 'function') {
+                window.i18n.updatePage();
+            }
+        }, 500);
+    } else {
+        console.warn('i18n 未加载，延迟重试...');
+        setTimeout(function() {
+            if (window.i18n) {
+                updateBrowserLanguageDisplay();
+            } else {
+                console.error('i18n 仍未加载');
+            }
+        }, 1000);
     }
 }
 
@@ -385,27 +450,5 @@ function t(key) {
     return (window.i18n && typeof window.i18n.t === 'function') 
         ? window.i18n.t(key) 
         : key;
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    initSettings();
-
-    const languageSelect = document.getElementById('languageSelect');
-    if (languageSelect) {
-
-        languageSelect.removeEventListener('change', handleLanguageChange);
-        languageSelect.addEventListener('change', handleLanguageChange);
-        console.log('Language select event listener attached');
-    }
-});
-
-function handleLanguageChange(event) {
-    const lang = event.target.value;
-    console.log('Language select changed to:', lang);
-    if (window.changeLanguageSetting) {
-        window.changeLanguageSetting(lang);
-    } else {
-        console.error('changeLanguageSetting function not available');
-    }
 }
 

@@ -546,8 +546,9 @@ const translations = {
 
             document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
                 const key = el.getAttribute('data-i18n-placeholder');
-                if (key) {
+                if (key && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) {
                     el.placeholder = i18n.t(key);
+                    updatedCount++;
                 }
             });
 
@@ -555,6 +556,7 @@ const translations = {
                 const key = el.getAttribute('data-i18n-title');
                 if (key) {
                     el.title = i18n.t(key);
+                    updatedCount++;
                 }
             });
 
@@ -562,12 +564,16 @@ const translations = {
                 document.documentElement.lang = this.currentLang === 'zh' ? 'zh-CN' : 'en';
             }
 
+            console.log('updatePage 完成，共更新了', updatedCount, '个元素');
+            
             try {
-                window.dispatchEvent(new CustomEvent('languageChanged', { 
+                const event = new CustomEvent('languageChanged', { 
                     detail: { lang: this.currentLang } 
-                }));
+                });
+                window.dispatchEvent(event);
+                console.log('已分发 languageChanged 事件，语言:', this.currentLang);
             } catch (e) {
-
+                console.error('分发语言更改事件失败:', e);
             }
         },
         
