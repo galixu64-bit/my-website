@@ -216,15 +216,26 @@ async function generateJson() {
     } catch (error) {
         console.error('加载现有资源失败:', error);
         
-        // 尝试从 localStorage 读取
+        // 获取当前登录用户
+        const currentUser = getCurrentUser();
+        if (!currentUser || !currentUser.username) {
+            alert('请先登录后再上传资源！');
+            window.location.href = 'login.html';
+            return;
+        }
+        
+        const authorName = currentUser.username;
+        
+        // 尝试从 localStorage 读取（按用户独立存储）
         let existingResources = [];
+        const userResourcesKey = `resources_${authorName}`;
         try {
-            const stored = localStorage.getItem('resources');
+            const stored = localStorage.getItem(userResourcesKey);
             if (stored) {
                 existingResources = JSON.parse(stored);
             }
         } catch (e) {
-            console.error('读取本地存储失败:', e);
+            console.error('读取用户资源失败:', e);
         }
         
         // 计算新的ID
@@ -234,16 +245,12 @@ async function generateJson() {
             nextId = maxId + 1;
         }
         
-        // 获取当前登录用户
-        const currentUser = getCurrentUser();
-        const authorName = currentUser ? currentUser.username : '匿名用户';
-        
         // 创建新资源对象
         const newResource = {
             id: nextId,
             name: name,
             description: description,
-            details: details || description, // 如果没有详细说明，使用简短描述
+            details: details || description,
             tags: tags,
             images: images,
             videos: videos,
@@ -254,13 +261,14 @@ async function generateJson() {
             icon: finalIcon,
             author: authorName,
             uploadedBy: authorName,
-            uploadedAt: new Date().toISOString()
+            uploadedAt: new Date().toISOString(),
+            userId: currentUser.id || currentUser.username
         };
         
         // 添加到现有资源列表
         const updatedResources = [...existingResources, newResource];
         
-        // 保存到 localStorage
+        // 保存到 localStorage（按用户独立存储）
         saveResourcesToLocalStorage(updatedResources);
         
         // 显示成功消息并跳转
