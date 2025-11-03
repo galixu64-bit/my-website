@@ -291,6 +291,7 @@ function renderResources() {
         });
 
         resourcesList.replaceChildren(fragment);
+        resourcesList.classList.toggle('empty', filteredResources.length === 0);
 
         if (noResults) {
             if (filteredResources.length === 0) {
