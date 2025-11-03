@@ -206,8 +206,46 @@ function loadAllUsers() {
     if (!display || !list) return;
     
     if (display.style.display === 'none') {
-
-        const users = getAllUsersSync ? getAllUsersSync() : [];
+        console.log('=== 加载所有用户 ===');
+        
+        let users = [];
+        
+        if (typeof getAllUsersSync === 'function') {
+            users = getAllUsersSync();
+            console.log('通过 getAllUsersSync 获取:', users.length, '个用户');
+        } else if (window.getAllUsersSync) {
+            users = window.getAllUsersSync();
+            console.log('通过 window.getAllUsersSync 获取:', users.length, '个用户');
+        } else {
+            console.warn('getAllUsersSync 不可用，直接从 localStorage 读取');
+            try {
+                const userDb = localStorage.getItem('userDatabase');
+                const usersKey = localStorage.getItem('users');
+                
+                if (userDb) {
+                    users = JSON.parse(userDb);
+                    console.log('从 userDatabase 读取:', users.length, '个用户');
+                } else if (usersKey) {
+                    users = JSON.parse(usersKey);
+                    console.log('从 users 读取:', users.length, '个用户');
+                }
+            } catch (e) {
+                console.error('读取用户失败:', e);
+            }
+        }
+        
+        if (!Array.isArray(users)) {
+            users = [];
+        }
+        
+        users = users.filter(u => u !== null && u !== undefined);
+        
+        console.log('最终显示用户数量:', users.length);
+        console.log('所有用户:', users.map(u => ({
+            username: u.username,
+            email: u.email,
+            isDeveloper: u.isDeveloper
+        })));
         
         const t = (key) => {
             return (window.i18n && typeof window.i18n.t === 'function') 
