@@ -160,20 +160,30 @@ function updateEmailDisplay(email) {
 window.updateEmailDisplay = updateEmailDisplay;
 
 function changeLanguageSetting(lang) {
-    console.log('changeLanguageSetting called with lang:', lang);
+    console.log('=== changeLanguageSetting 开始 ===');
+    console.log('参数 lang:', lang);
+    console.log('window.i18n 是否存在:', !!window.i18n);
+    console.log('window.i18n.setLanguage 是否存在:', window.i18n ? typeof window.i18n.setLanguage : 'N/A');
 
     if (!lang || (lang !== 'zh' && lang !== 'en')) {
         console.warn('Invalid language value:', lang);
         return;
     }
 
+    try {
+        localStorage.setItem('language', lang);
+        console.log('语言已保存到 localStorage:', lang);
+    } catch (e) {
+        console.error('保存语言到 localStorage 失败:', e);
+    }
+
     if (window.i18n && typeof window.i18n.setLanguage === 'function') {
-        console.log('Using i18n.setLanguage');
+        console.log('使用 i18n.setLanguage');
         window.i18n.setLanguage(lang);
         
         setTimeout(function() {
             if (window.i18n && typeof window.i18n.updatePage === 'function') {
-                console.log('强制更新页面内容');
+                console.log('第一次强制更新页面内容');
                 window.i18n.updatePage();
             }
             updateLanguageDisplay(lang);
@@ -182,37 +192,32 @@ function changeLanguageSetting(lang) {
         
         setTimeout(function() {
             if (window.i18n && typeof window.i18n.updatePage === 'function') {
+                console.log('第二次更新页面内容');
                 window.i18n.updatePage();
             }
             updateLanguageDisplay(lang);
         }, 500);
     } else if (window.switchLanguage && typeof window.switchLanguage === 'function') {
-        console.log('Using window.switchLanguage');
+        console.log('使用 window.switchLanguage');
         window.switchLanguage(lang);
         setTimeout(function() {
             updateLanguageDisplay(lang);
             updateBrowserLanguageDisplay();
         }, 100);
     } else {
-        console.warn('No language switching method available');
+        console.warn('没有可用的语言切换方法，直接更新');
 
-        try {
-            localStorage.setItem('language', lang);
-
-            if (window.i18n) {
-                window.i18n.currentLang = lang;
-                if (typeof window.i18n.updatePage === 'function') {
-                    window.i18n.updatePage();
-                }
+        if (window.i18n) {
+            window.i18n.currentLang = lang;
+            if (typeof window.i18n.updatePage === 'function') {
+                window.i18n.updatePage();
             }
-            updateLanguageDisplay(lang);
-            updateBrowserLanguageDisplay();
-        } catch (e) {
-            console.error('Failed to save language preference:', e);
         }
+        updateLanguageDisplay(lang);
+        updateBrowserLanguageDisplay();
     }
     
-    console.log('Language changed to:', lang);
+    console.log('=== changeLanguageSetting 完成，语言已改为:', lang, '===');
 }
 
 window.changeLanguageSetting = changeLanguageSetting;

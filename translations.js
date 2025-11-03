@@ -483,11 +483,14 @@ const translations = {
         },
         
         updatePage: function() {
-
+            console.log('updatePage 开始执行，当前语言:', this.currentLang);
+            let updatedCount = 0;
+            
             document.querySelectorAll('[data-i18n]').forEach(function(el) {
                 const key = el.getAttribute('data-i18n');
                 if (key) {
                     const translated = i18n.t(key);
+                    updatedCount++;
 
                     if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
                         if (el.getAttribute('data-i18n-placeholder') || el.placeholder) {
