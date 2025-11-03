@@ -415,6 +415,12 @@
                 initSettings();
             }
             
+            setTimeout(() => {
+                if (typeof initThemeSettings === 'function') {
+                    initThemeSettings();
+                }
+            }, 200);
+            
             const languageSelect = document.getElementById('languageSelect');
             if (languageSelect) {
                 languageSelect.addEventListener('change', function(e) {
