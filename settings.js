@@ -436,7 +436,6 @@ function initSettings() {
         if (!savedLang) {
             if (window.detectBrowserLanguage && typeof window.detectBrowserLanguage === 'function') {
                 savedLang = window.detectBrowserLanguage();
-                console.log('从 detectBrowserLanguage 获取:', savedLang);
                 if (savedLang) {
                     localStorage.setItem('language', savedLang);
                 }
@@ -446,10 +445,8 @@ function initSettings() {
                         (navigator.languages && navigator.languages[0]) || 'zh-CN';
                     const langCode = browserLang.toLowerCase().split('-')[0];
                     savedLang = (langCode === 'zh' || langCode === 'en') ? langCode : 'zh';
-                    console.log('直接从浏览器解析语言:', savedLang, '来自:', browserLang);
                     localStorage.setItem('language', savedLang);
                 } catch (e) {
-                    console.error('解析浏览器语言失败:', e);
                     savedLang = 'zh';
                 }
             }
