@@ -1,13 +1,13 @@
-
+// 设置用户信息
 function setUserInfo() {
     const avatarImg = document.getElementById('avatar');
     const userNameElement = document.getElementById('userName');
     const userInfo = document.getElementById('userInfo');
-
+    const topRightButtons = document.getElementById('topRightButtons');
+    
     const currentUser = getCurrentUser();
     
     if (currentUser) {
-
         if (userInfo) userInfo.style.display = 'flex';
         if (avatarImg) {
             avatarImg.src = 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + currentUser.username;
@@ -15,14 +15,19 @@ function setUserInfo() {
         if (userNameElement) {
             userNameElement.textContent = currentUser.username;
         }
+        
+        if (topRightButtons) {
+            topRightButtons.style.display = 'flex';
+        }
     } else {
-
         if (userInfo) userInfo.style.display = 'none';
+        if (topRightButtons) topRightButtons.style.display = 'none';
     }
 }
 
+// 图标预览
 document.addEventListener('DOMContentLoaded', function() {
-
+    // 检查登录状态
     if (!isLoggedIn()) {
         alert('请先登录后才能添加 dragbit');
         window.location.href = 'login.html';
@@ -38,21 +43,19 @@ document.addEventListener('DOMContentLoaded', function() {
         iconInput.addEventListener('input', function() {
             const value = this.value.trim();
             if (value) {
-
                 if (value.startsWith('fa-') || value.startsWith('fas ') || value.startsWith('far ') || value.startsWith('fab ')) {
-
                     iconPreview.innerHTML = `<i class="${value}"></i>`;
                 } else {
-
                     iconPreview.textContent = value;
                 }
             } else {
-
+                // 默认图标
                 iconPreview.innerHTML = '<i class="fas fa-archive"></i>';
             }
         });
     }
-
+    
+    // 图片预览功能
     const imagesInput = document.getElementById('resourceImages');
     const imagePreview = document.getElementById('imagePreview');
     
@@ -88,7 +91,8 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
-
+    
+    // 表单提交
     const form = document.getElementById('resourceForm');
     if (form) {
         form.addEventListener('submit', function(e) {
@@ -98,8 +102,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// 生成并添加资源到列表
 async function generateJson() {
-
+    // 获取表单数据
     const name = document.getElementById('resourceName').value.trim();
     const description = document.getElementById('resourceDescription').value.trim();
     const details = document.getElementById('resourceDetails').value.trim();
@@ -111,18 +116,23 @@ async function generateJson() {
     const format = document.getElementById('resourceFormat').value.trim() || 'ZIP';
     const downloadUrl = document.getElementById('resourceUrl').value.trim();
     const icon = document.getElementById('resourceIcon').value.trim() || 'fas fa-archive';
-
+    
+    // 处理标签（分割并清理）
     const tags = tagsInput ? tagsInput.split(',').map(t => t.trim()).filter(t => t) : [];
-
+    
+    // 处理图片（分割URL）
     const images = imagesInput ? imagesInput.split(',').map(img => img.trim()).filter(img => img) : [];
-
+    
+    // 处理视频（分割URL）
     const videos = videosInput ? videosInput.split(',').map(v => v.trim()).filter(v => v) : [];
-
+    
+    // 验证必填字段
     if (!name || !description || !category || !downloadUrl) {
         alert('请填写所有必填字段！');
         return;
     }
-
+    
+    // 根据分类设置默认图标
     const defaultIcons = {
         'software': '💻',
         'document': '📘',
@@ -134,28 +144,31 @@ async function generateJson() {
     const finalIcon = icon || defaultIcons[category] || '📦';
     
     try {
-
+        // 读取现有的资源列表
         const response = await fetch('resources.json', { cache: 'no-cache' });
         let existingResources = [];
         
         if (response.ok) {
             existingResources = await response.json();
         }
-
+        
+        // 计算新的ID
         let nextId = 1;
         if (Array.isArray(existingResources) && existingResources.length > 0) {
             const maxId = Math.max(...existingResources.map(r => r.id || 0));
             nextId = maxId + 1;
         }
-
+        
+        // 获取当前登录用户
         const currentUser = getCurrentUser();
         const authorName = currentUser ? currentUser.username : '匿名用户';
-
+        
+        // 创建新资源对象
         const newResource = {
             id: nextId,
             name: name,
             description: description,
-            details: details || description, 
+            details: details || description, // 如果没有详细说明，使用简短描述
             tags: tags,
             images: images,
             videos: videos,
@@ -168,24 +181,31 @@ async function generateJson() {
             uploadedBy: authorName,
             uploadedAt: new Date().toISOString()
         };
-
+        
+        // 添加到现有资源列表
         const updatedResources = [...existingResources, newResource];
-
+        
+        // 保存到 localStorage（浏览器本地存储）
         saveResourcesToLocalStorage(updatedResources);
-
+        
+        // 生成完整的JSON（包含所有资源）
         const jsonString = JSON.stringify(updatedResources, null, 2);
-
+        
+        // 保存到全局变量，供下载和复制使用
         window.generatedJson = jsonString;
-
+        
+        // 显示成功消息并跳转
         showAddSuccessMessage(newResource.name);
-
+        
+        // 2秒后自动跳转到主页
         setTimeout(() => {
             window.location.href = 'index.html';
         }, 2000);
         
     } catch (error) {
         console.error('加载现有资源失败:', error);
-
+        
+        // 尝试从 localStorage 读取
         let existingResources = [];
         try {
             const stored = localStorage.getItem('resources');
@@ -195,21 +215,24 @@ async function generateJson() {
         } catch (e) {
             console.error('读取本地存储失败:', e);
         }
-
+        
+        // 计算新的ID
         let nextId = 1;
         if (Array.isArray(existingResources) && existingResources.length > 0) {
             const maxId = Math.max(...existingResources.map(r => r.id || 0));
             nextId = maxId + 1;
         }
-
+        
+        // 获取当前登录用户
         const currentUser = getCurrentUser();
         const authorName = currentUser ? currentUser.username : '匿名用户';
-
+        
+        // 创建新资源对象
         const newResource = {
             id: nextId,
             name: name,
             description: description,
-            details: details || description, 
+            details: details || description, // 如果没有详细说明，使用简短描述
             tags: tags,
             images: images,
             videos: videos,
@@ -222,19 +245,24 @@ async function generateJson() {
             uploadedBy: authorName,
             uploadedAt: new Date().toISOString()
         };
-
+        
+        // 添加到现有资源列表
         const updatedResources = [...existingResources, newResource];
-
+        
+        // 保存到 localStorage
         saveResourcesToLocalStorage(updatedResources);
-
+        
+        // 显示成功消息并跳转
         showAddSuccessMessage(newResource.name);
-
+        
+        // 2秒后自动跳转到主页
         setTimeout(() => {
             window.location.href = 'index.html';
         }, 2000);
     }
 }
 
+// 复制JSON到剪贴板
 function copyJson() {
     const jsonText = window.generatedJson || document.getElementById('jsonCode').textContent;
     
@@ -242,7 +270,7 @@ function copyJson() {
         showSuccessMessage('✅ 完整的 resources.json 已复制到剪贴板！\n\n请打开 resources.json 文件，替换全部内容。');
     }).catch(function(err) {
         console.error('复制失败:', err);
-
+        // 备用方法
         const textArea = document.createElement('textarea');
         textArea.value = jsonText;
         document.body.appendChild(textArea);
@@ -257,6 +285,7 @@ function copyJson() {
     });
 }
 
+// 下载完整的 resources.json 文件
 function downloadJson() {
     const jsonText = window.generatedJson || document.getElementById('jsonCode').textContent;
     const blob = new Blob([jsonText], { type: 'application/json' });
@@ -264,7 +293,7 @@ function downloadJson() {
     const a = document.createElement('a');
     
     a.href = url;
-    a.download = 'resources.json';  
+    a.download = 'resources.json';  // 直接下载为 resources.json，方便替换
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -273,6 +302,7 @@ function downloadJson() {
     showSuccessMessage('✅ resources.json 已下载！\n\n请将下载的文件替换项目中的 resources.json，然后刷新页面。');
 }
 
+// 显示成功消息
 function showSuccessMessage(text) {
     const message = document.getElementById('successMessage');
     if (message) {
@@ -286,6 +316,7 @@ function showSuccessMessage(text) {
     }
 }
 
+// 保存资源到 localStorage
 function saveResourcesToLocalStorage(resources) {
     try {
         localStorage.setItem('resources', JSON.stringify(resources));
@@ -296,8 +327,9 @@ function saveResourcesToLocalStorage(resources) {
     }
 }
 
+// 显示添加成功消息
 function showAddSuccessMessage(resourceName) {
-
+    // 隐藏表单，显示成功信息
     const form = document.getElementById('resourceForm');
     const jsonOutput = document.getElementById('jsonOutput');
     
@@ -326,7 +358,9 @@ function showAddSuccessMessage(resourceName) {
                 </div>
             </div>
         `;
-
+        
+        // 滚动到顶部
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 }
+
