@@ -33,40 +33,46 @@ async function loadUsersFromJSON() {
 }
 
 async function initDefaultUsers() {
-
+    console.log('initDefaultUsers: 开始初始化用户数据');
+    
     const jsonUsers = await loadUsersFromJSON();
+    console.log('从 users.json 加载的用户:', jsonUsers);
 
     const localUsers = getAllUsersFromLocalStorage();
-
-
+    console.log('从 localStorage 获取的用户:', localUsers);
 
     const mergedUsers = [];
     const usernames = new Set();
     const emails = new Set();
 
-    jsonUsers.forEach(user => {
-        const key = user.email ? user.email.toLowerCase() : user.username;
-        if (!emails.has(user.email?.toLowerCase() || '') && !usernames.has(user.username)) {
+    localUsers.forEach(user => {
+        if (!user) return;
+        const emailKey = user.email ? user.email.toLowerCase() : '';
+        const usernameKey = user.username || '';
+        
+        if ((emailKey && !emails.has(emailKey)) || (!emailKey && usernameKey && !usernames.has(usernameKey))) {
             mergedUsers.push(user);
-            usernames.add(user.username);
-            if (user.email) {
-                emails.add(user.email.toLowerCase());
-            }
+            if (emailKey) emails.add(emailKey);
+            if (usernameKey) usernames.add(usernameKey);
+            console.log('添加 localStorage 用户:', user.email || user.username);
         }
     });
 
-    localUsers.forEach(user => {
+    jsonUsers.forEach(user => {
+        if (!user) return;
         const emailKey = user.email ? user.email.toLowerCase() : '';
-        if (!emails.has(emailKey) && !usernames.has(user.username)) {
+        const usernameKey = user.username || '';
+        
+        if ((emailKey && !emails.has(emailKey)) || (!emailKey && usernameKey && !usernames.has(usernameKey))) {
             mergedUsers.push(user);
-            usernames.add(user.username);
-            if (user.email) {
-                emails.add(emailKey);
-            }
+            if (emailKey) emails.add(emailKey);
+            if (usernameKey) usernames.add(usernameKey);
+            console.log('添加 JSON 用户:', user.email || user.username);
         }
     });
 
     if (mergedUsers.length === 0) {
+        console.log('没有用户数据，创建默认 demo 用户');
         const demoUser = {
             id: 1,
             username: 'demo',
@@ -78,11 +84,16 @@ async function initDefaultUsers() {
         mergedUsers.push(demoUser);
     }
 
+    console.log('合并后的用户总数:', mergedUsers.length);
+    console.log('合并后的用户列表:', mergedUsers);
+
     if (mergedUsers.length > 0) {
         localStorage.setItem(USER_DATABASE_KEY, JSON.stringify(mergedUsers));
-        localStorage.setItem('users', JSON.stringify(mergedUsers)); 
+        localStorage.setItem('users', JSON.stringify(mergedUsers));
+        console.log('用户数据已保存到 localStorage');
     }
     
+    usersLoaded = true;
     return mergedUsers;
 }
 
