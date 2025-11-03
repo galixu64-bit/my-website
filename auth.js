@@ -89,18 +89,23 @@ async function initDefaultUsers() {
 function getAllUsersFromLocalStorage() {
     try {
         const usersJson = localStorage.getItem(USER_DATABASE_KEY);
-        if (!usersJson) {
-
-            const oldUsersJson = localStorage.getItem('users');
-            if (oldUsersJson) {
-                const oldUsers = JSON.parse(oldUsersJson);
-
-                localStorage.setItem(USER_DATABASE_KEY, oldUsersJson);
-                return oldUsers;
+        if (usersJson) {
+            const users = JSON.parse(usersJson);
+            if (Array.isArray(users)) {
+                return users.filter(u => u !== null && u !== undefined);
             }
             return [];
         }
-        return JSON.parse(usersJson);
+
+        const oldUsersJson = localStorage.getItem('users');
+        if (oldUsersJson) {
+            const oldUsers = JSON.parse(oldUsersJson);
+            if (Array.isArray(oldUsers)) {
+                localStorage.setItem(USER_DATABASE_KEY, oldUsersJson);
+                return oldUsers.filter(u => u !== null && u !== undefined);
+            }
+        }
+        return [];
     } catch (error) {
         console.error('读取用户数据失败:', error);
         return [];
@@ -167,6 +172,7 @@ window.getUserByUsernameSync = getUserByUsernameSync;
 window.getAllUsersSync = getAllUsersSync;
 
 async function registerUser(email, password, username = '') {
+    console.log('开始注册用户:', { email, username });
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email || !emailRegex.test(email)) {
@@ -177,15 +183,21 @@ async function registerUser(email, password, username = '') {
         return { success: false, message: '密码长度至少6个字符' };
     }
     
-    const users = await getAllUsers();
+    await initDefaultUsers();
+    
+    const users = getAllUsersSync();
+    console.log('注册时获取到的用户列表:', users);
+    console.log('当前用户数量:', users.length);
 
     if (users.find(u => u.email && u.email.toLowerCase() === email.toLowerCase())) {
+        console.log('邮箱已被注册:', email);
         return { success: false, message: '该邮箱已被注册' };
     }
 
     const finalUsername = username.trim() || email.split('@')[0];
 
     if (username.trim() && users.find(u => u.username === finalUsername)) {
+        console.log('用户名已存在:', finalUsername);
         return { success: false, message: '用户名已存在' };
     }
 
@@ -198,8 +210,21 @@ async function registerUser(email, password, username = '') {
         isDeveloper: false
     };
 
+    console.log('准备保存新用户:', newUser);
     saveUserToDatabase(newUser);
-    return { success: true, user: newUser };
+    
+    const savedUsers = getAllUsersSync();
+    console.log('保存后验证 - 用户数量:', savedUsers.length);
+    console.log('保存后验证 - 用户列表:', savedUsers);
+    
+    const savedUser = savedUsers.find(u => u.email && u.email.toLowerCase() === email.toLowerCase());
+    if (!savedUser) {
+        console.error('错误：用户保存失败！');
+        return { success: false, message: '用户保存失败，请重试' };
+    }
+    
+    console.log('用户注册成功:', savedUser);
+    return { success: true, user: savedUser };
 }
 
 async function loginAsync(emailOrUsername, password) {

@@ -72,7 +72,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             (async function() {
                 try {
+                    console.log('注册表单提交，邮箱:', email, '用户名:', username);
                     const result = await registerUser(email, password, username);
+                    console.log('注册结果:', result);
 
                     const t = (key) => {
                         return (window.i18n && typeof window.i18n.t === 'function') 
@@ -81,10 +83,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     };
                     
                     if (result.success) {
+                        console.log('注册成功，准备登录...');
                         showSuccess(t('registerSuccess'));
+                        
+                        const verifyUsers = getAllUsersSync ? getAllUsersSync() : [];
+                        console.log('注册后验证 - localStorage中的用户数量:', verifyUsers.length);
+                        console.log('注册后验证 - 所有用户:', verifyUsers);
 
                         setTimeout(() => {
                             const loginResult = login(email, password);
+                            console.log('自动登录结果:', loginResult);
                             if (loginResult.success) {
                                 window.location.href = 'index.html';
                             } else {
@@ -92,6 +100,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             }
                         }, 1500);
                     } else {
+                        console.error('注册失败:', result.message);
                         showError(result.message || t('registerFailed'));
                     }
                 } catch (error) {
