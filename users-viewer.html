@@ -255,10 +255,41 @@
         }
         
         function loadAllUsers() {
-            const users = getAllUsersSync ? getAllUsersSync() : (window.getAllUsersSync ? window.getAllUsersSync() : []);
+            console.log('开始加载用户数据...');
             
-            console.log('获取到的用户数据:', users);
+            let users = [];
+            
+            if (typeof getAllUsersSync === 'function') {
+                users = getAllUsersSync();
+                console.log('通过 getAllUsersSync 获取:', users);
+            } else if (window.getAllUsersSync) {
+                users = window.getAllUsersSync();
+                console.log('通过 window.getAllUsersSync 获取:', users);
+            } else {
+                console.error('getAllUsersSync 函数未找到');
+                try {
+                    const userDb = localStorage.getItem('userDatabase');
+                    const usersKey = localStorage.getItem('users');
+                    console.log('userDatabase:', userDb);
+                    console.log('users key:', usersKey);
+                    
+                    if (userDb) {
+                        users = JSON.parse(userDb);
+                        console.log('从 userDatabase 解析:', users);
+                    } else if (usersKey) {
+                        users = JSON.parse(usersKey);
+                        console.log('从 users 解析:', users);
+                    }
+                } catch (e) {
+                    console.error('解析用户数据失败:', e);
+                }
+            }
+            
+            console.log('最终获取到的用户数据:', users);
             console.log('用户数量:', users.length);
+            if (users.length > 0) {
+                console.log('第一个用户:', users[0]);
+            }
             
             const jsonData = document.getElementById('jsonData');
             if (jsonData) {
@@ -301,7 +332,28 @@
         }
         
         function updateStats() {
-            const users = getAllUsersSync ? getAllUsersSync() : (window.getAllUsersSync ? window.getAllUsersSync() : []);
+            let users = [];
+            
+            if (typeof getAllUsersSync === 'function') {
+                users = getAllUsersSync();
+            } else if (window.getAllUsersSync) {
+                users = window.getAllUsersSync();
+            } else {
+                try {
+                    const userDb = localStorage.getItem('userDatabase');
+                    if (userDb) {
+                        users = JSON.parse(userDb);
+                    } else {
+                        const usersKey = localStorage.getItem('users');
+                        if (usersKey) {
+                            users = JSON.parse(usersKey);
+                        }
+                    }
+                } catch (e) {
+                    console.error('更新统计失败:', e);
+                }
+            }
+            
             const statsContainer = document.getElementById('stats');
             
             if (!statsContainer) return;
@@ -327,7 +379,28 @@
         }
         
         function exportJSON() {
-            const users = getAllUsersSync ? getAllUsersSync() : (window.getAllUsersSync ? window.getAllUsersSync() : []);
+            let users = [];
+            
+            if (typeof getAllUsersSync === 'function') {
+                users = getAllUsersSync();
+            } else if (window.getAllUsersSync) {
+                users = window.getAllUsersSync();
+            } else {
+                try {
+                    const userDb = localStorage.getItem('userDatabase');
+                    if (userDb) {
+                        users = JSON.parse(userDb);
+                    } else {
+                        const usersKey = localStorage.getItem('users');
+                        if (usersKey) {
+                            users = JSON.parse(usersKey);
+                        }
+                    }
+                } catch (e) {
+                    console.error('导出失败:', e);
+                }
+            }
+            
             const jsonString = JSON.stringify(users, null, 2);
             const blob = new Blob([jsonString], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
@@ -342,7 +415,28 @@
         }
         
         function copyJSON() {
-            const users = getAllUsersSync ? getAllUsersSync() : (window.getAllUsersSync ? window.getAllUsersSync() : []);
+            let users = [];
+            
+            if (typeof getAllUsersSync === 'function') {
+                users = getAllUsersSync();
+            } else if (window.getAllUsersSync) {
+                users = window.getAllUsersSync();
+            } else {
+                try {
+                    const userDb = localStorage.getItem('userDatabase');
+                    if (userDb) {
+                        users = JSON.parse(userDb);
+                    } else {
+                        const usersKey = localStorage.getItem('users');
+                        if (usersKey) {
+                            users = JSON.parse(usersKey);
+                        }
+                    }
+                } catch (e) {
+                    console.error('复制失败:', e);
+                }
+            }
+            
             const jsonString = JSON.stringify(users, null, 2);
             
             if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -384,7 +478,15 @@
                 const key = localStorage.key(i);
                 try {
                     const value = localStorage.getItem(key);
-                    allData[key] = value;
+                    if (key === 'userDatabase' || key === 'users') {
+                        try {
+                            allData[key] = JSON.parse(value);
+                        } catch (e) {
+                            allData[key] = value;
+                        }
+                    } else {
+                        allData[key] = value;
+                    }
                 } catch (e) {
                     allData[key] = '[无法读取]';
                 }
@@ -392,6 +494,61 @@
             
             display.textContent = JSON.stringify(allData, null, 2);
             section.style.display = 'block';
+        }
+        
+        function updateDebugInfo() {
+            const debugInfo = document.getElementById('debugInfo');
+            if (!debugInfo) return;
+            
+            let info = {
+                timestamp: new Date().toLocaleString('zh-CN'),
+                functions: {
+                    getAllUsersSync: typeof getAllUsersSync !== 'undefined',
+                    windowGetAllUsersSync: typeof window.getAllUsersSync !== 'undefined',
+                    initDefaultUsers: typeof initDefaultUsers !== 'undefined',
+                    registerUser: typeof registerUser !== 'undefined'
+                },
+                localStorage: {
+                    userDatabase: localStorage.getItem('userDatabase') ? '存在' : '不存在',
+                    users: localStorage.getItem('users') ? '存在' : '不存在',
+                    currentUser: localStorage.getItem('currentUser') ? '存在' : '不存在'
+                },
+                userCount: {
+                    userDatabase: (() => {
+                        try {
+                            const data = localStorage.getItem('userDatabase');
+                            return data ? JSON.parse(data).length : 0;
+                        } catch (e) {
+                            return '解析失败';
+                        }
+                    })(),
+                    users: (() => {
+                        try {
+                            const data = localStorage.getItem('users');
+                            return data ? JSON.parse(data).length : 0;
+                        } catch (e) {
+                            return '解析失败';
+                        }
+                    })()
+                },
+                actualUsers: (() => {
+                    try {
+                        const userDb = localStorage.getItem('userDatabase');
+                        if (userDb) {
+                            return JSON.parse(userDb);
+                        }
+                        const usersKey = localStorage.getItem('users');
+                        if (usersKey) {
+                            return JSON.parse(usersKey);
+                        }
+                        return [];
+                    } catch (e) {
+                        return { error: e.message };
+                    }
+                })()
+            };
+            
+            debugInfo.textContent = JSON.stringify(info, null, 2);
         }
         
         function escapeHtml(text) {
@@ -402,20 +559,29 @@
         
         document.addEventListener('DOMContentLoaded', function() {
             console.log('页面加载完成，开始加载用户数据...');
+            console.log('auth.js 是否已加载:', typeof getAllUsersSync !== 'undefined');
+            console.log('initDefaultUsers 是否可用:', typeof initDefaultUsers !== 'undefined');
             
             setTimeout(async function() {
                 if (typeof initDefaultUsers === 'function') {
                     try {
+                        console.log('开始初始化用户数据...');
                         await initDefaultUsers();
                         console.log('用户数据初始化完成');
                     } catch (error) {
                         console.error('初始化失败:', error);
                     }
+                } else {
+                    console.warn('initDefaultUsers 函数不可用，直接读取 localStorage');
                 }
+                
+                console.log('当前 localStorage userDatabase:', localStorage.getItem('userDatabase'));
+                console.log('当前 localStorage users:', localStorage.getItem('users'));
                 
                 loadAllUsers();
                 updateStats();
-            }, 500);
+                updateDebugInfo();
+            }, 800);
         });
     </script>
 </body>
