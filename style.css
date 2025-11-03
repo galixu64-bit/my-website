@@ -20,28 +20,28 @@
     --accent-hover: #764ba2;
 }
 
-/* 浅色主题 - 高级现代化设计 */
+/* 浅色主题 - 柔和护眼设计 */
 .light-theme {
-    --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 40%, #f093fb 70%, #4facfe 100%);
-    --bg-secondary: rgba(255, 255, 255, 0.95);
-    --bg-card: rgba(255, 255, 255, 0.85);
-    --bg-card-hover: rgba(255, 255, 255, 0.98);
-    --text-primary: #0f172a;
-    --text-secondary: #1e293b;
-    --text-muted: #64748b;
-    --border-color: rgba(102, 126, 234, 0.25);
-    --border-color-hover: rgba(102, 126, 234, 0.4);
-    --shadow: rgba(102, 126, 234, 0.12);
-    --shadow-hover: rgba(102, 126, 234, 0.25);
-    --shadow-card: rgba(102, 126, 234, 0.08);
+    --bg-primary: linear-gradient(135deg, #8b9dc3 0%, #a8c0d1 40%, #b8d4e3 70%, #c5d5e8 100%);
+    --bg-secondary: rgba(240, 245, 250, 0.98);
+    --bg-card: rgba(245, 248, 252, 0.92);
+    --bg-card-hover: rgba(250, 252, 255, 0.98);
+    --text-primary: #1a1f35;
+    --text-secondary: #2d3748;
+    --text-muted: #4a5568;
+    --border-color: rgba(102, 126, 234, 0.3);
+    --border-color-hover: rgba(102, 126, 234, 0.5);
+    --shadow: rgba(102, 126, 234, 0.15);
+    --shadow-hover: rgba(102, 126, 234, 0.3);
+    --shadow-card: rgba(102, 126, 234, 0.1);
     --accent-color: #667eea;
     --accent-hover: #764ba2;
-    --accent-light: rgba(102, 126, 234, 0.1);
-    --bg-input: rgba(255, 255, 255, 0.95);
+    --accent-light: rgba(102, 126, 234, 0.15);
+    --bg-input: rgba(250, 252, 255, 0.98);
     --bg-input-focus: rgba(255, 255, 255, 1);
     --bg-button: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     --bg-button-hover: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-    --bg-button-secondary: rgba(102, 126, 234, 0.1);
+    --bg-button-secondary: rgba(102, 126, 234, 0.15);
     --text-button-secondary: #667eea;
 }
 
@@ -511,6 +511,10 @@ footer p {
     align-items: center;
     padding: 20px 25px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.light-theme .comment-modal-header {
+    border-bottom: 1px solid rgba(102, 126, 234, 0.2);
 }
 
 .comment-modal-header h3 {

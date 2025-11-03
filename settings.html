@@ -337,7 +337,7 @@
                 <div class="settings-form">
                     <div class="form-group-settings">
                         <label class="form-label-settings" data-i18n="selectLanguage">选择语言</label>
-                        <select class="form-input-settings" id="languageSelect">
+                        <select class="form-input-settings" id="languageSelect" onchange="handleLanguageSelectChange(this.value)">
                             <option value="zh">中文</option>
                             <option value="en">English</option>
                         </select>
@@ -358,6 +358,17 @@
     <script src="auth.js"></script>
     <script src="settings.js"></script>
     <script>
+        function handleLanguageSelectChange(lang) {
+            console.log('Language select changed to:', lang);
+            if (window.changeLanguageSetting) {
+                window.changeLanguageSetting(lang);
+            } else if (window.i18n && typeof window.i18n.setLanguage === 'function') {
+                window.i18n.setLanguage(lang);
+            } else {
+                console.error('Language switching function not available');
+            }
+        }
+        
         document.addEventListener('DOMContentLoaded', function() {
             if (!isLoggedIn()) {
                 alert('请先登录');
@@ -367,6 +378,13 @@
             
             if (window.initSettings) {
                 initSettings();
+            }
+            
+            const languageSelect = document.getElementById('languageSelect');
+            if (languageSelect) {
+                languageSelect.addEventListener('change', function(e) {
+                    handleLanguageSelectChange(e.target.value);
+                });
             }
         });
     </script>
