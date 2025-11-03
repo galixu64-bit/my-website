@@ -42,23 +42,33 @@ async function initDefaultUsers() {
     const localUsers = getAllUsersFromLocalStorage();
     
     // 合并数据：JSON 文件中的用户 + localStorage 中的用户
-    // 如果用户名冲突，localStorage 中的优先（因为包含新注册的用户）
+    // JSON 文件中的用户优先（包含预设的开发者账户）
+    // 如果用户名或邮箱冲突，JSON 文件中的优先
     const mergedUsers = [];
     const usernames = new Set();
+    const emails = new Set();
     
-    // 先添加 localStorage 中的用户（优先）
-    localUsers.forEach(user => {
-        if (!usernames.has(user.username)) {
+    // 先添加 JSON 文件中的用户（优先，包含开发者账户）
+    jsonUsers.forEach(user => {
+        const key = user.email ? user.email.toLowerCase() : user.username;
+        if (!emails.has(user.email?.toLowerCase() || '') && !usernames.has(user.username)) {
             mergedUsers.push(user);
             usernames.add(user.username);
+            if (user.email) {
+                emails.add(user.email.toLowerCase());
+            }
         }
     });
     
-    // 再添加 JSON 文件中的用户（避免重复）
-    jsonUsers.forEach(user => {
-        if (!usernames.has(user.username)) {
+    // 再添加 localStorage 中的用户（避免重复，只添加新注册的）
+    localUsers.forEach(user => {
+        const emailKey = user.email ? user.email.toLowerCase() : '';
+        if (!emails.has(emailKey) && !usernames.has(user.username)) {
             mergedUsers.push(user);
             usernames.add(user.username);
+            if (user.email) {
+                emails.add(emailKey);
+            }
         }
     });
     
