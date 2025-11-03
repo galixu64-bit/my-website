@@ -76,7 +76,6 @@ function getResourcesFromLocalStorage() {
             return JSON.parse(stored);
         }
     } catch (error) {
-        console.error('读取用户资源失败:', error);
     }
     return null;
 }
@@ -186,7 +185,6 @@ async function loadResourcesFromFile() {
             }
         }
     } catch (error) {
-        console.error('加载文件时出错:', error);
 
         const localResources = getResourcesFromLocalStorage();
         if (localResources) {

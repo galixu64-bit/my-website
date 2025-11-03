@@ -614,6 +614,4 @@ const translations = {
 
     window.i18n = i18n;
     window.translations = translations;
-    
-    console.log('✓ i18n 已加载，当前语言:', currentLang);
 })();

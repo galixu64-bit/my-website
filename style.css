@@ -260,7 +260,7 @@ main {
     gap: 25px;
     box-shadow: 0 5px 15px var(--shadow);
     border: 1px solid var(--border-color);
-    transition: box-shadow 0.25s ease, border-color 0.25s ease;
+    transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
     backdrop-filter: blur(10px);
     min-height: 120px;
     position: relative;
@@ -270,6 +270,7 @@ main {
 .resource-card:hover {
     box-shadow: 0 10px 25px var(--shadow);
     border-color: var(--accent-color);
+    transform: translateY(-2px);
 }
 
 .light-theme .resource-card {
@@ -399,15 +400,15 @@ main {
     border-radius: 10px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
     border: 1px solid rgba(102, 126, 234, 0.5);
-    opacity: 0;
-    transform: translateY(20px);
+        opacity: 0;
+        transform: translateY(20px);
     transition: all 0.3s ease;
     z-index: 1000;
-}
+    }
 
 .download-notification.show {
-    opacity: 1;
-    transform: translateY(0);
+        opacity: 1;
+        transform: translateY(0);
 }
 
 /* 页脚样式 */
