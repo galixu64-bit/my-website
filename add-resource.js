@@ -268,33 +268,15 @@ async function generateJson() {
         // 添加到现有资源列表
         const updatedResources = [...existingResources, newResource];
         
-        console.log('准备保存资源，用户:', authorName, '资源数量:', updatedResources.length);
-        console.log('新资源:', newResource);
-        
         // 保存到 localStorage（按用户独立存储）
         saveResourcesToLocalStorage(updatedResources);
-        
-        // 验证保存是否成功
-        const saved = localStorage.getItem(userResourcesKey);
-        if (saved) {
-            const savedResources = JSON.parse(saved);
-            console.log('✅ 验证：资源已成功保存，保存的资源数量:', savedResources.length);
-        } else {
-            console.error('❌ 验证失败：资源未保存到localStorage');
-        }
         
         // 尝试保存到在线JSON库
         if (window.jsonStorage && window.jsonStorage.config.binId && window.jsonStorage.config.apiKey) {
             try {
                 const allResources = getAllResourcesFromLocalStorage();
-                const onlineSaveResult = await window.jsonStorage.save(allResources);
-                if (onlineSaveResult.success) {
-                    console.log('✅ 资源已同步到在线JSON库');
-                } else {
-                    console.warn('⚠️ 在线保存失败，但已保存到本地:', onlineSaveResult.error);
-                }
+                await window.jsonStorage.save(allResources);
             } catch (error) {
-                console.error('保存到在线JSON库时出错:', error);
             }
         }
         
@@ -370,7 +352,6 @@ function saveResourcesToLocalStorage(resources) {
             const userResourcesKey = `resources_${currentUser.username}`;
             localStorage.setItem(userResourcesKey, JSON.stringify(resources));
             localStorage.setItem(`${userResourcesKey}_updated`, Date.now().toString());
-            console.log('资源已保存到用户独立存储:', userResourcesKey);
             
             // 同时保存到全局列表（用于"所有资源"页面）
             updateGlobalResourcesList(resources);
@@ -378,10 +359,8 @@ function saveResourcesToLocalStorage(resources) {
             // 未登录用户使用默认键
             localStorage.setItem('resources', JSON.stringify(resources));
             localStorage.setItem('resources_updated', Date.now().toString());
-            console.log('资源已保存到默认存储');
         }
     } catch (error) {
-        console.error('保存到本地存储失败:', error);
     }
 }
 
@@ -412,9 +391,7 @@ function updateGlobalResourcesList(newResources) {
         
         localStorage.setItem('all_resources', JSON.stringify(allResources));
         localStorage.setItem('all_resources_updated', Date.now().toString());
-        console.log('全局资源列表已更新，总数:', allResources.length);
     } catch (error) {
-        console.error('更新全局资源列表失败:', error);
     }
 }
 

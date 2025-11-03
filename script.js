@@ -32,48 +32,32 @@ let searchQuery = '';
  */
 async function loadResourcesFromDatabase() {
     try {
-        console.log('=== 开始加载资源 ===');
-        
         const localResources = getResourcesFromLocalStorage();
-        console.log('当前用户资源:', localResources ? localResources.length : 0);
-        
         const allResources = getAllResourcesFromLocalStorage();
-        console.log('所有用户资源总数:', allResources ? allResources.length : 0);
         
         if (allResources && allResources.length > 0) {
-            console.log('✅ 使用所有用户资源，数量:', allResources.length);
             resources = allResources;
             renderResources();
-
-            if (localResources && localResources.length > 0) {
-                console.log('当前用户资源数量:', localResources.length);
-            }
-            
             await loadResourcesFromFile();
             return;
         }
         
         if (localResources && localResources.length > 0) {
-            console.log('✅ 使用当前用户资源，数量:', localResources.length);
             resources = localResources;
             renderResources();
-
             await loadResourcesFromFile();
             return;
         }
 
-        console.log('⚠️ 没有找到本地资源，尝试从文件加载...');
         await loadResourcesFromFile();
         
         if (!resources || resources.length === 0) {
-            console.warn('❌ 所有加载方式都失败，资源列表为空');
             resources = [];
         }
         
         renderResources();
         
     } catch (error) {
-        console.error('加载资源时出错:', error);
         resources = [];
         renderResources();
     }
@@ -102,15 +86,12 @@ function getAllResourcesFromLocalStorage() {
     const resourceMap = new Map();
     
     try {
-        console.log('开始收集所有用户的资源...');
-        
         for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
             if (key && key.startsWith('resources_') && key !== 'resources_updated' && !key.endsWith('_updated') && key !== 'all_resources') {
                 try {
                     const userResources = JSON.parse(localStorage.getItem(key));
                     if (Array.isArray(userResources)) {
-                        console.log(`从 ${key} 加载 ${userResources.length} 个资源`);
                         userResources.forEach(resource => {
                             const uniqueKey = `${resource.id}_${resource.author || resource.uploadedBy || 'unknown'}`;
                             if (!resourceMap.has(uniqueKey)) {
@@ -120,7 +101,6 @@ function getAllResourcesFromLocalStorage() {
                         });
                     }
                 } catch (e) {
-                    console.error(`解析 ${key} 失败:`, e);
                 }
             }
         }
@@ -130,7 +110,6 @@ function getAllResourcesFromLocalStorage() {
             if (globalResources) {
                 const parsed = JSON.parse(globalResources);
                 if (Array.isArray(parsed)) {
-                    console.log(`从 all_resources 加载 ${parsed.length} 个资源`);
                     parsed.forEach(resource => {
                         const uniqueKey = `${resource.id}_${resource.author || resource.uploadedBy || 'unknown'}`;
                         if (!resourceMap.has(uniqueKey)) {
@@ -141,12 +120,8 @@ function getAllResourcesFromLocalStorage() {
                 }
             }
         } catch (e) {
-            console.error('加载全局资源列表失败:', e);
         }
-        
-        console.log(`✅ 总共收集到 ${allResources.length} 个资源`);
     } catch (error) {
-        console.error('读取所有资源失败:', error);
     }
     
     return allResources;
@@ -158,28 +133,20 @@ async function loadResourcesFromFile() {
         
         // 优先尝试从在线JSON库加载
         if (window.jsonStorage && window.jsonStorage.config.binId && window.jsonStorage.config.apiKey) {
-            console.log('尝试从在线JSON库加载...');
             const onlineResult = await window.jsonStorage.load();
             if (onlineResult.success && onlineResult.data && onlineResult.data.length > 0) {
                 fileData = onlineResult.data;
-                console.log('✅ 从在线JSON库加载成功，资源数量:', fileData.length);
-            } else {
-                console.log('在线JSON库加载失败或无数据，尝试从文件加载...');
             }
         }
         
         // 如果在线加载失败，尝试从本地文件加载
         if (fileData.length === 0) {
-            console.log('开始加载 resources.json...');
             const response = await fetch('resources.json', {
                 cache: 'no-cache'
             });
             
             if (response.ok) {
                 fileData = await response.json();
-                console.log('从文件加载成功，资源数量:', fileData.length);
-            } else {
-                console.error('加载文件失败:', response.status);
             }
         }
         
@@ -209,7 +176,6 @@ async function loadResourcesFromFile() {
                 renderResources();
             }
         } else {
-            console.warn('没有从任何来源加载到资源数据');
             const localResources = getResourcesFromLocalStorage();
             if (localResources) {
                 resources = localResources;
@@ -289,16 +255,17 @@ function logout() {
     }
 }
 
+let isRendering = false;
+
 function renderResources() {
+    if (isRendering) return;
+    isRendering = true;
+    
     const resourcesList = document.getElementById('resourcesList');
     const noResults = document.getElementById('noResults');
     
-    console.log('渲染资源列表，当前资源数量:', resources.length);
-    console.log('当前分类:', currentCategory);
-    console.log('搜索关键词:', searchQuery);
-    
     if (!resourcesList) {
-        console.error('找不到 resourcesList 元素！');
+        isRendering = false;
         return;
     }
 
@@ -312,23 +279,23 @@ function renderResources() {
         const matchesSearch = inName || inDesc || inTags;
         return matchesCategory && matchesSearch;
     });
-    
-    console.log('筛选后的资源数量:', filteredResources.length);
 
-    resourcesList.innerHTML = '';
+    requestAnimationFrame(() => {
+        resourcesList.innerHTML = '';
 
-    if (filteredResources.length === 0) {
-        console.log('没有资源，显示"无结果"提示');
-        noResults.classList.remove('hidden');
-    } else {
-        noResults.classList.add('hidden');
+        if (filteredResources.length === 0) {
+            noResults.classList.remove('hidden');
+        } else {
+            noResults.classList.add('hidden');
 
-        filteredResources.forEach(resource => {
-            console.log('渲染资源:', resource.name);
-            const resourceItem = createResourceCard(resource);
-            resourcesList.appendChild(resourceItem);
-        });
-    }
+            filteredResources.forEach(resource => {
+                const resourceItem = createResourceCard(resource);
+                resourcesList.appendChild(resourceItem);
+            });
+        }
+        
+        isRendering = false;
+    });
 }
 
 function createResourceCard(resource) {
