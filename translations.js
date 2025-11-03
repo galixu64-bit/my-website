@@ -432,6 +432,10 @@ const translations = {
 
                 }
                 this.updatePage();
+                
+                setTimeout(() => {
+                    this.updatePage();
+                }, 50);
             }
         },
         

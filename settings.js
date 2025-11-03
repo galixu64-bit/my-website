@@ -274,6 +274,13 @@ function initSettings() {
     setTimeout(function() {
         const savedLang = localStorage.getItem('language') || 
             (window.detectBrowserLanguage ? window.detectBrowserLanguage() : 'zh');
+        
+        if (window.i18n) {
+            if (window.i18n.currentLang !== savedLang && window.i18n.setLanguage) {
+                window.i18n.setLanguage(savedLang);
+            }
+        }
+        
         updateLanguageDisplay(savedLang);
         updateBrowserLanguageDisplay();
 
@@ -292,6 +299,10 @@ function initSettings() {
             langSelect.value = lang;
         }
     });
+    
+    if (window.i18n && typeof window.i18n.init === 'function') {
+        window.i18n.init();
+    }
 }
 
 function t(key) {
