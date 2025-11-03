@@ -40,15 +40,22 @@ async function initDefaultUsers() {
 
     const localUsers = getAllUsersFromLocalStorage();
     console.log('从 localStorage 获取的用户:', localUsers);
+    console.log('localStorage 用户数量:', localUsers.length);
 
     const mergedUsers = [];
     const usernames = new Set();
     const emails = new Set();
+    const userIds = new Set();
 
     localUsers.forEach(user => {
-        if (!user) return;
+        if (!user) {
+            console.warn('跳过空用户');
+            return;
+        }
+        
         const emailKey = user.email ? user.email.toLowerCase().trim() : '';
         const usernameKey = (user.username || '').trim();
+        const userId = user.id;
         
         let shouldAdd = false;
         let reason = '';
@@ -56,33 +63,42 @@ async function initDefaultUsers() {
         if (emailKey) {
             if (!emails.has(emailKey)) {
                 shouldAdd = true;
-                reason = 'email not found';
+                reason = 'email not found in set';
                 emails.add(emailKey);
             } else {
-                reason = 'email already exists';
+                reason = 'email already in set';
                 const existingUser = mergedUsers.find(u => u.email && u.email.toLowerCase() === emailKey);
                 if (existingUser) {
-                    console.log('更新已有用户（邮箱匹配）:', emailKey, '从', existingUser, '到', user);
+                    console.log('邮箱已存在，使用 localStorage 中的最新版本:', emailKey);
                     const index = mergedUsers.indexOf(existingUser);
                     mergedUsers[index] = user;
-                    reason = 'email matched, updated';
+                    reason = 'email matched, replaced with localStorage version';
                 }
             }
         } else if (usernameKey) {
-            if (!usernames.has(usernameKey)) {
+            const existingByUsername = mergedUsers.find(u => u.username === usernameKey);
+            if (existingByUsername) {
+                if (!existingByUsername.email) {
+                    console.log('用户名已存在且无邮箱，更新为 localStorage 版本:', usernameKey);
+                    const index = mergedUsers.indexOf(existingByUsername);
+                    mergedUsers[index] = user;
+                    reason = 'username matched, replaced';
+                } else {
+                    console.log('用户名已存在但有邮箱，保留原有版本:', usernameKey);
+                    reason = 'username exists but has email, skipped';
+                }
+            } else {
                 shouldAdd = true;
                 reason = 'username not found';
                 usernames.add(usernameKey);
-            } else {
-                reason = 'username already exists';
-                const existingUser = mergedUsers.find(u => u.username === usernameKey && !u.email);
-                if (existingUser) {
-                    console.log('更新已有用户（用户名匹配）:', usernameKey, '从', existingUser, '到', user);
-                    const index = mergedUsers.indexOf(existingUser);
-                    mergedUsers[index] = user;
-                    reason = 'username matched, updated';
-                }
             }
+        }
+        
+        if (userId && userIds.has(userId)) {
+            reason = 'user id already exists';
+            shouldAdd = false;
+        } else if (userId) {
+            userIds.add(userId);
         }
         
         if (shouldAdd) {
@@ -90,16 +106,21 @@ async function initDefaultUsers() {
             if (usernameKey && !usernames.has(usernameKey)) {
                 usernames.add(usernameKey);
             }
-            console.log('添加 localStorage 用户:', user.email || user.username, '-', reason);
-        } else if (!reason.includes('updated')) {
-            console.log('跳过 localStorage 用户:', user.email || user.username, '-', reason);
+            console.log('添加 localStorage 用户:', user.email || user.username || user.id, '-', reason);
+        } else if (!reason.includes('replaced') && !reason.includes('updated')) {
+            console.log('跳过 localStorage 用户:', user.email || user.username || user.id, '-', reason);
         }
     });
 
     jsonUsers.forEach(user => {
-        if (!user) return;
+        if (!user) {
+            console.warn('跳过 JSON 中的空用户');
+            return;
+        }
+        
         const emailKey = user.email ? user.email.toLowerCase().trim() : '';
         const usernameKey = (user.username || '').trim();
+        const userId = user.id;
         
         let shouldAdd = false;
         let reason = '';
@@ -110,16 +131,31 @@ async function initDefaultUsers() {
                 reason = 'email not found';
                 emails.add(emailKey);
             } else {
-                reason = 'email already exists (skipped)';
+                reason = 'email already exists, localStorage version has priority (skipped)';
             }
         } else if (usernameKey) {
-            if (!usernames.has(usernameKey)) {
+            const existingByUsername = mergedUsers.find(u => u.username === usernameKey);
+            if (existingByUsername) {
+                if (!existingByUsername.email) {
+                    console.log('JSON 用户与 localStorage 用户用户名冲突，保留 localStorage 版本:', usernameKey);
+                    reason = 'username conflict, localStorage has priority (skipped)';
+                } else {
+                    reason = 'username exists and has email (skipped)';
+                }
+            } else if (!usernames.has(usernameKey)) {
                 shouldAdd = true;
                 reason = 'username not found';
                 usernames.add(usernameKey);
             } else {
-                reason = 'username already exists (skipped)';
+                reason = 'username already in set (skipped)';
             }
+        }
+        
+        if (userId && userIds.has(userId)) {
+            reason = 'user id already exists (skipped)';
+            shouldAdd = false;
+        } else if (userId) {
+            userIds.add(userId);
         }
         
         if (shouldAdd) {
@@ -127,9 +163,9 @@ async function initDefaultUsers() {
             if (usernameKey && !usernames.has(usernameKey)) {
                 usernames.add(usernameKey);
             }
-            console.log('添加 JSON 用户:', user.email || user.username, '-', reason);
+            console.log('添加 JSON 用户:', user.email || user.username || user.id, '-', reason);
         } else {
-            console.log('跳过 JSON 用户:', user.email || user.username, '-', reason);
+            console.log('跳过 JSON 用户:', user.email || user.username || user.id, '-', reason);
         }
     });
 
