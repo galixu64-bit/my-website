@@ -458,29 +458,46 @@ const translations = {
                         }
 
                     } else {
-
-
-
                         const hasIcon = el.querySelector('i, svg, img') !== null;
+                        const hasSpanWithI18n = el.querySelector('span[data-i18n]');
                         
-                        if (hasIcon) {
-
-
+                        if (hasSpanWithI18n) {
+                            hasSpanWithI18n.textContent = translated;
+                        } else if (hasIcon) {
                             let textUpdated = false;
-                            Array.from(el.childNodes).forEach(function(node) {
+                            const iconNodes = el.querySelectorAll('i, svg, img');
+                            const allChildren = Array.from(el.childNodes);
+                            
+                            allChildren.forEach(function(node) {
                                 if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
+                                    const iconBefore = Array.from(el.childNodes).slice(0, Array.from(el.childNodes).indexOf(node)).some(n => (n.nodeType === Node.ELEMENT_NODE && (n.tagName === 'I' || n.tagName === 'SVG' || n.tagName === 'IMG')));
+                                    if (iconBefore) {
+                                        node.textContent = ' ' + translated;
+                                    } else {
+                                        node.textContent = translated;
+                                    }
+                                    textUpdated = true;
+                                } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'SPAN' && !node.querySelector('i, svg, img')) {
                                     node.textContent = translated;
                                     textUpdated = true;
                                 }
                             });
 
-                            if (!textUpdated && el.firstChild) {
-                                el.insertBefore(document.createTextNode(translated), el.firstChild);
-                            } else if (!textUpdated) {
-                                el.textContent = translated;
+                            if (!textUpdated) {
+                                const firstIcon = el.querySelector('i, svg, img');
+                                if (firstIcon && firstIcon.nextSibling) {
+                                    if (firstIcon.nextSibling.nodeType === Node.TEXT_NODE) {
+                                        firstIcon.nextSibling.textContent = ' ' + translated;
+                                    } else {
+                                        firstIcon.insertAdjacentText('afterend', ' ' + translated);
+                                    }
+                                } else if (firstIcon) {
+                                    firstIcon.insertAdjacentText('afterend', ' ' + translated);
+                                } else {
+                                    el.textContent = translated;
+                                }
                             }
                         } else {
-
                             el.textContent = translated;
                         }
                     }
