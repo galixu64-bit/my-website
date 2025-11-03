@@ -256,6 +256,55 @@ function exportAllUsers() {
     }
 }
 
+function showUserDataJSON() {
+    const users = getAllUsersSync ? getAllUsersSync() : (window.getAllUsersSync ? window.getAllUsersSync() : []);
+    const jsonDisplay = document.getElementById('jsonDisplay');
+    const jsonContent = document.getElementById('jsonContent');
+    
+    if (!jsonDisplay || !jsonContent) return;
+    
+    const jsonString = JSON.stringify(users, null, 2);
+    jsonContent.textContent = jsonString;
+    jsonDisplay.style.display = 'block';
+    
+    jsonContent.scrollTop = 0;
+}
+
+function copyAllUsersJSON() {
+    const users = getAllUsersSync ? getAllUsersSync() : (window.getAllUsersSync ? window.getAllUsersSync() : []);
+    const jsonString = JSON.stringify(users, null, 2);
+    
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(jsonString).then(function() {
+            alert('用户数据JSON已复制到剪贴板！');
+        }).catch(function(err) {
+            console.error('复制失败:', err);
+            fallbackCopyJSON(jsonString);
+        });
+    } else {
+        fallbackCopyJSON(jsonString);
+    }
+}
+
+function fallbackCopyJSON(text) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.opacity = '0';
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+        document.execCommand('copy');
+        alert('用户数据JSON已复制到剪贴板！');
+    } catch (err) {
+        alert('复制失败，请手动选择并复制');
+    }
+    document.body.removeChild(textArea);
+}
+
+window.showUserDataJSON = showUserDataJSON;
+window.copyAllUsersJSON = copyAllUsersJSON;
+
 function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;

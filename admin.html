@@ -181,6 +181,28 @@
             border: 1px solid rgba(102, 126, 234, 0.3);
             color: var(--accent-color);
         }
+        
+        #jsonDisplay {
+            background: rgba(26, 26, 46, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .light-theme #jsonDisplay {
+            background: rgba(245, 248, 252, 0.98);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.1);
+        }
+        
+        #jsonContent {
+            color: #10b981;
+        }
+        
+        .light-theme #jsonContent {
+            color: #059669;
+            background: rgba(0, 0, 0, 0.02);
+            padding: 15px;
+            border-radius: 8px;
+        }
     </style>
 </head>
 <body>
@@ -211,12 +233,29 @@
                 <h3 class="section-title">
                     <i class="fas fa-users"></i> <span data-i18n="allUsers">所有用户</span>
                 </h3>
-                <button class="btn-admin" onclick="loadAllUsers()">
-                    <i class="fas fa-sync"></i> <span data-i18n="refreshUsers">刷新用户列表</span>
-                </button>
-                <button class="btn-admin" onclick="exportAllUsers()" style="margin-left: 10px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
-                    <i class="fas fa-download"></i> <span data-i18n="exportUsers">导出用户数据</span>
-                </button>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
+                    <button class="btn-admin" onclick="loadAllUsers()">
+                        <i class="fas fa-sync"></i> <span data-i18n="refreshUsers">刷新用户列表</span>
+                    </button>
+                    <button class="btn-admin" onclick="exportAllUsers()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                        <i class="fas fa-download"></i> <span data-i18n="exportUsers">导出用户数据</span>
+                    </button>
+                    <button class="btn-admin" onclick="showUserDataJSON()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <i class="fas fa-code"></i> 查看JSON数据
+                    </button>
+                    <button class="btn-admin" onclick="copyAllUsersJSON()" style="background: linear-gradient(135deg, #f093fb 0%, #4facfe 100%);">
+                        <i class="fas fa-copy"></i> 复制JSON
+                    </button>
+                </div>
+                <div id="jsonDisplay" style="display: none; margin-top: 20px; padding: 20px; background: rgba(26, 26, 46, 0.8); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); max-height: 500px; overflow-y: auto;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h4 style="color: var(--accent-color); margin: 0;">用户数据 JSON</h4>
+                        <button onclick="document.getElementById('jsonDisplay').style.display='none'" style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.5); color: #ef4444; padding: 5px 15px; border-radius: 5px; cursor: pointer;">
+                            <i class="fas fa-times"></i> 关闭
+                        </button>
+                    </div>
+                    <pre id="jsonContent" style="color: #10b981; font-family: 'Courier New', monospace; font-size: 0.9em; margin: 0; white-space: pre-wrap; word-wrap: break-word;"></pre>
+                </div>
                 <div id="allUsersList" class="users-grid" style="margin-top: 20px;"></div>
             </div>
         </div>
@@ -313,6 +352,62 @@
             } else if (window.exportUsersToJSON) {
                 window.exportUsersToJSON();
             }
+        }
+        
+        function showUserDataJSON() {
+            if (!isDeveloper()) {
+                alert('您没有权限执行此操作');
+                return;
+            }
+            
+            const users = getAllUsersSync ? getAllUsersSync() : (window.getAllUsersSync ? window.getAllUsersSync() : []);
+            const jsonDisplay = document.getElementById('jsonDisplay');
+            const jsonContent = document.getElementById('jsonContent');
+            
+            if (!jsonDisplay || !jsonContent) return;
+            
+            const jsonString = JSON.stringify(users, null, 2);
+            jsonContent.textContent = jsonString;
+            jsonDisplay.style.display = 'block';
+            
+            jsonContent.scrollTop = 0;
+        }
+        
+        function copyAllUsersJSON() {
+            if (!isDeveloper()) {
+                alert('您没有权限执行此操作');
+                return;
+            }
+            
+            const users = getAllUsersSync ? getAllUsersSync() : (window.getAllUsersSync ? window.getAllUsersSync() : []);
+            const jsonString = JSON.stringify(users, null, 2);
+            
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(jsonString).then(function() {
+                    alert('用户数据JSON已复制到剪贴板！');
+                }).catch(function(err) {
+                    console.error('复制失败:', err);
+                    fallbackCopy(jsonString);
+                });
+            } else {
+                fallbackCopy(jsonString);
+            }
+        }
+        
+        function fallbackCopy(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.opacity = '0';
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                alert('用户数据JSON已复制到剪贴板！');
+            } catch (err) {
+                alert('复制失败，请手动选择并复制');
+            }
+            document.body.removeChild(textArea);
         }
         
         document.addEventListener('DOMContentLoaded', function() {
