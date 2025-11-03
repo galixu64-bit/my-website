@@ -258,7 +258,7 @@ main {
 
 .resource-name {
     font-size: 1.5em;
-    color: #667eea;
+    color: var(--accent-color);
     margin-bottom: 10px;
 }
 
