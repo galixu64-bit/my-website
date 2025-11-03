@@ -253,8 +253,14 @@
             
             <form id="registerForm">
                 <div class="form-group">
-                    <label class="form-label" data-i18n="username">用户名</label>
-                    <input type="text" class="form-input" id="username" data-i18n-placeholder="usernamePlaceholder" placeholder="输入用户名（3-20个字符）" required minlength="3" maxlength="20" autofocus>
+                    <label class="form-label" data-i18n="email">邮箱 <span style="color: #ef4444;">*</span></label>
+                    <input type="email" class="form-input" id="email" placeholder="your@email.com" required autofocus>
+                    <div style="font-size: 0.85em; color: #888; margin-top: 5px;" data-i18n="codeSentTo">验证码将发送到此邮箱</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" data-i18n="username">用户名 <span style="color: #888; font-size: 0.85em;">(可选)</span></label>
+                    <input type="text" class="form-input" id="username" data-i18n-placeholder="usernamePlaceholderOptional" placeholder="输入用户名（可选，不填则使用邮箱前缀）" minlength="3" maxlength="20">
                 </div>
                 
                 <div class="form-group">
@@ -265,12 +271,6 @@
                 <div class="form-group">
                     <label class="form-label" data-i18n="confirmPassword">确认密码</label>
                     <input type="password" class="form-input" id="confirmPassword" data-i18n-placeholder="confirmPasswordPlaceholder" placeholder="再次输入密码" required>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label" data-i18n="email">邮箱 <span style="color: #ef4444;">*</span></label>
-                    <input type="email" class="form-input" id="email" placeholder="your@email.com" required>
-                    <div style="font-size: 0.85em; color: #888; margin-top: 5px;" data-i18n="codeSentTo">验证码将发送到此邮箱</div>
                 </div>
                 
                 <div class="verification-code-group">

@@ -15,10 +15,10 @@ document.addEventListener('DOMContentLoaded', function() {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             
+            const email = document.getElementById('email').value.trim();
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
-            const email = document.getElementById('email').value.trim();
             const verificationCode = document.getElementById('verificationCode').value.trim();
             
             // 获取翻译函数
@@ -28,8 +28,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     : key;
             };
             
-            // 验证
-            if (username.length < 3 || username.length > 20) {
+            // 验证邮箱（必需）
+            if (!email) {
+                showError(t('emailRequired'));
+                return;
+            }
+            
+            // 验证邮箱格式
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showError(t('emailInvalid'));
+                return;
+            }
+            
+            // 验证用户名（如果提供了）
+            if (username && (username.length < 3 || username.length > 20)) {
                 showError(t('usernameLengthError'));
                 return;
             }
@@ -41,18 +54,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (password !== confirmPassword) {
                 showError(t('passwordMismatch'));
-                return;
-            }
-            
-            if (!email) {
-                showError(t('emailRequired'));
-                return;
-            }
-            
-            // 验证邮箱格式
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                showError(t('emailInvalid'));
                 return;
             }
             
@@ -78,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // 注册（异步）
             (async function() {
                 try {
-                    const result = await registerUser(username, password, email);
+                    const result = await registerUser(email, password, username);
                     
                     // 获取翻译函数
                     const t = (key) => {
@@ -90,9 +91,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (result.success) {
                         showSuccess(t('registerSuccess'));
                         
-                        // 自动登录
+                        // 自动登录（使用邮箱登录）
                         setTimeout(() => {
-                            const loginResult = login(username, password);
+                            const loginResult = login(email, password);
                             if (loginResult.success) {
                                 window.location.href = 'index.html';
                             } else {

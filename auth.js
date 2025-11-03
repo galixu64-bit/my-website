@@ -161,20 +161,39 @@ window.getUserByUsernameSync = getUserByUsernameSync;
 window.getAllUsersSync = getAllUsersSync;
 
 // 注册新用户（保存到独立登录库）
-async function registerUser(username, password, email = '') {
+async function registerUser(email, password, username = '') {
+    // 验证邮箱格式
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+        return { success: false, message: '请输入有效的邮箱地址' };
+    }
+    
+    // 验证密码长度
+    if (!password || password.length < 6) {
+        return { success: false, message: '密码长度至少6个字符' };
+    }
+    
     const users = await getAllUsers();
     
-    // 检查用户名是否已存在
-    if (users.find(u => u.username === username)) {
+    // 检查邮箱是否已存在
+    if (users.find(u => u.email && u.email.toLowerCase() === email.toLowerCase())) {
+        return { success: false, message: '该邮箱已被注册' };
+    }
+    
+    // 如果没有提供用户名，使用邮箱前缀作为用户名
+    const finalUsername = username.trim() || email.split('@')[0];
+    
+    // 检查用户名是否已存在（如果提供了用户名）
+    if (username.trim() && users.find(u => u.username === finalUsername)) {
         return { success: false, message: '用户名已存在' };
     }
     
     // 创建新用户
     const newUser = {
         id: Date.now(),
-        username: username,
+        username: finalUsername,
         password: password, // 在实际应用中应该加密
-        email: email,
+        email: email.toLowerCase(), // 邮箱统一转为小写存储
         createdAt: new Date().toISOString(),
         isDeveloper: false
     };
@@ -208,26 +227,45 @@ async function loginAsync(username, password) {
     return { success: true, user: user, session: session };
 }
 
-// 登录（同步版本，用于向后兼容）
-function login(username, password) {
-    const user = getUserByUsernameSync(username);
-    
-    if (!user) {
-        return { success: false, message: '用户名不存在' };
+// 登录（支持邮箱或用户名登录）
+function login(emailOrUsername, password) {
+    if (!emailOrUsername || !password) {
+        return { success: false, message: '请输入邮箱/用户名和密码' };
     }
     
+    const users = getAllUsersSync();
+    
+    // 判断是邮箱还是用户名（包含@则为邮箱）
+    const isEmail = emailOrUsername.includes('@');
+    
+    let user = null;
+    if (isEmail) {
+        // 邮箱登录
+        user = users.find(u => u.email && u.email.toLowerCase() === emailOrUsername.toLowerCase());
+        if (!user) {
+            return { success: false, message: '邮箱不存在' };
+        }
+    } else {
+        // 用户名登录
+        user = users.find(u => u.username === emailOrUsername);
+        if (!user) {
+            return { success: false, message: '用户名不存在' };
+        }
+    }
+
     if (user.password !== password) {
         return { success: false, message: '密码错误' };
     }
-    
+
     // 保存登录状态
     const session = {
         userId: user.id,
         username: user.username,
+        email: user.email,
         isDeveloper: user.isDeveloper || false,
         loginTime: new Date().toISOString()
     };
-    
+
     localStorage.setItem('currentUser', JSON.stringify(session));
     return { success: true, user: user, session: session };
 }
