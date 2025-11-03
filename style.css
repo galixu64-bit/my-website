@@ -11,9 +11,9 @@
     --bg-primary: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
     --bg-secondary: rgba(26, 26, 46, 0.9);
     --bg-card: rgba(26, 26, 46, 0.8);
-    --text-primary: #e0e0e0;
-    --text-secondary: #b0b0b0;
-    --text-muted: #888;
+    --text-primary: #f5f5f5;
+    --text-secondary: #d0d0d0;
+    --text-muted: #a0a0a0;
     --border-color: rgba(255, 255, 255, 0.1);
     --shadow: rgba(0, 0, 0, 0.5);
     --accent-color: #667eea;
@@ -26,9 +26,9 @@
     --bg-secondary: rgba(240, 245, 250, 0.98);
     --bg-card: rgba(245, 248, 252, 0.92);
     --bg-card-hover: rgba(250, 252, 255, 0.98);
-    --text-primary: #0f172a;
-    --text-secondary: #1e293b;
-    --text-muted: #334155;
+    --text-primary: #020617;
+    --text-secondary: #0f172a;
+    --text-muted: #1e293b;
     --border-color: rgba(102, 126, 234, 0.3);
     --border-color-hover: rgba(102, 126, 234, 0.5);
     --shadow: rgba(102, 126, 234, 0.15);
@@ -254,8 +254,9 @@ main {
     gap: 25px;
     box-shadow: 0 5px 15px var(--shadow);
     border: 1px solid var(--border-color);
-    transition: all 0.3s ease;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     backdrop-filter: blur(10px);
+    will-change: transform, box-shadow;
 }
 
 .resource-card:hover {
@@ -274,7 +275,7 @@ main {
     background: var(--bg-card-hover);
     box-shadow: 0 12px 40px var(--shadow-hover), 0 4px 12px rgba(102, 126, 234, 0.15);
     border-color: var(--border-color-hover);
-    transform: translateY(-4px) scale(1.01);
+    transform: translateY(-4px);
 }
 
 .resource-icon {
