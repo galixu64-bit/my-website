@@ -174,6 +174,12 @@ const translations = {
         'currentLanguage': '当前语言',
         'browserLanguage': '浏览器语言',
         'selectLanguage': '选择语言',
+        'theme': '主题设置',
+        'currentTheme': '当前主题：',
+        'selectTheme': '选择主题',
+        'themeSystem': '跟随系统',
+        'themeLight': '浅色',
+        'themeDark': '深色',
 
         'copyright': '© 2024 dragbit | Made with ❤️',
     },
