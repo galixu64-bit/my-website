@@ -227,24 +227,54 @@ function updateLanguageDisplay(lang) {
 
 function updateBrowserLanguageDisplay() {
     const browserLangDisplay = document.getElementById('browserLanguageDisplay');
-    if (browserLangDisplay && window.getBrowserLanguage) {
-        try {
-            const browserLang = window.getBrowserLanguage();
-            const detectedLang = window.detectBrowserLanguage ? window.detectBrowserLanguage() : 'zh';
-
-            const detectedName = detectedLang === 'zh' ? '中文' : 'English';
-            browserLangDisplay.textContent = `${browserLang} (${detectedName})`;
-
-            const currentLang = localStorage.getItem('language') || 'zh';
-            if (detectedLang !== currentLang) {
-                browserLangDisplay.style.color = '#888';
-                browserLangDisplay.title = '浏览器检测到的语言与当前设置不同';
-            } else {
-                browserLangDisplay.style.color = '#10b981';
+    if (!browserLangDisplay) {
+        console.warn('browserLanguageDisplay element not found');
+        return;
+    }
+    
+    try {
+        let browserLang = 'zh-CN';
+        let detectedLang = 'zh';
+        
+        if (window.getBrowserLanguage && typeof window.getBrowserLanguage === 'function') {
+            browserLang = window.getBrowserLanguage();
+            console.log('使用 window.getBrowserLanguage:', browserLang);
+        } else {
+            try {
+                browserLang = navigator.language || navigator.userLanguage || 
+                    (navigator.languages && navigator.languages[0]) || 'zh-CN';
+                console.log('直接从 navigator 获取:', browserLang);
+            } catch (e) {
+                console.error('无法从 navigator 获取语言:', e);
             }
-        } catch (e) {
-            browserLangDisplay.textContent = '无法检测';
         }
+        
+        if (window.detectBrowserLanguage && typeof window.detectBrowserLanguage === 'function') {
+            detectedLang = window.detectBrowserLanguage();
+            console.log('使用 window.detectBrowserLanguage:', detectedLang);
+        } else {
+            try {
+                const langCode = browserLang.toLowerCase().split('-')[0];
+                detectedLang = (langCode === 'zh' || langCode === 'en') ? langCode : 'zh';
+                console.log('从浏览器语言代码解析:', detectedLang);
+            } catch (e) {
+                console.error('无法解析浏览器语言:', e);
+            }
+        }
+
+        const detectedName = detectedLang === 'zh' ? '中文' : 'English';
+        browserLangDisplay.textContent = `${browserLang} (${detectedName})`;
+
+        const currentLang = localStorage.getItem('language') || 'zh';
+        if (detectedLang !== currentLang) {
+            browserLangDisplay.style.color = '#888';
+            browserLangDisplay.title = '浏览器检测到的语言与当前设置不同';
+        } else {
+            browserLangDisplay.style.color = '#10b981';
+        }
+    } catch (e) {
+        console.error('更新浏览器语言显示失败:', e);
+        browserLangDisplay.textContent = '无法检测';
     }
 }
 
@@ -282,8 +312,24 @@ function initSettings() {
     }
 
     setTimeout(function() {
-        const savedLang = localStorage.getItem('language') || 
-            (window.detectBrowserLanguage ? window.detectBrowserLanguage() : 'zh');
+        let savedLang = localStorage.getItem('language');
+        if (!savedLang) {
+            if (window.detectBrowserLanguage && typeof window.detectBrowserLanguage === 'function') {
+                savedLang = window.detectBrowserLanguage();
+                console.log('从 detectBrowserLanguage 获取:', savedLang);
+            } else {
+                try {
+                    const browserLang = navigator.language || navigator.userLanguage || 
+                        (navigator.languages && navigator.languages[0]) || 'zh-CN';
+                    const langCode = browserLang.toLowerCase().split('-')[0];
+                    savedLang = (langCode === 'zh' || langCode === 'en') ? langCode : 'zh';
+                    console.log('直接从浏览器解析语言:', savedLang);
+                } catch (e) {
+                    console.error('解析浏览器语言失败:', e);
+                    savedLang = 'zh';
+                }
+            }
+        }
         
         if (window.i18n) {
             if (window.i18n.currentLang !== savedLang && window.i18n.setLanguage) {
@@ -292,13 +338,16 @@ function initSettings() {
         }
         
         updateLanguageDisplay(savedLang);
-        updateBrowserLanguageDisplay();
+        
+        setTimeout(function() {
+            updateBrowserLanguageDisplay();
+        }, 200);
 
         const langSelect = document.getElementById('languageSelect');
         if (langSelect) {
             langSelect.value = savedLang;
         }
-    }, 100);
+    }, 200);
 
     window.addEventListener('languageChanged', function(e) {
         const lang = e.detail ? e.detail.lang : (localStorage.getItem('language') || 'zh');

@@ -362,20 +362,30 @@ const translations = {
 
     function detectBrowserLanguage() {
         try {
-
-            const browserLang = (navigator.language || navigator.userLanguage || 
-                (navigator.languages && navigator.languages[0]) || 'zh-CN').toLowerCase();
-
-            const supportedLangs = ['zh', 'en'];
-
-            if (browserLang) {
-                const langCode = browserLang.split('-')[0];
-                if (supportedLangs.includes(langCode)) {
-                    return langCode;
-                }
+            let browserLang = navigator.language || navigator.userLanguage;
+            
+            if (!browserLang && navigator.languages && navigator.languages.length > 0) {
+                browserLang = navigator.languages[0];
             }
+            
+            if (!browserLang) {
+                console.warn('无法获取浏览器语言，使用默认值 zh-CN');
+                return 'zh';
+            }
+            
+            const browserLangLower = browserLang.toLowerCase();
+            const supportedLangs = ['zh', 'en'];
+            const langCode = browserLangLower.split('-')[0];
+            
+            console.log('检测到浏览器语言:', browserLang, '解析为:', langCode);
+            
+            if (supportedLangs.includes(langCode)) {
+                return langCode;
+            }
+            
+            console.warn('不支持的浏览器语言代码:', langCode, '使用默认值 zh');
         } catch (e) {
-            console.warn('无法检测浏览器语言:', e);
+            console.error('检测浏览器语言时出错:', e);
         }
 
         return 'zh';
@@ -383,10 +393,20 @@ const translations = {
 
     function getBrowserLanguage() {
         try {
-            const browserLang = (navigator.language || navigator.userLanguage || 
-                (navigator.languages && navigator.languages[0]) || 'zh-CN');
+            let browserLang = navigator.language || navigator.userLanguage;
+            
+            if (!browserLang && navigator.languages && navigator.languages.length > 0) {
+                browserLang = navigator.languages[0];
+            }
+            
+            if (!browserLang) {
+                browserLang = 'zh-CN';
+            }
+            
+            console.log('getBrowserLanguage 返回:', browserLang);
             return browserLang;
         } catch (e) {
+            console.error('getBrowserLanguage 错误:', e);
             return 'zh-CN';
         }
     }
