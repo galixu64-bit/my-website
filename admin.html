@@ -249,13 +249,34 @@
             const list = document.getElementById('allUsersList');
             if (!list) return;
             
-            const users = getAllUsersSync ? getAllUsersSync() : [];
+            list.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 20px;">加载中...</p>';
             
+            if (typeof initDefaultUsers === 'function') {
+                initDefaultUsers().then(function() {
+                    const users = getAllUsersSync ? getAllUsersSync() : (window.getAllUsersSync ? window.getAllUsersSync() : []);
+                    displayUsers(users, list);
+                }).catch(function(error) {
+                    console.error('加载用户失败:', error);
+                    const users = getAllUsersSync ? getAllUsersSync() : (window.getAllUsersSync ? window.getAllUsersSync() : []);
+                    displayUsers(users, list);
+                });
+            } else {
+                setTimeout(function() {
+                    const users = getAllUsersSync ? getAllUsersSync() : (window.getAllUsersSync ? window.getAllUsersSync() : []);
+                    displayUsers(users, list);
+                }, 500);
+            }
+        }
+        
+        function displayUsers(users, list) {
             const t = (key) => {
                 return (window.i18n && typeof window.i18n.t === 'function')
                     ? window.i18n.t(key)
                     : key;
             };
+            
+            console.log('显示用户列表，用户数量:', users.length);
+            console.log('用户数据:', users);
             
             if (users.length === 0) {
                 list.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 40px; grid-column: 1 / -1;">' + t('noUsers') + '</p>';
@@ -266,13 +287,13 @@
                         <div class="user-card">
                             <div class="user-card-header">
                                 <div>
-                                    <span class="user-card-username">${escapeHtml(user.username)}</span>
+                                    <span class="user-card-username">${escapeHtml(user.username || '未命名')}</span>
                                     ${user.isDeveloper ? '<span class="user-card-badge">⭐ ' + t('developerAccount') + '</span>' : ''}
                                 </div>
-                                <span class="user-card-id">ID: ${user.id}</span>
+                                <span class="user-card-id">ID: ${user.id || 'N/A'}</span>
                             </div>
                             <div class="user-card-info">
-                                <div><strong>${t('email')}:</strong> ${user.email || t('emailNotSet')}</div>
+                                <div><strong>${t('email')}:</strong> ${escapeHtml(user.email || t('emailNotSet'))}</div>
                                 <div><strong>${t('registerTime')}:</strong> ${date}</div>
                             </div>
                         </div>
@@ -307,11 +328,22 @@
                 return;
             }
             
-            if (window.i18n && typeof window.i18n.init === 'function') {
-                window.i18n.init();
-            }
-            
-            loadAllUsers();
+            setTimeout(function() {
+                if (window.i18n && typeof window.i18n.init === 'function') {
+                    window.i18n.init();
+                }
+                
+                if (typeof initDefaultUsers === 'function') {
+                    initDefaultUsers().then(function() {
+                        loadAllUsers();
+                    }).catch(function(error) {
+                        console.error('初始化用户数据失败:', error);
+                        loadAllUsers();
+                    });
+                } else {
+                    loadAllUsers();
+                }
+            }, 200);
         });
     </script>
 </body>
