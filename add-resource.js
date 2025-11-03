@@ -268,11 +268,21 @@ async function generateJson() {
         // 添加到现有资源列表
         const updatedResources = [...existingResources, newResource];
         
+        console.log('准备保存资源，用户:', authorName, '资源数量:', updatedResources.length);
+        console.log('新资源:', newResource);
+        
         // 保存到 localStorage（按用户独立存储）
         saveResourcesToLocalStorage(updatedResources);
         
-        // 更新全局资源列表
-        updateGlobalResourcesList(updatedResources);
+        // 验证保存是否成功
+        const userResourcesKey = `resources_${authorName}`;
+        const saved = localStorage.getItem(userResourcesKey);
+        if (saved) {
+            const savedResources = JSON.parse(saved);
+            console.log('✅ 验证：资源已成功保存，保存的资源数量:', savedResources.length);
+        } else {
+            console.error('❌ 验证失败：资源未保存到localStorage');
+        }
         
         // 尝试保存到在线JSON库
         if (window.jsonStorage && window.jsonStorage.config.binId && window.jsonStorage.config.apiKey) {

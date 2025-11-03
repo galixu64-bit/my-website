@@ -32,33 +32,45 @@ let searchQuery = '';
  */
 async function loadResourcesFromDatabase() {
     try {
-
+        console.log('=== 开始加载资源 ===');
+        
         const localResources = getResourcesFromLocalStorage();
+        console.log('当前用户资源:', localResources ? localResources.length : 0);
+        
         const allResources = getAllResourcesFromLocalStorage();
+        console.log('所有用户资源总数:', allResources ? allResources.length : 0);
         
         if (allResources && allResources.length > 0) {
-            console.log('从所有用户存储加载资源，数量:', allResources.length);
+            console.log('✅ 使用所有用户资源，数量:', allResources.length);
             resources = allResources;
             renderResources();
 
             if (localResources && localResources.length > 0) {
-                console.log('用户自己的资源数量:', localResources.length);
+                console.log('当前用户资源数量:', localResources.length);
             }
             
-            loadResourcesFromFile();
+            await loadResourcesFromFile();
             return;
         }
         
         if (localResources && localResources.length > 0) {
-            console.log('从用户存储加载资源，数量:', localResources.length);
+            console.log('✅ 使用当前用户资源，数量:', localResources.length);
             resources = localResources;
             renderResources();
 
-            loadResourcesFromFile();
+            await loadResourcesFromFile();
             return;
         }
 
+        console.log('⚠️ 没有找到本地资源，尝试从文件加载...');
         await loadResourcesFromFile();
+        
+        if (!resources || resources.length === 0) {
+            console.warn('❌ 所有加载方式都失败，资源列表为空');
+            resources = [];
+        }
+        
+        renderResources();
         
     } catch (error) {
         console.error('加载资源时出错:', error);
@@ -87,15 +99,25 @@ function getResourcesFromLocalStorage() {
 
 function getAllResourcesFromLocalStorage() {
     const allResources = [];
+    const resourceMap = new Map();
     
     try {
+        console.log('开始收集所有用户的资源...');
+        
         for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
-            if (key && key.startsWith('resources_') && key !== 'resources_updated' && !key.endsWith('_updated')) {
+            if (key && key.startsWith('resources_') && key !== 'resources_updated' && !key.endsWith('_updated') && key !== 'all_resources') {
                 try {
                     const userResources = JSON.parse(localStorage.getItem(key));
                     if (Array.isArray(userResources)) {
-                        allResources.push(...userResources);
+                        console.log(`从 ${key} 加载 ${userResources.length} 个资源`);
+                        userResources.forEach(resource => {
+                            const uniqueKey = `${resource.id}_${resource.author || resource.uploadedBy || 'unknown'}`;
+                            if (!resourceMap.has(uniqueKey)) {
+                                resourceMap.set(uniqueKey, resource);
+                                allResources.push(resource);
+                            }
+                        });
                     }
                 } catch (e) {
                     console.error(`解析 ${key} 失败:`, e);
@@ -108,12 +130,11 @@ function getAllResourcesFromLocalStorage() {
             if (globalResources) {
                 const parsed = JSON.parse(globalResources);
                 if (Array.isArray(parsed)) {
+                    console.log(`从 all_resources 加载 ${parsed.length} 个资源`);
                     parsed.forEach(resource => {
-                        const exists = allResources.find(r => 
-                            r.id === resource.id && 
-                            (r.author || r.uploadedBy) === (resource.author || resource.uploadedBy)
-                        );
-                        if (!exists) {
+                        const uniqueKey = `${resource.id}_${resource.author || resource.uploadedBy || 'unknown'}`;
+                        if (!resourceMap.has(uniqueKey)) {
+                            resourceMap.set(uniqueKey, resource);
                             allResources.push(resource);
                         }
                     });
@@ -122,6 +143,8 @@ function getAllResourcesFromLocalStorage() {
         } catch (e) {
             console.error('加载全局资源列表失败:', e);
         }
+        
+        console.log(`✅ 总共收集到 ${allResources.length} 个资源`);
     } catch (error) {
         console.error('读取所有资源失败:', error);
     }
