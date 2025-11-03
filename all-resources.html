@@ -18,15 +18,15 @@
         <div class="container">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
-                    <h1><i class="fas fa-boxes"></i> 所有上传的资源</h1>
-                    <p>查看所有用户上传的资源</p>
+                    <h1><i class="fas fa-boxes"></i> <span data-i18n="viewAllResources">所有上传的资源</span></h1>
+                    <p data-i18n="viewAllResourcesSubtitle">查看所有用户上传的资源</p>
                 </div>
                 <div style="display: flex; gap: 10px;">
                     <a href="index.html" class="download-btn" style="text-decoration: none; padding: 10px 20px;">
-                        <i class="fas fa-home"></i> 返回首页
+                        <i class="fas fa-home"></i> <span data-i18n="backToMain">返回首页</span>
                     </a>
                     <a href="add-resource.html" class="download-btn" style="text-decoration: none; padding: 10px 20px;">
-                        <i class="fas fa-plus"></i> 添加资源
+                        <i class="fas fa-plus"></i> <span data-i18n="addResource">添加资源</span>
                     </a>
                 </div>
             </div>
@@ -41,12 +41,12 @@
             </div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 20px; flex-wrap: wrap;">
                 <div class="filter-tabs">
-                    <button class="filter-btn active" data-category="all">全部</button>
-                    <button class="filter-btn" data-category="software">软件</button>
-                    <button class="filter-btn" data-category="document">文档</button>
-                    <button class="filter-btn" data-category="media">媒体</button>
-                    <button class="filter-btn" data-category="website">网站</button>
-                    <button class="filter-btn" data-category="other">其他</button>
+                    <button class="filter-btn active" data-category="all" data-i18n="filterAll">全部</button>
+                    <button class="filter-btn" data-category="software" data-i18n="filterSoftware">软件</button>
+                    <button class="filter-btn" data-category="document" data-i18n="filterDocument">文档</button>
+                    <button class="filter-btn" data-category="media" data-i18n="filterMedia">媒体</button>
+                    <button class="filter-btn" data-category="website" data-i18n="filterWebsite">网站</button>
+                    <button class="filter-btn" data-category="other" data-i18n="filterOther">其他</button>
                 </div>
                 <div style="color: var(--text-secondary); font-size: 0.9em;">
                     <span id="resourceCount">加载中...</span>
@@ -59,7 +59,7 @@
                 <!-- 资源项将通过JavaScript动态生成 -->
             </div>
             <div id="noResults" class="no-results hidden">
-                <p><i class="fas fa-frown"></i> 没有找到相关资源</p>
+                <p><i class="fas fa-frown"></i> <span data-i18n="noResults">没有找到相关资源</span></p>
             </div>
         </div>
     </main>
@@ -67,7 +67,7 @@
     <footer>
         <div class="container">
             <p data-i18n="copyright">© 2024 dragbit优质资源网站 | 用 ❤️ 制作</p>
-            <p style="margin-top: 10px; font-size: 0.9em; color: var(--text-muted);">版本: <span style="font-weight: bold; color: var(--accent-color);">beta 0.0.2</span></p>
+            <p style="margin-top: 10px; font-size: 0.9em; color: var(--text-muted);">版本: <span style="font-weight: bold; color: var(--accent-color);">beta 0.0.3</span></p>
         </div>
     </footer>
 
