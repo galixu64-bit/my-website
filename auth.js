@@ -202,29 +202,63 @@ function saveUserToDatabase(user) {
     console.log('保存用户到数据库:', user);
     
     const users = getAllUsersSync();
-    console.log('当前用户列表:', users);
+    console.log('保存前用户列表:', users);
+    console.log('保存前用户数量:', users.length);
     
-    const existingIndex = users.findIndex(u => 
-        (u.id && user.id && u.id === user.id) || 
-        (u.email && user.email && u.email.toLowerCase() === user.email.toLowerCase()) ||
-        (u.username && user.username && u.username === user.username)
-    );
+    let existingIndex = -1;
+    let matchReason = '';
+    
+    if (user.email) {
+        existingIndex = users.findIndex(u => 
+            u.email && u.email.toLowerCase() === user.email.toLowerCase()
+        );
+        if (existingIndex >= 0) {
+            matchReason = 'email match';
+        }
+    }
+    
+    if (existingIndex < 0 && user.id) {
+        existingIndex = users.findIndex(u => u.id && u.id === user.id);
+        if (existingIndex >= 0) {
+            matchReason = 'id match';
+        }
+    }
+    
+    if (existingIndex < 0 && user.username) {
+        const existingByUsername = users.findIndex(u => 
+            u.username && u.username === user.username && !u.email
+        );
+        if (existingByUsername >= 0) {
+            existingIndex = existingByUsername;
+            matchReason = 'username match (no email)';
+        }
+    }
     
     if (existingIndex >= 0) {
-        console.log('更新现有用户，索引:', existingIndex);
+        console.log('更新现有用户，索引:', existingIndex, '匹配原因:', matchReason);
+        console.log('旧用户:', users[existingIndex]);
         users[existingIndex] = user;
+        console.log('新用户:', users[existingIndex]);
     } else {
         console.log('添加新用户');
         users.push(user);
     }
     
     console.log('保存后的用户列表:', users);
-    console.log('用户数量:', users.length);
+    console.log('保存后用户数量:', users.length);
     
-    localStorage.setItem(USER_DATABASE_KEY, JSON.stringify(users));
-    localStorage.setItem('users', JSON.stringify(users));
+    const savedData = JSON.stringify(users);
+    localStorage.setItem(USER_DATABASE_KEY, savedData);
+    localStorage.setItem('users', savedData);
     
     console.log('用户数据已保存到 localStorage');
+    
+    const verifyUsers = JSON.parse(localStorage.getItem(USER_DATABASE_KEY) || '[]');
+    console.log('验证保存 - localStorage中的用户数量:', verifyUsers.length);
+    if (user.email) {
+        const found = verifyUsers.find(u => u.email && u.email.toLowerCase() === user.email.toLowerCase());
+        console.log('验证保存 - 找到邮箱用户:', found ? '是' : '否', found);
+    }
 }
 
 function saveUser(user) {
