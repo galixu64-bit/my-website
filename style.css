@@ -341,7 +341,7 @@ main {
 .no-results {
     text-align: center;
     padding: 60px 20px;
-    color: #888;
+    color: var(--text-muted);
     font-size: 1.2em;
 }
 
