@@ -35,6 +35,10 @@
             margin-bottom: 30px;
             text-align: center;
         }
+        
+        .light-theme .login-subtitle {
+            color: var(--text-muted);
+        }
         .login-form label {
             font-weight:bold;
             color: #ccc;
@@ -50,6 +54,23 @@
             border: 1px solid #222a45;
             background: #232946;
             color: #f0f1f7;
+            transition: all 0.3s ease;
+        }
+        
+        .light-theme .login-form input[type="text"], 
+        .light-theme .login-form input[type="password"] {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1.5px solid rgba(102, 126, 234, 0.2);
+            color: var(--text-primary);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.08);
+        }
+        
+        .light-theme .login-form input[type="text"]:focus, 
+        .light-theme .login-form input[type="password"]:focus {
+            background: rgba(255, 255, 255, 1);
+            border-color: var(--accent-color);
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2), 0 0 0 3px rgba(102, 126, 234, 0.1);
+            outline: none;
         }
         .login-row {
             display: flex;

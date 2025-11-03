@@ -36,6 +36,10 @@
             margin-bottom: 30px;
         }
         
+        .light-theme .login-subtitle {
+            color: var(--text-muted);
+        }
+        
         .form-group {
             margin-bottom: 20px;
         }
@@ -57,11 +61,24 @@
             font-size: 1em;
             transition: all 0.3s ease;
         }
-        
+
         .form-input:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        }
+        
+        .light-theme .form-input {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1.5px solid rgba(102, 126, 234, 0.2);
+            color: var(--text-primary);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.08);
+        }
+        
+        .light-theme .form-input:focus {
+            background: rgba(255, 255, 255, 1);
+            border-color: var(--accent-color);
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2), 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
         
         .btn-register {

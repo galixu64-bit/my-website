@@ -20,6 +20,14 @@
             text-align: center;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .light-theme .profile-header {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.12), 0 2px 8px rgba(102, 126, 234, 0.08);
+            border: 1.5px solid rgba(102, 126, 234, 0.2);
         }
         
         .profile-avatar {
@@ -61,6 +69,18 @@
             border-radius: 10px;
             text-align: center;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .light-theme .stat-card {
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.1);
+            border: 1.5px solid rgba(102, 126, 234, 0.15);
+        }
+        
+        .light-theme .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(102, 126, 234, 0.15);
         }
         
         .stat-value {
@@ -82,6 +102,14 @@
             margin-bottom: 30px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .light-theme .profile-section {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.12), 0 2px 8px rgba(102, 126, 234, 0.08);
+            border: 1.5px solid rgba(102, 126, 234, 0.2);
         }
         
         .section-title {
@@ -107,9 +135,17 @@
             color: #b0b0b0;
         }
         
+        .light-theme .info-label {
+            color: var(--text-secondary);
+        }
+        
         .info-value {
             color: #e0e0e0;
             font-weight: 500;
+        }
+        
+        .light-theme .info-value {
+            color: var(--text-primary);
         }
         
         .action-buttons {
@@ -241,6 +277,24 @@
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        }
+        
+        .light-theme .form-input-settings {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1.5px solid rgba(102, 126, 234, 0.2);
+            color: var(--text-primary);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.08);
+        }
+        
+        .light-theme .form-input-settings:focus {
+            background: rgba(255, 255, 255, 1);
+            border-color: var(--accent-color);
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2), 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .light-theme .form-input-settings option {
+            background: rgba(255, 255, 255, 1);
+            color: var(--text-primary);
         }
         
         .settings-form-actions {
