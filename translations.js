@@ -409,10 +409,8 @@ const translations = {
                 browserLang = 'zh-CN';
             }
             
-            console.log('getBrowserLanguage 返回:', browserLang);
             return browserLang;
         } catch (e) {
-            console.error('getBrowserLanguage 错误:', e);
             return 'zh-CN';
         }
     }
