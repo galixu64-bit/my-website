@@ -170,25 +170,35 @@ function changeLanguageSetting(lang) {
     if (window.i18n && typeof window.i18n.setLanguage === 'function') {
         console.log('Using i18n.setLanguage');
         window.i18n.setLanguage(lang);
+        setTimeout(function() {
+            if (window.i18n && typeof window.i18n.updatePage === 'function') {
+                window.i18n.updatePage();
+            }
+            updateLanguageDisplay(lang);
+        }, 100);
     } else if (window.switchLanguage && typeof window.switchLanguage === 'function') {
         console.log('Using window.switchLanguage');
         window.switchLanguage(lang);
+        setTimeout(function() {
+            updateLanguageDisplay(lang);
+        }, 100);
     } else {
         console.warn('No language switching method available');
 
         try {
             localStorage.setItem('language', lang);
 
-            if (window.i18n && typeof window.i18n.updatePage === 'function') {
+            if (window.i18n) {
                 window.i18n.currentLang = lang;
-                window.i18n.updatePage();
+                if (typeof window.i18n.updatePage === 'function') {
+                    window.i18n.updatePage();
+                }
             }
+            updateLanguageDisplay(lang);
         } catch (e) {
             console.error('Failed to save language preference:', e);
         }
     }
-
-    updateLanguageDisplay(lang);
     
     console.log('Language changed to:', lang);
 }
