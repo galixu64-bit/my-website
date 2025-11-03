@@ -188,7 +188,7 @@ function changeLanguageSetting(lang) {
             }
             updateLanguageDisplay(lang);
             updateBrowserLanguageDisplay();
-        }, 200);
+        }, 300);
         
         setTimeout(function() {
             if (window.i18n && typeof window.i18n.updatePage === 'function') {
@@ -196,7 +196,14 @@ function changeLanguageSetting(lang) {
                 window.i18n.updatePage();
             }
             updateLanguageDisplay(lang);
-        }, 500);
+        }, 700);
+        
+        setTimeout(function() {
+            if (window.i18n && typeof window.i18n.updatePage === 'function') {
+                console.log('第三次更新页面内容（确保所有元素都更新）');
+                window.i18n.updatePage();
+            }
+        }, 1000);
     } else if (window.switchLanguage && typeof window.switchLanguage === 'function') {
         console.log('使用 window.switchLanguage');
         window.switchLanguage(lang);
