@@ -95,8 +95,8 @@
         <div class="login-title" data-i18n="loginTitle">登录资源库</div>
         <div class="login-subtitle" data-i18n="loginSubtitle">账号登录，畅享高质量资源免费下载！</div>
         <form id="loginForm" class="login-form">
-            <label for="username" data-i18n="username">用户名</label>
-            <input type="text" id="username" name="username" required autocomplete="username">
+            <label for="username" data-i18n="emailOrUsername">邮箱或用户名</label>
+            <input type="text" id="username" name="username" data-i18n-placeholder="loginPlaceholder" placeholder="输入邮箱或用户名" required autocomplete="username">
             <label for="password" data-i18n="password">密码</label>
             <input type="password" id="password" name="password" required autocomplete="current-password">
             <div class="login-error" id="loginError"></div>
