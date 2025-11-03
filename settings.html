@@ -367,6 +367,39 @@
                     </div>
                 </div>
             </div>
+
+            <div class="settings-section" id="jsonStorageSection">
+                <div class="settings-header-row">
+                    <div>
+                        <div class="settings-label">
+                            <i class="fas fa-database"></i> <span>在线JSON存储</span>
+                        </div>
+                        <div class="settings-value">配置在线JSON库，资源将自动同步</div>
+                    </div>
+                </div>
+                <div class="settings-form">
+                    <div class="form-group-settings">
+                        <label class="form-label-settings">JSONBin.io API Key</label>
+                        <input type="password" class="form-input-settings" id="jsonStorageApiKey" placeholder="输入您的API Key（从 jsonbin.io 获取）">
+                        <small style="color: var(--text-muted); font-size: 0.85em; margin-top: 5px; display: block;">
+                            访问 <a href="https://jsonbin.io/" target="_blank" style="color: var(--accent-color);">jsonbin.io</a> 注册并获取API Key
+                        </small>
+                    </div>
+                    <div class="form-group-settings">
+                        <label class="form-label-settings">Bin ID（可选，留空将自动创建）</label>
+                        <input type="text" class="form-input-settings" id="jsonStorageBinId" placeholder="留空将自动创建新的Bin">
+                    </div>
+                    <div class="settings-form-actions">
+                        <button class="btn-settings-save" onclick="saveJSONStorageConfig()">
+                            <i class="fas fa-save"></i> <span>保存配置</span>
+                        </button>
+                        <button class="btn-settings-save" style="background: rgba(102, 126, 234, 0.3);" onclick="testJSONStorageConnection()">
+                            <i class="fas fa-check"></i> 测试连接
+                        </button>
+                    </div>
+                    <div class="settings-message" id="jsonStorageMessage"></div>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -380,6 +413,7 @@
     <script src="theme.js"></script>
     <script src="translations.js"></script>
     <script src="auth.js"></script>
+    <script src="json-storage.js"></script>
     <script src="settings.js"></script>
     <script>
         function handleLanguageSelectChange(lang) {

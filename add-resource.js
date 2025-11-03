@@ -271,6 +271,24 @@ async function generateJson() {
         // 保存到 localStorage（按用户独立存储）
         saveResourcesToLocalStorage(updatedResources);
         
+        // 更新全局资源列表
+        updateGlobalResourcesList(updatedResources);
+        
+        // 尝试保存到在线JSON库
+        if (window.jsonStorage && window.jsonStorage.config.binId && window.jsonStorage.config.apiKey) {
+            try {
+                const allResources = getAllResourcesFromLocalStorage();
+                const onlineSaveResult = await window.jsonStorage.save(allResources);
+                if (onlineSaveResult.success) {
+                    console.log('✅ 资源已同步到在线JSON库');
+                } else {
+                    console.warn('⚠️ 在线保存失败，但已保存到本地:', onlineSaveResult.error);
+                }
+            } catch (error) {
+                console.error('保存到在线JSON库时出错:', error);
+            }
+        }
+        
         // 显示成功消息并跳转
         showAddSuccessMessage(newResource.name);
         

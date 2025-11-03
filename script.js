@@ -131,23 +131,45 @@ function getAllResourcesFromLocalStorage() {
 
 async function loadResourcesFromFile() {
     try {
-        console.log('开始加载 resources.json...');
-        const response = await fetch('resources.json', {
-            cache: 'no-cache'
-        });
+        let fileData = [];
         
-        if (response.ok) {
-            const data = await response.json();
-            console.log('从文件加载成功，资源数量:', data.length);
-
+        // 优先尝试从在线JSON库加载
+        if (window.jsonStorage && window.jsonStorage.config.binId && window.jsonStorage.config.apiKey) {
+            console.log('尝试从在线JSON库加载...');
+            const onlineResult = await window.jsonStorage.load();
+            if (onlineResult.success && onlineResult.data && onlineResult.data.length > 0) {
+                fileData = onlineResult.data;
+                console.log('✅ 从在线JSON库加载成功，资源数量:', fileData.length);
+            } else {
+                console.log('在线JSON库加载失败或无数据，尝试从文件加载...');
+            }
+        }
+        
+        // 如果在线加载失败，尝试从本地文件加载
+        if (fileData.length === 0) {
+            console.log('开始加载 resources.json...');
+            const response = await fetch('resources.json', {
+                cache: 'no-cache'
+            });
+            
+            if (response.ok) {
+                fileData = await response.json();
+                console.log('从文件加载成功，资源数量:', fileData.length);
+            } else {
+                console.error('加载文件失败:', response.status);
+            }
+        }
+        
+        // 合并数据
+        if (fileData.length > 0) {
             const allResources = getAllResourcesFromLocalStorage();
             if (!allResources || allResources.length === 0) {
-                resources = data;
+                resources = fileData;
                 renderResources();
             } else {
-                const fileIds = new Set(data.map(r => r.id));
+                const fileIds = new Set(fileData.map(r => r.id));
                 const localOnly = allResources.filter(r => !fileIds.has(r.id));
-                resources = [...data, ...localOnly];
+                resources = [...fileData, ...localOnly];
                 
                 const currentUser = getCurrentUser();
                 if (currentUser && currentUser.username) {
@@ -164,8 +186,7 @@ async function loadResourcesFromFile() {
                 renderResources();
             }
         } else {
-            console.error('加载文件失败:', response.status);
-
+            console.warn('没有从任何来源加载到资源数据');
             const localResources = getResourcesFromLocalStorage();
             if (localResources) {
                 resources = localResources;
