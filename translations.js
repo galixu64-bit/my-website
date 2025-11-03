@@ -133,7 +133,7 @@ const translations = {
         'imageHelp': '支持 jpg, png, gif 格式',
         'videoHelp': '支持 YouTube, Bilibili, 或其他视频链接',
         'resourceLink': '资源链接',
-        'resourceLinkPlaceholder': 'https://example.com 或 file:/
+        'resourceLinkPlaceholder': 'https://example.com 或 file://...',
         'resourceLinkHelp': '网站链接或本地文件路径',
         'categorySelect': '分类',
         'iconSelect': '图标',
