@@ -503,6 +503,13 @@ footer p {
     flex-direction: column;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
     border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.light-theme .comment-modal-content {
+    background: rgba(250, 252, 255, 0.98);
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    box-shadow: 0 10px 40px rgba(102, 126, 234, 0.2);
 }
 
 .comment-modal-header {
@@ -567,6 +574,13 @@ footer p {
     border-radius: 10px;
     margin-bottom: 15px;
     border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.light-theme .comment-item {
+    background: rgba(245, 248, 252, 0.95);
+    border: 1px solid rgba(102, 126, 234, 0.2);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.08);
 }
 
 .comment-author {
@@ -751,6 +765,11 @@ footer p {
     z-index: 3000;
     padding: 20px;
     overflow-y: auto;
+    transition: all 0.3s ease;
+}
+
+.light-theme .resource-detail-modal {
+    background: rgba(0, 0, 0, 0.6);
 }
 
 .resource-detail-modal.hidden {
@@ -767,6 +786,13 @@ footer p {
     flex-direction: column;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
     border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.light-theme .resource-detail-content {
+    background: rgba(250, 252, 255, 0.98);
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    box-shadow: 0 10px 40px rgba(102, 126, 234, 0.25);
 }
 
 .resource-detail-header {
@@ -778,16 +804,24 @@ footer p {
     flex-shrink: 0;
 }
 
+.light-theme .resource-detail-header {
+    border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+}
+
 .resource-detail-title {
     font-size: 2em;
-    color: #667eea;
+    color: var(--accent-color);
     margin: 0;
+}
+
+.light-theme .resource-detail-title {
+    color: var(--accent-color);
 }
 
 .resource-detail-close {
     background: transparent;
     border: none;
-    color: #b0b0b0;
+    color: var(--text-secondary);
     font-size: 2em;
     cursor: pointer;
     padding: 0;
@@ -798,6 +832,10 @@ footer p {
     justify-content: center;
     transition: all 0.3s ease;
     border-radius: 50%;
+}
+
+.light-theme .resource-detail-close {
+    color: var(--text-secondary);
 }
 
 .resource-detail-close:hover {
@@ -831,6 +869,10 @@ footer p {
     transition: all 0.3s ease;
 }
 
+.light-theme .resource-detail-image {
+    border: 2px solid rgba(102, 126, 234, 0.2);
+}
+
 .resource-detail-image:hover {
     transform: scale(1.05);
     border-color: rgba(102, 126, 234, 0.5);
@@ -852,6 +894,11 @@ footer p {
     border-radius: 10px;
     overflow: hidden;
     border: 2px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.light-theme .resource-detail-video {
+    border: 2px solid rgba(102, 126, 234, 0.2);
 }
 
 .resource-detail-video video,
@@ -878,10 +925,14 @@ footer p {
 }
 
 .resource-detail-text {
-    color: #e0e0e0;
+    color: var(--text-primary);
     line-height: 1.8;
     font-size: 1.05em;
     white-space: pre-wrap;
+}
+
+.light-theme .resource-detail-text {
+    color: var(--text-primary);
 }
 
 .resource-detail-tags {
@@ -917,6 +968,13 @@ footer p {
     padding: 15px;
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.light-theme .resource-detail-info-item {
+    background: rgba(245, 248, 252, 0.95);
+    border: 1px solid rgba(102, 126, 234, 0.2);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.08);
 }
 
 .resource-detail-info-label {
@@ -945,6 +1003,10 @@ footer p {
     margin-top: 30px;
     padding-top: 25px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.light-theme .resource-detail-actions {
+    border-top: 1px solid rgba(102, 126, 234, 0.2);
 }
 
 @media (max-width: 768px) {
@@ -991,12 +1053,23 @@ footer p {
     width: 100%;
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.light-theme .login-required-box {
+    background: rgba(250, 252, 255, 0.98);
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    box-shadow: 0 10px 40px rgba(102, 126, 234, 0.2);
 }
 
 .login-required-box h2 {
-    color: #667eea;
+    color: var(--accent-color);
     font-size: 2em;
     margin: 0 0 10px 0;
+}
+
+.light-theme .login-required-box h2 {
+    color: var(--accent-color);
 }
 
 .login-required-icon {
