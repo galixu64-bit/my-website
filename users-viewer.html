@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户数据查看器</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="auth.js"></script>
+    <style>
+        body {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .viewer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(26, 26, 46, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .light-theme .viewer-container {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+        
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .light-theme h1 {
+            color: var(--accent-color);
+        }
+        
+        .info-section {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .light-theme .info-section {
+            background: rgba(102, 126, 234, 0.05);
+            border: 1px solid rgba(102, 126, 234, 0.15);
+        }
+        
+        .info-section h3 {
+            color: #10b981;
+            margin-bottom: 15px;
+        }
+        
+        .light-theme .info-section h3 {
+            color: #059669;
+        }
+        
+        .data-display {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #10b981;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .light-theme .data-display {
+            background: rgba(0, 0, 0, 0.02);
+            color: #059669;
+        }
+        
+        .btn-action {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .users-table th,
+        .users-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .users-table th {
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .light-theme .users-table th {
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--accent-color);
+        }
+        
+        .users-table td {
+            color: #e0e0e0;
+        }
+        
+        .light-theme .users-table td {
+            color: var(--text-primary);
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+        
+        .badge-developer {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+        
+        .badge-user {
+            background: rgba(255, 255, 255, 0.2);
+            color: #b0b0b0;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-box {
+            background: rgba(102, 126, 234, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+        
+        .light-theme .stat-box {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+        
+        .stat-value {
+            font-size: 2em;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .light-theme .stat-value {
+            color: var(--accent-color);
+        }
+        
+        .stat-label {
+            color: #b0b0b0;
+            font-size: 0.9em;
+        }
+        
+        .light-theme .stat-label {
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="viewer-container">
+        <h1><i class="fas fa-database"></i> 用户数据查看器</h1>
+        
+        <div class="stats" id="stats">
+        </div>
+        
+        <div class="info-section">
+            <h3><i class="fas fa-info-circle"></i> 快速操作</h3>
+            <button class="btn-action" onclick="refreshData()">
+                <i class="fas fa-sync"></i> 刷新数据
+            </button>
+            <button class="btn-action btn-secondary" onclick="exportJSON()">
+                <i class="fas fa-download"></i> 导出JSON文件
+            </button>
+            <button class="btn-action" onclick="copyJSON()">
+                <i class="fas fa-copy"></i> 复制JSON
+            </button>
+            <button class="btn-action btn-danger" onclick="showRawLocalStorage()">
+                <i class="fas fa-code"></i> 查看原始localStorage
+            </button>
+        </div>
+        
+        <div class="info-section">
+            <h3><i class="fas fa-users"></i> 所有用户列表</h3>
+            <div id="usersTableContainer"></div>
+        </div>
+        
+        <div class="info-section">
+            <h3><i class="fas fa-database"></i> JSON数据</h3>
+            <div class="data-display" id="jsonData">正在加载...</div>
+        </div>
+        
+        <div class="info-section" id="localStorageSection" style="display: none;">
+            <h3><i class="fas fa-hdd"></i> localStorage原始数据</h3>
+            <div class="data-display" id="localStorageData"></div>
+        </div>
+    </div>
+    
+    <script src="theme.js"></script>
+    <script>
+        async function refreshData() {
+            console.log('开始刷新数据...');
+            
+            if (typeof initDefaultUsers === 'function') {
+                try {
+                    await initDefaultUsers();
+                    console.log('用户数据初始化完成');
+                } catch (error) {
+                    console.error('初始化失败:', error);
+                }
+            }
+            
+            loadAllUsers();
+            updateStats();
+        }
+        
+        function loadAllUsers() {
+            const users = getAllUsersSync ? getAllUsersSync() : (window.getAllUsersSync ? window.getAllUsersSync() : []);
+            
+            console.log('获取到的用户数据:', users);
+            console.log('用户数量:', users.length);
+            
+            const jsonData = document.getElementById('jsonData');
+            if (jsonData) {
+                jsonData.textContent = JSON.stringify(users, null, 2);
+            }
+            
+            const tableContainer = document.getElementById('usersTableContainer');
+            if (tableContainer && users.length > 0) {
+                let tableHTML = '<table class="users-table">';
+                tableHTML += '<thead><tr>';
+                tableHTML += '<th>ID</th>';
+                tableHTML += '<th>用户名</th>';
+                tableHTML += '<th>邮箱</th>';
+                tableHTML += '<th>密码</th>';
+                tableHTML += '<th>注册时间</th>';
+                tableHTML += '<th>类型</th>';
+                tableHTML += '</tr></thead><tbody>';
+                
+                users.forEach(user => {
+                    const date = user.createdAt ? new Date(user.createdAt).toLocaleString('zh-CN') : '未知';
+                    const badge = user.isDeveloper 
+                        ? '<span class="badge badge-developer">开发者</span>' 
+                        : '<span class="badge badge-user">普通用户</span>';
+                    
+                    tableHTML += `<tr>`;
+                    tableHTML += `<td>${user.id || 'N/A'}</td>`;
+                    tableHTML += `<td>${escapeHtml(user.username || 'N/A')}</td>`;
+                    tableHTML += `<td>${escapeHtml(user.email || 'N/A')}</td>`;
+                    tableHTML += `<td>${escapeHtml(user.password || 'N/A')}</td>`;
+                    tableHTML += `<td>${date}</td>`;
+                    tableHTML += `<td>${badge}</td>`;
+                    tableHTML += `</tr>`;
+                });
+                
+                tableHTML += '</tbody></table>';
+                tableContainer.innerHTML = tableHTML;
+            } else if (tableContainer) {
+                tableContainer.innerHTML = '<p style="color: #b0b0b0; text-align: center; padding: 20px;">暂无用户数据</p>';
+            }
+        }
+        
+        function updateStats() {
+            const users = getAllUsersSync ? getAllUsersSync() : (window.getAllUsersSync ? window.getAllUsersSync() : []);
+            const statsContainer = document.getElementById('stats');
+            
+            if (!statsContainer) return;
+            
+            const totalUsers = users.length;
+            const developers = users.filter(u => u.isDeveloper).length;
+            const regularUsers = totalUsers - developers;
+            
+            statsContainer.innerHTML = `
+                <div class="stat-box">
+                    <div class="stat-value">${totalUsers}</div>
+                    <div class="stat-label">总用户数</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">${developers}</div>
+                    <div class="stat-label">开发者</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">${regularUsers}</div>
+                    <div class="stat-label">普通用户</div>
+                </div>
+            `;
+        }
+        
+        function exportJSON() {
+            const users = getAllUsersSync ? getAllUsersSync() : (window.getAllUsersSync ? window.getAllUsersSync() : []);
+            const jsonString = JSON.stringify(users, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'users-' + new Date().getTime() + '.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            alert('用户数据已导出！');
+        }
+        
+        function copyJSON() {
+            const users = getAllUsersSync ? getAllUsersSync() : (window.getAllUsersSync ? window.getAllUsersSync() : []);
+            const jsonString = JSON.stringify(users, null, 2);
+            
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(jsonString).then(function() {
+                    alert('JSON数据已复制到剪贴板！');
+                }).catch(function(err) {
+                    console.error('复制失败:', err);
+                    fallbackCopy(jsonString);
+                });
+            } else {
+                fallbackCopy(jsonString);
+            }
+        }
+        
+        function fallbackCopy(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.opacity = '0';
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                alert('JSON数据已复制到剪贴板！');
+            } catch (err) {
+                alert('复制失败，请手动选择并复制');
+            }
+            document.body.removeChild(textArea);
+        }
+        
+        function showRawLocalStorage() {
+            const section = document.getElementById('localStorageSection');
+            const display = document.getElementById('localStorageData');
+            
+            if (!section || !display) return;
+            
+            const allData = {};
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                try {
+                    const value = localStorage.getItem(key);
+                    allData[key] = value;
+                } catch (e) {
+                    allData[key] = '[无法读取]';
+                }
+            }
+            
+            display.textContent = JSON.stringify(allData, null, 2);
+            section.style.display = 'block';
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('页面加载完成，开始加载用户数据...');
+            
+            setTimeout(async function() {
+                if (typeof initDefaultUsers === 'function') {
+                    try {
+                        await initDefaultUsers();
+                        console.log('用户数据初始化完成');
+                    } catch (error) {
+                        console.error('初始化失败:', error);
+                    }
+                }
+                
+                loadAllUsers();
+                updateStats();
+            }, 500);
+        });
+    </script>
+</body>
+</html>
+
