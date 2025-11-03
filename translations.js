@@ -444,35 +444,51 @@ const translations = {
         currentLang: currentLang,
         
         setLanguage: function(lang) {
-            console.log('i18n.setLanguage called with:', lang);
+            console.log('=== i18n.setLanguage 开始 ===');
+            console.log('目标语言:', lang);
+            console.log('当前语言:', this.currentLang);
+            
             if (translations[lang]) {
+                const oldLang = this.currentLang;
                 this.currentLang = lang;
+                
                 try {
                     localStorage.setItem('language', lang);
-                    console.log('语言已保存到 localStorage:', lang);
+                    console.log('✓ 语言已保存到 localStorage:', lang);
                 } catch (e) {
-                    console.error('保存语言到 localStorage 失败:', e);
+                    console.error('✗ 保存语言到 localStorage 失败:', e);
                 }
                 
-                console.log('开始更新页面...');
+                console.log('开始更新页面内容...');
                 this.updatePage();
                 
                 setTimeout(() => {
-                    console.log('第二次更新页面...');
+                    console.log('延迟更新页面内容（第一次）...');
                     this.updatePage();
-                }, 100);
+                }, 150);
                 
                 setTimeout(() => {
+                    console.log('延迟更新页面内容（第二次）...');
+                    this.updatePage();
+                    
                     try {
-                        const event = new CustomEvent('languageChanged', { detail: { lang: lang } });
+                        const event = new CustomEvent('languageChanged', { 
+                            detail: { lang: lang, oldLang: oldLang } 
+                        });
                         window.dispatchEvent(event);
-                        console.log('已分发 languageChanged 事件');
+                        console.log('✓ 已分发 languageChanged 事件');
                     } catch (e) {
-                        console.error('分发 languageChanged 事件失败:', e);
+                        console.error('✗ 分发 languageChanged 事件失败:', e);
                     }
-                }, 150);
+                }, 300);
+                
+                setTimeout(() => {
+                    console.log('最终更新页面内容...');
+                    this.updatePage();
+                    console.log('=== i18n.setLanguage 完成 ===');
+                }, 600);
             } else {
-                console.warn('不支持的语言:', lang);
+                console.warn('✗ 不支持的语言:', lang);
             }
         },
         
@@ -493,10 +509,16 @@ const translations = {
                     updatedCount++;
 
                     if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-                        if (el.getAttribute('data-i18n-placeholder') || el.placeholder) {
-
+                        const placeholderKey = el.getAttribute('data-i18n-placeholder') || el.getAttribute('data-i18n');
+                        if (placeholderKey) {
+                            el.placeholder = i18n.t(placeholderKey);
                         }
-
+                        if (el.value === '' || el.getAttribute('data-i18n-value')) {
+                            const valueKey = el.getAttribute('data-i18n-value');
+                            if (valueKey) {
+                                el.value = i18n.t(valueKey);
+                            }
+                        }
                     } else {
                         const hasIcon = el.querySelector('i, svg, img') !== null;
                         const hasSpanWithI18n = el.querySelector('span[data-i18n]');
