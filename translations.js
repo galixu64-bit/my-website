@@ -525,6 +525,7 @@ const translations = {
                         
                         if (hasSpanWithI18n) {
                             hasSpanWithI18n.textContent = translated;
+                            console.log('更新 span[data-i18n] 元素:', key, '=', translated);
                         } else if (hasIcon) {
                             let textUpdated = false;
                             const allChildren = Array.from(el.childNodes);
@@ -536,16 +537,20 @@ const translations = {
                                         n.nodeType === Node.ELEMENT_NODE && 
                                         (n.tagName === 'I' || n.tagName === 'SVG' || n.tagName === 'IMG')
                                     );
+                                    const oldText = node.textContent;
                                     if (hasIconBefore) {
                                         node.textContent = ' ' + translated;
                                     } else {
                                         node.textContent = translated;
                                     }
                                     textUpdated = true;
-                                } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'SPAN') {
-                                    if (!node.querySelector('i, svg, img') && !node.hasAttribute('data-i18n')) {
+                                    console.log('更新文本节点:', key, '从', oldText.trim(), '到', translated);
+                                } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'SPAN' && !node.hasAttribute('data-i18n')) {
+                                    if (!node.querySelector('i, svg, img')) {
+                                        const oldSpanText = node.textContent;
                                         node.textContent = translated;
                                         textUpdated = true;
+                                        console.log('更新 SPAN 元素:', key, '从', oldSpanText, '到', translated);
                                     }
                                 }
                             });
@@ -555,29 +560,37 @@ const translations = {
                                 if (firstIcon) {
                                     const nextSibling = firstIcon.nextSibling;
                                     if (nextSibling && nextSibling.nodeType === Node.TEXT_NODE) {
+                                        const oldNextText = nextSibling.textContent;
                                         nextSibling.textContent = ' ' + translated;
+                                        console.log('更新图标后的文本节点:', key, '从', oldNextText.trim(), '到', translated);
+                                        textUpdated = true;
                                     } else {
-                                        const existingTextNodes = Array.from(el.childNodes).filter(n => n.nodeType === Node.TEXT_NODE && n !== nextSibling);
-                                        existingTextNodes.forEach(n => {
-                                            if (n.textContent.trim()) {
+                                        const existingTextNodes = Array.from(el.childNodes).filter(n => 
+                                            n.nodeType === Node.TEXT_NODE && n.textContent.trim()
+                                        );
+                                        if (existingTextNodes.length > 0) {
+                                            existingTextNodes.forEach(n => {
+                                                const oldText = n.textContent;
                                                 n.textContent = ' ' + translated;
+                                                console.log('更新现有文本节点:', key, '从', oldText.trim(), '到', translated);
                                                 textUpdated = true;
-                                            }
-                                        });
+                                            });
+                                        }
                                         if (!textUpdated) {
                                             firstIcon.insertAdjacentText('afterend', ' ' + translated);
+                                            console.log('插入新文本节点:', key, '=', translated);
                                         }
                                     }
                                 } else {
+                                    const oldText = el.textContent;
                                     el.textContent = translated;
+                                    console.log('更新元素文本:', key, '从', oldText, '到', translated);
                                 }
                             }
                         } else {
-                            const oldContent = el.innerHTML;
+                            const oldContent = el.textContent || el.innerHTML;
                             el.textContent = translated;
-                            if (oldContent !== el.innerHTML) {
-                                console.log('更新文本元素:', key, '从', oldContent, '到', translated);
-                            }
+                            console.log('更新纯文本元素:', key, '从', oldContent, '到', translated);
                         }
                     }
                 }
