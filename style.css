@@ -189,10 +189,10 @@ main {
     background: var(--bg-card);
     border: 2px solid var(--border-color);
     border-radius: 25px;
-    color: var(--text-secondary);
+    color: var(--text-primary);
     font-size: 1em;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.25s ease;
     backdrop-filter: blur(10px);
 }
 
