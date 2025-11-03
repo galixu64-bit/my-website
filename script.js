@@ -254,9 +254,14 @@ function logout() {
 }
 
 let isRendering = false;
+let renderTimer = null;
 
 function renderResources() {
-    if (isRendering) return;
+    if (isRendering) {
+        if (renderTimer) {
+            cancelAnimationFrame(renderTimer);
+        }
+    }
     isRendering = true;
     
     const resourcesList = document.getElementById('resourcesList');
@@ -267,7 +272,7 @@ function renderResources() {
         return;
     }
 
-    let filteredResources = resources.filter(resource => {
+    const filteredResources = resources.filter(resource => {
         const matchesCategory = currentCategory === 'all' || resource.category === currentCategory;
 
         const searchLower = searchQuery.toLowerCase();
@@ -277,22 +282,26 @@ function renderResources() {
         const matchesSearch = inName || inDesc || inTags;
         return matchesCategory && matchesSearch;
     });
+    
+    renderTimer = requestAnimationFrame(() => {
+        const fragment = document.createDocumentFragment();
+        filteredResources.forEach(resource => {
+            const resourceItem = createResourceCard(resource);
+            fragment.appendChild(resourceItem);
+        });
 
-    requestAnimationFrame(() => {
-        resourcesList.innerHTML = '';
+        resourcesList.replaceChildren(fragment);
 
-        if (filteredResources.length === 0) {
-            noResults.classList.remove('hidden');
-        } else {
-            noResults.classList.add('hidden');
-
-            filteredResources.forEach(resource => {
-                const resourceItem = createResourceCard(resource);
-                resourcesList.appendChild(resourceItem);
-            });
+        if (noResults) {
+            if (filteredResources.length === 0) {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+            }
         }
         
         isRendering = false;
+        renderTimer = null;
     });
 }
 
