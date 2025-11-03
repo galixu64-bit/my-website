@@ -602,26 +602,6 @@ function initSettings() {
 
     initJSONStorageSettings();
 
-    const btnSaveJSON = document.getElementById('btnSaveJSONStorage');
-    if (btnSaveJSON) {
-        btnSaveJSON.addEventListener('click', function (e) {
-            e.preventDefault();
-            if (typeof window.saveJSONStorageConfig === 'function') {
-                window.saveJSONStorageConfig();
-            }
-        });
-    }
-
-    const btnTestJSON = document.getElementById('btnTestJSONStorage');
-    if (btnTestJSON) {
-        btnTestJSON.addEventListener('click', async function (e) {
-            e.preventDefault();
-            if (typeof window.testJSONStorageConnection === 'function') {
-                await window.testJSONStorageConnection();
-            }
-        });
-    }
-
     window.addEventListener('languageChanged', function(e) {
         const lang = e.detail ? e.detail.lang : (localStorage.getItem('language') || 'zh');
         updateLanguageDisplay(lang);
