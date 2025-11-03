@@ -1117,7 +1117,6 @@ footer p {
     backdrop-filter: blur(10px);
     cursor: pointer;
     position: relative;
-    will-change: transform, box-shadow;
 }
 
 .btn-settings-icon:hover {
