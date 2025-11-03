@@ -1,10 +1,9 @@
-// 临时脚本：清除 localStorage 中的旧用户数据
-// 在浏览器控制台运行：清除后刷新页面
+
+
 (function() {
     'use strict';
     console.log('清除用户数据...');
-    
-    // 清除旧的用户数据
+
     localStorage.removeItem('userDatabase');
     localStorage.removeItem('users');
     localStorage.removeItem('jsonUsersLoaded');

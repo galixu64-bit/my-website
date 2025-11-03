@@ -1,7 +1,7 @@
-// 登录页面功能
+
 
 document.addEventListener('DOMContentLoaded', function() {
-    // 如果已登录，重定向到主页
+
     if (isLoggedIn()) {
         window.location.href = 'index.html';
         return;
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = login(username, password);
             
             if (result.success) {
-                // 登录成功，跳转到主页
+
                 window.location.href = 'index.html';
             } else {
                 showError(result.message || '登录失败，请检查用户名和密码');

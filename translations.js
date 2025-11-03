@@ -1,7 +1,7 @@
-// 多语言翻译文件
+
 const translations = {
     zh: {
-        // 通用
+
         'login': '登录',
         'logout': '登出',
         'register': '注册',
@@ -19,8 +19,7 @@ const translations = {
         'loading': '加载中...',
         'error': '错误',
         'success': '成功',
-        
-        // 导航和页面
+
         'siteName': 'dragbit',
         'siteDescription': '优质资源，免费下载',
         'home': '首页',
@@ -30,8 +29,7 @@ const translations = {
         'personalCenter': '个人中心',
         'loginRequired': '需要登录',
         'loginRequiredMessage': '您需要登录才能查看资源\n请登录或注册',
-        
-        // 资源相关
+
         'resources': '资源',
         'allCategories': '全部',
         'filterAll': '全部',
@@ -63,8 +61,7 @@ const translations = {
         'noCommentsYet': '暂无评论，快来发表第一条评论吧！',
         'loginToComment': '请登录后评论',
         'viewComments': '查看评论',
-        
-        // 登录页面
+
         'loginTitle': '登录资源库',
         'loginSubtitle': '账号登录，畅享高质量资源免费下载！',
         'username': '用户名',
@@ -79,8 +76,7 @@ const translations = {
         'registerButton': '注册',
         'demoAccount': '演示账号：',
         'or': '或',
-        
-        // 注册页面
+
         'registerTitle': '✨ 注册',
         'registerSubtitle': '创建账户开始使用',
         'confirmPassword': '确认密码',
@@ -93,8 +89,7 @@ const translations = {
         'loginNow': '立即登录',
         'backToHome': '← 返回首页',
         'enterCode': '请输入验证码',
-        
-        // 注册验证错误消息
+
         'usernameLengthError': '用户名长度必须在3-20个字符之间',
         'passwordLengthError': '密码长度至少6个字符',
         'passwordMismatch': '两次输入的密码不一致',
@@ -115,15 +110,13 @@ const translations = {
         'codeSendFailedError': '错误代码：{status}，详细信息：{details}',
         'verificationCodeMessage': '您的验证码是：{code}，有效期为5分钟。',
         'codeCountdown': '{seconds}秒后可重新发送',
-        
-        // 我的资源页面
+
         'myResourcesTitle': '我的资源',
         'myResourcesSubtitle': '这里展示你在dragbit上传的所有资源',
         'noMyResources': '你还没有上传任何资源',
         'addFirstResource': '添加第一个资源',
         'backToMain': '返回主页',
-        
-        // 添加资源页面
+
         'addResourceTitle': '➕ 添加资源',
         'addResourceSubtitle': '资源将收录在 dragbit —— 一个优质资源网站',
         'addNewResource': '添加新资源',
@@ -140,14 +133,13 @@ const translations = {
         'imageHelp': '支持 jpg, png, gif 格式',
         'videoHelp': '支持 YouTube, Bilibili, 或其他视频链接',
         'resourceLink': '资源链接',
-        'resourceLinkPlaceholder': 'https://example.com 或 file:///path/to/file',
+        'resourceLinkPlaceholder': 'https://example.com 或 file:/
         'resourceLinkHelp': '网站链接或本地文件路径',
         'categorySelect': '分类',
         'iconSelect': '图标',
         'submitResource': '提交',
         'backToDragbit': '← 返回 dragbit',
-        
-        // 个人中心页面
+
         'profileTitle': '个人中心',
         'profileSubtitle': '管理你的账户信息',
         'member': '会员',
@@ -182,12 +174,11 @@ const translations = {
         'currentLanguage': '当前语言',
         'browserLanguage': '浏览器语言',
         'selectLanguage': '选择语言',
-        
-        // Other
+
         'copyright': '© 2024 dragbit | Made with ❤️',
     },
     en: {
-        // Common
+
         'login': 'Login',
         'logout': 'Logout',
         'register': 'Register',
@@ -205,8 +196,7 @@ const translations = {
         'loading': 'Loading...',
         'error': 'Error',
         'success': 'Success',
-        
-        // Navigation and Pages
+
         'siteName': 'dragbit',
         'siteDescription': 'High-quality resources, free download',
         'home': 'Home',
@@ -216,8 +206,7 @@ const translations = {
         'personalCenter': 'Personal Center',
         'loginRequired': 'Login Required',
         'loginRequiredMessage': 'You need to login to view resources\nPlease login or register',
-        
-        // Resources
+
         'resources': 'Resources',
         'allCategories': 'All',
         'filterAll': 'All',
@@ -249,8 +238,7 @@ const translations = {
         'noCommentsYet': 'No comments yet. Be the first to comment!',
         'loginToComment': 'Please login to comment',
         'viewComments': 'View Comments',
-        
-        // Login Page
+
         'loginTitle': 'Login',
         'loginSubtitle': 'Account login to enjoy high-quality free resources!',
         'username': 'Username',
@@ -265,8 +253,7 @@ const translations = {
         'registerButton': 'Register',
         'demoAccount': 'Demo Account:',
         'or': 'or',
-        
-        // Register Page
+
         'registerTitle': '✨ Register',
         'registerSubtitle': 'Create an account to get started',
         'confirmPassword': 'Confirm Password',
@@ -279,8 +266,7 @@ const translations = {
         'loginNow': 'Login Now',
         'backToHome': '← Back to Home',
         'enterCode': 'Enter verification code',
-        
-        // Register validation error messages
+
         'usernameLengthError': 'Username must be between 3-20 characters',
         'passwordLengthError': 'Password must be at least 6 characters',
         'passwordMismatch': 'Passwords do not match',
@@ -301,15 +287,13 @@ const translations = {
         'codeSendFailedError': 'Error code: {status}, Details: {details}',
         'verificationCodeMessage': 'Your verification code is: {code}, valid for 5 minutes.',
         'codeCountdown': '{seconds} seconds before resending',
-        
-        // My Resources Page
+
         'myResourcesTitle': 'My Resources',
         'myResourcesSubtitle': 'All resources you uploaded on dragbit',
         'noMyResources': 'You have not uploaded any resources yet',
         'addFirstResource': 'Add Your First Resource',
         'backToMain': 'Back to Home',
-        
-        // Add Resource Page
+
         'addResourceTitle': '➕ Add Resource',
         'addResourceSubtitle': 'Resources will be added to dragbit - a quality resource website',
         'addNewResource': 'Add New Resource',
@@ -326,14 +310,13 @@ const translations = {
         'imageHelp': 'Supports jpg, png, gif formats',
         'videoHelp': 'Supports YouTube, Bilibili, or other video links',
         'resourceLink': 'Resource Link',
-        'resourceLinkPlaceholder': 'https://example.com or file:///path/to/file',
+        'resourceLinkPlaceholder': 'https://example.com or file:/
         'resourceLinkHelp': 'Website link or local file path',
         'categorySelect': 'Category',
         'iconSelect': 'Icon',
         'submitResource': 'Submit',
         'backToDragbit': '← Back to dragbit',
-        
-        // Profile Page
+
         'profileTitle': 'Profile',
         'profileSubtitle': 'Manage your account information',
         'member': 'Member',
@@ -368,28 +351,23 @@ const translations = {
         'currentLanguage': 'Current Language',
         'browserLanguage': 'Browser Language',
         'selectLanguage': 'Select Language',
-        
-        // Other
+
         'copyright': '© 2024 dragbit | Made with ❤️',
     }
 };
 
-// 语言工具对象
 (function() {
     'use strict';
-    
-    // 自动检测浏览器语言
-    // 检测浏览器语言
+
+
     function detectBrowserLanguage() {
         try {
-            // 获取浏览器语言（优先级：language > userLanguage > languages[0]）
+
             const browserLang = (navigator.language || navigator.userLanguage || 
                 (navigator.languages && navigator.languages[0]) || 'zh-CN').toLowerCase();
-            
-            // 支持的语言列表
+
             const supportedLangs = ['zh', 'en'];
-            
-            // 检查完整语言代码（如 zh-cn, en-us, zh-tw）
+
             if (browserLang) {
                 const langCode = browserLang.split('-')[0];
                 if (supportedLangs.includes(langCode)) {
@@ -399,12 +377,10 @@ const translations = {
         } catch (e) {
             console.warn('无法检测浏览器语言:', e);
         }
-        
-        // 默认返回中文
+
         return 'zh';
     }
-    
-    // 获取浏览器语言（用于显示）
+
     function getBrowserLanguage() {
         try {
             const browserLang = (navigator.language || navigator.userLanguage || 
@@ -414,40 +390,36 @@ const translations = {
             return 'zh-CN';
         }
     }
-    
-    // 获取当前语言（优先级：localStorage > 浏览器语言 > 默认中文）
+
     let currentLang = 'zh';
     let browserDetectedLang = detectBrowserLanguage();
     
     try {
         const savedLang = localStorage.getItem('language');
         if (savedLang && translations[savedLang]) {
-            // 使用保存的语言
+
             currentLang = savedLang;
         } else {
-            // 如果没有保存的语言，使用检测到的浏览器语言
+
             currentLang = browserDetectedLang;
-            // 保存检测到的语言
+
             try {
                 localStorage.setItem('language', currentLang);
             } catch (e) {
-                // 忽略存储错误
+
             }
         }
-        
-        // 确保语言有效
+
         if (!translations[currentLang]) {
             currentLang = 'zh';
         }
     } catch (e) {
         currentLang = 'zh';
     }
-    
-    // 导出浏览器语言检测函数
+
     window.getBrowserLanguage = getBrowserLanguage;
     window.detectBrowserLanguage = detectBrowserLanguage;
-    
-    // 创建 i18n 对象
+
     const i18n = {
         currentLang: currentLang,
         
@@ -457,7 +429,7 @@ const translations = {
                 try {
                     localStorage.setItem('language', lang);
                 } catch (e) {
-                    // 忽略 localStorage 错误
+
                 }
                 this.updatePage();
             }
@@ -470,27 +442,26 @@ const translations = {
         },
         
         updatePage: function() {
-            // 更新 data-i18n
+
             document.querySelectorAll('[data-i18n]').forEach(function(el) {
                 const key = el.getAttribute('data-i18n');
                 if (key) {
                     const translated = i18n.t(key);
-                    
-                    // 如果元素是 input、textarea 等，更新 placeholder 或 value
+
                     if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
                         if (el.getAttribute('data-i18n-placeholder') || el.placeholder) {
-                            // placeholder 会由 data-i18n-placeholder 处理
+
                         }
-                        // 如果 value 需要翻译，可以使用 data-i18n-value
+
                     } else {
-                        // 对于普通元素，更新文本内容
-                        // 如果元素有子元素（如 <i> 图标），需要特殊处理
-                        // 检查是否有子元素且子元素是图标或其他需要保留的元素
+
+
+
                         const hasIcon = el.querySelector('i, svg, img') !== null;
                         
                         if (hasIcon) {
-                            // 有图标等子元素，需要保留子元素，只更新文本
-                            // 找到文本节点并更新
+
+
                             let textUpdated = false;
                             Array.from(el.childNodes).forEach(function(node) {
                                 if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
@@ -498,49 +469,44 @@ const translations = {
                                     textUpdated = true;
                                 }
                             });
-                            
-                            // 如果没有文本节点，在第一个子元素前插入翻译文本
+
                             if (!textUpdated && el.firstChild) {
                                 el.insertBefore(document.createTextNode(translated), el.firstChild);
                             } else if (!textUpdated) {
                                 el.textContent = translated;
                             }
                         } else {
-                            // 没有需要保留的子元素，直接替换所有文本内容
+
                             el.textContent = translated;
                         }
                     }
                 }
             });
-            
-            // 更新 data-i18n-placeholder
+
             document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
                 const key = el.getAttribute('data-i18n-placeholder');
                 if (key) {
                     el.placeholder = i18n.t(key);
                 }
             });
-            
-            // 更新 data-i18n-title
+
             document.querySelectorAll('[data-i18n-title]').forEach(function(el) {
                 const key = el.getAttribute('data-i18n-title');
                 if (key) {
                     el.title = i18n.t(key);
                 }
             });
-            
-            // 更新 HTML lang 属性
+
             if (document.documentElement) {
                 document.documentElement.lang = this.currentLang === 'zh' ? 'zh-CN' : 'en';
             }
-            
-            // 触发语言变更事件
+
             try {
                 window.dispatchEvent(new CustomEvent('languageChanged', { 
                     detail: { lang: this.currentLang } 
                 }));
             } catch (e) {
-                // 忽略事件分发错误
+
             }
         },
         
@@ -548,8 +514,7 @@ const translations = {
             this.updatePage();
         }
     };
-    
-    // 导出到全局
+
     window.i18n = i18n;
     window.translations = translations;
     

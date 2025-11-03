@@ -141,14 +141,13 @@
     <script src="auth.js"></script>
     <script src="script.js"></script>
     <script>
-        // 语言切换函数（供设置页面使用）
+
         window.switchLanguage = function(lang) {
             if (window.i18n && typeof window.i18n.setLanguage === 'function') {
                 window.i18n.setLanguage(lang);
             }
         };
-        
-        // 页面加载完成后初始化语言
+
         document.addEventListener('DOMContentLoaded', function() {
             setTimeout(function() {
                 if (window.i18n && typeof window.i18n.init === 'function') {
@@ -159,4 +158,3 @@
     </script>
 </body>
 </html>
-

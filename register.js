@@ -1,7 +1,7 @@
-// 注册页面功能
+
 
 document.addEventListener('DOMContentLoaded', function() {
-    // 如果已登录，重定向到主页
+
     if (isLoggedIn()) {
         window.location.href = 'index.html';
         return;
@@ -20,28 +20,24 @@ document.addEventListener('DOMContentLoaded', function() {
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
             const verificationCode = document.getElementById('verificationCode').value.trim();
-            
-            // 获取翻译函数
+
             const t = (key) => {
                 return (window.i18n && typeof window.i18n.t === 'function') 
                     ? window.i18n.t(key) 
                     : key;
             };
-            
-            // 验证邮箱（必需）
+
             if (!email) {
                 showError(t('emailRequired'));
                 return;
             }
-            
-            // 验证邮箱格式
+
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
                 showError(t('emailInvalid'));
                 return;
             }
-            
-            // 验证用户名（如果提供了）
+
             if (username && (username.length < 3 || username.length > 20)) {
                 showError(t('usernameLengthError'));
                 return;
@@ -56,18 +52,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 showError(t('passwordMismatch'));
                 return;
             }
-            
-            // 验证验证码
+
             if (!verificationCode) {
                 showError(t('codeRequired'));
                 return;
             }
-            
-            // 调用验证码验证函数（在 register.html 中定义）
+
             if (window.verifyVerificationCode) {
                 const codeResult = window.verifyVerificationCode(verificationCode);
                 if (!codeResult.valid) {
-                    // codeResult.message 可能已经包含翻译，如果没有则使用默认翻译
+
                     showError(codeResult.message || t('codeError'));
                     return;
                 }
@@ -75,13 +69,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 showError(t('codeVerificationFailed'));
                 return;
             }
-            
-            // 注册（异步）
+
             (async function() {
                 try {
                     const result = await registerUser(email, password, username);
-                    
-                    // 获取翻译函数
+
                     const t = (key) => {
                         return (window.i18n && typeof window.i18n.t === 'function') 
                             ? window.i18n.t(key) 
@@ -90,8 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     if (result.success) {
                         showSuccess(t('registerSuccess'));
-                        
-                        // 自动登录（使用邮箱登录）
+
                         setTimeout(() => {
                             const loginResult = login(email, password);
                             if (loginResult.success) {

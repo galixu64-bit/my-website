@@ -1,20 +1,17 @@
-// 我的资源页面
 
-// 设置用户信息
+
 function setUserInfo() {
     const avatarImg = document.getElementById('avatar');
     const userNameElement = document.getElementById('userName');
     const userInfo = document.getElementById('userInfo');
-    
-    // 检查登录状态
+
     const currentUser = getCurrentUser();
     if (!currentUser) {
         alert('请先登录');
         window.location.href = 'login.html';
         return;
     }
-    
-    // 已登录，显示头像和名字
+
     if (userInfo) userInfo.style.display = 'flex';
     if (avatarImg) {
         avatarImg.src = 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + currentUser.username;
@@ -24,7 +21,6 @@ function setUserInfo() {
     }
 }
 
-// 加载我的资源
 async function loadMyResources() {
     const currentUser = getCurrentUser();
     if (!currentUser) {
@@ -33,15 +29,14 @@ async function loadMyResources() {
     }
     
     try {
-        // 从 localStorage 读取资源
+
         let allResources = [];
-        
-        // 先尝试从 localStorage 读取
+
         const localResources = getResourcesFromLocalStorage();
         if (localResources && localResources.length > 0) {
             allResources = localResources;
         } else {
-            // 从文件加载
+
             try {
                 const response = await fetch('resources.json', { cache: 'no-cache' });
                 if (response.ok) {
@@ -51,8 +46,7 @@ async function loadMyResources() {
                 console.error('加载文件失败:', e);
             }
         }
-        
-        // 筛选当前用户的资源
+
         const myResources = allResources.filter(resource => {
             const author = resource.author || resource.uploadedBy;
             return author === currentUser.username;
@@ -66,7 +60,6 @@ async function loadMyResources() {
     }
 }
 
-// 从 localStorage 读取资源
 function getResourcesFromLocalStorage() {
     try {
         const stored = localStorage.getItem('resources');
@@ -77,7 +70,6 @@ function getResourcesFromLocalStorage() {
     }
 }
 
-// 渲染我的资源
 function renderMyResources(myResources) {
     const resourcesList = document.getElementById('myResourcesList');
     const noResults = document.getElementById('noMyResources');
@@ -92,15 +84,13 @@ function renderMyResources(myResources) {
     }
     
     if (noResults) noResults.classList.add('hidden');
-    
-    // 渲染每个资源
+
     myResources.forEach(resource => {
         const resourceCard = createMyResourceCard(resource);
         resourcesList.appendChild(resourceCard);
     });
 }
 
-// 创建我的资源卡片
 function createMyResourceCard(resource) {
     const card = document.createElement('div');
     card.className = 'resource-card';
@@ -112,8 +102,7 @@ function createMyResourceCard(resource) {
     
     const uploadedDate = resource.uploadedAt ? new Date(resource.uploadedAt).toLocaleDateString('zh-CN') : '未知';
     const commentCount = getCommentCount(resource.id);
-    
-    // 处理资源图标：如果是 Font Awesome 类名则使用，否则显示为文本（兼容旧数据）
+
     let iconDisplay = '';
     if (resource.icon) {
         if (resource.icon.startsWith('fa-') || resource.icon.startsWith('fas ') || resource.icon.startsWith('far ') || resource.icon.startsWith('fab ')) {
@@ -152,7 +141,6 @@ function createMyResourceCard(resource) {
     return card;
 }
 
-// HTML转义（防止XSS）
 function escapeHtml(text) {
     if (!text) return '';
     const div = document.createElement('div');
@@ -160,7 +148,6 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// 获取评论数量（需要从主页脚本引入或重新实现）
 function getCommentCount(resourceId) {
     try {
         const commentsJson = localStorage.getItem(`comments_${resourceId}`);
@@ -170,9 +157,8 @@ function getCommentCount(resourceId) {
     }
 }
 
-// 下载/访问资源（简化版）
 function downloadResource(resourceId) {
-    // 从 localStorage 读取资源
+
     const allResources = getResourcesFromLocalStorage() || [];
     const resource = allResources.find(r => r.id === resourceId);
     
@@ -194,9 +180,7 @@ function visitWebsite(resourceId) {
     downloadResource(resourceId);
 }
 
-// 页面加载
 document.addEventListener('DOMContentLoaded', function() {
     setUserInfo();
     loadMyResources();
 });
-

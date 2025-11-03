@@ -313,14 +313,13 @@
     <script src="translations.js"></script>
     <script src="auth.js"></script>
     <script>
-        // 语言切换函数（供设置页面使用）
+
         window.switchLanguage = function(lang) {
             if (window.i18n && typeof window.i18n.setLanguage === 'function') {
                 window.i18n.setLanguage(lang);
             }
         };
-        
-        // 页面加载完成后初始化语言
+
         document.addEventListener('DOMContentLoaded', function() {
             setTimeout(function() {
                 if (window.i18n && typeof window.i18n.init === 'function') {
@@ -328,29 +327,25 @@
                 }
             }, 50);
         });
-        
-        // 原有代码继续...
-        // 初始化 EmailJS（需要替换为你的实际配置）
-        // 用户需要到 https://www.emailjs.com/ 注册并获取以下信息：
-        // - Public Key (EMAILJS_PUBLIC_KEY)
-        // - Service ID (EMAILJS_SERVICE_ID)
-        // - Template ID (EMAILJS_TEMPLATE_ID)
+
+
+
+
+
+
         const EMAILJS_CONFIG = {
             publicKey: 'He4SR5Jhl-7ZEOPRu',
             serviceId: 'service_w41xxeq',
             templateId: 'template_i0nicqo'
         };
-        
-        // 初始化 EmailJS
+
         (function() {
             emailjs.init(EMAILJS_CONFIG.publicKey);
         })();
-        
-        // 验证码相关变量
+
         let verificationCode = '';
         let codeExpireTime = 0;
-        
-        // 获取翻译函数（统一声明）
+
         const getTranslation = (key, params) => {
             if (!window.i18n || typeof window.i18n.t !== 'function') {
                 return key;
@@ -363,15 +358,13 @@
             }
             return text;
         };
-        
-        // 发送验证码
+
         window.sendVerificationCode = function() {
             const emailInput = document.getElementById('email');
             const email = emailInput.value.trim();
             const sendCodeBtn = document.getElementById('sendCodeBtn');
             const countdownDiv = document.getElementById('codeCountdown');
-            
-            // 验证邮箱格式
+
             if (!email) {
                 showErrorMessage(getTranslation('emailRequired'));
                 return;
@@ -382,36 +375,34 @@
                 showErrorMessage(getTranslation('emailInvalid'));
                 return;
             }
-            
-            // 生成6位随机验证码
+
             verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-            codeExpireTime = Date.now() + 5 * 60 * 1000; // 5分钟有效期
-            
-            // 使用 EmailJS 发送邮件
-            // 注意：EmailJS 模板变量名称必须与模板中完全匹配
-            // 支持多种常见的变量名格式，根据你的模板选择：
+            codeExpireTime = Date.now() + 5 * 60 * 1000; 
+
+
+
             const templateParams = {
-                // 收件人邮箱（常见格式）
+
                 to_email: email,
                 email: email,
                 user_email: email,
-                // 收件人名称（可选）
+
                 to_name: email.split('@')[0],
-                // 验证码（常见格式）
+
                 verification_code: verificationCode,
                 code: verificationCode,
                 verificationCode: verificationCode,
-                // 网站名称
+
                 site_name: 'dragbit 资源库',
                 siteName: 'dragbit 资源库',
-                // 完整消息（可选，使用翻译）
+
                 message: getTranslation('verificationCodeMessage', { code: verificationCode })
             };
             
             console.log('发送验证码请求:', {
                 serviceId: EMAILJS_CONFIG.serviceId,
                 templateId: EMAILJS_CONFIG.templateId,
-                templateParams: { ...templateParams, verification_code: '***', code: '***', verificationCode: '***' } // 隐藏验证码
+                templateParams: { ...templateParams, verification_code: '***', code: '***', verificationCode: '***' } 
             });
             
             emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, templateParams)
@@ -427,8 +418,7 @@
                     });
                     
                     let errorMsg = getTranslation('codeSendFailed');
-                    
-                    // 检查是否是 Public Key 无效的错误
+
                     if (error.status === 400 && error.text && error.text.includes('Public Key is invalid')) {
                         errorMsg = 'Public Key is invalid!\n\n';
                         errorMsg += 'Please follow these steps to get the correct Public Key:\n';
@@ -437,7 +427,7 @@
                         errorMsg += '3. Find "Public Key" in the "General" page\n';
                         errorMsg += '4. Copy the full Public Key\n';
                         errorMsg += '5. Replace the publicKey value in register.html line 304';
-                        // 显示弹窗提示，因为错误信息可能较长
+
                         alert(errorMsg);
                         errorMsg = 'Public Key is invalid, please check configuration. See console or alert for details.';
                     } else if (error.status === 400) {
@@ -456,11 +446,10 @@
                     }
                     
                     showErrorMessage(errorMsg);
-                    // 发送失败时不清空验证码，方便调试（如果是配置问题，验证码仍然有效）
-                    // verificationCode = '';
+
+
                 });
-            
-            // 开始倒计时
+
             let countdown = 60;
             sendCodeBtn.disabled = true;
             countdownDiv.style.display = 'block';
@@ -479,8 +468,7 @@
                 }
             }, 1000);
         };
-        
-        // 验证验证码
+
         function verifyCode(inputCode) {
             if (!verificationCode) {
                 return { valid: false, message: getTranslation('codeNotSent') };
@@ -519,12 +507,10 @@
                 }, 3000);
             }
         }
-        
-        // 导出验证函数供 register.js 使用
+
         window.verifyVerificationCode = verifyCode;
     </script>
     <script src="theme.js"></script>
     <script src="register.js"></script>
 </body>
 </html>
-
